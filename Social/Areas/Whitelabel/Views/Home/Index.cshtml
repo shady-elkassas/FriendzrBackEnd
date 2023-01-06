@@ -1,0 +1,652 @@
+﻿
+@model UserStatistics
+@{
+    ViewData["Title"] = _localizer["Home"];
+    ViewData["PageTitle"] = _localizer["Home"];
+    ViewData["UserReports"] = ViewBag.UserReports;
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutstatistics.cshtml";
+}
+
+<div class="flex-column-fluid align-items-start container-xxl">
+       
+    <div class="row g-6 g-xl-9 mt-6">
+         <div>
+            <div class="card-toolbar" data-bs-toggle="tooltip"  data-bs-trigger="hover" >
+                <a target="_blank" href="/Whitelabel/Event/Index" class="btn btn-sm btn-primary btn-active-light-primary">
+                    <span><i class="bi bi-plus fs-3"></i></span>                   
+                    Add Event
+                </a>
+            </div>
+        </div>
+      <div class="col-lg-12 col-sm-12">            
+            <div class="card ">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">                      
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">                           
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="EventsLocationRadio">Events’ Location</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="h-300px">                   
+                    <div id="eventsMap" class="h-100 w-100"></div>
+                </div>
+            </div>
+        </div>
+
+          <div class="col-lg-12 col-sm-12">
+            <div class="card card-xl-stretch mb-xl-8">
+                <div class="align-items-center ">
+                    <div class="text-center m-2">
+                        <h3 class="">Total Events</h3>
+                    </div>
+                    <div class="box shadow h-300px">
+                        <div class="h-100" id="whitelabelEventsStatictes"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Gender part*@
+          <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+            Users’ Genders
+        </h1>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-danger-light">
+                                    <img src="~/assets/media/svg/avatars/029-boy-11.svg" class="h-50 align-self-center" alt="" />
+                                </span>
+                            </div>
+
+
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">
+                                    Male
+                                </span>
+                                <span class="text-muted fw-bold">count: @Model.Male_Count Users</span>
+                                <span class="text-muted fw-bold">percentage: @Model.Male_Rate %</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(Model.Male_Rate + "%")" aria-valuenow="@(Model.Male_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-primary-light">
+                                    <img src="~/assets/media/svg/avatars/014-girl-7.svg" class="h-50 align-self-center" alt="" />
+                                </span>
+                            </div>
+
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">Female </span>
+                                <span class="text-muted fw-bold">count: @Model.Female_Count Users</span>
+                                <span class="text-muted fw-bold">percentage: @Model.Female_Rate %</span>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: @(Model.Female_Rate + "%")" aria-valuenow="@(Model.Female_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-success-light">
+                                    <img src="~/assets/media/svg/avatars/User_Circle.png" class="h-50 align-self-center" alt="" />
+
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">other gender </span>
+                                <span class="text-muted fw-bold">count:@Model.Othergender_Count users</span>
+                                <span class="text-muted fw-bold">percentage: @Model.Othergender_Rate %</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-dark" role="progressbar" style="width: @(Model.Othergender_Rate + "%")" aria-valuenow="@(Model.Othergender_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        @*End Gender part*@
+         @*start list event part*@
+        <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+            Events Data
+        </h1>
+        <div class="table-responsive" style="background-color:white">
+            <table id="PageTable" class="d-none table  table-row-bordered gy-3 gs-5 border rounded cursor-pointer table-hover ">
+                <thead class="bg-light">
+                    <tr class="fw-bolder  text-gray-800 px-5">
+                        @{
+                            var eventsData = (EventDataadminMV)ViewBag.EventDataadminMV;
+                            <th></th>
+                            <th>#</th>
+                            <th class="mw-200px">@Html.DisplayNameFor(x => eventsData.Title)</th>
+                            <th>@Html.DisplayNameFor(x => eventsData.CreatedDate)</th>
+                            <th>@Html.DisplayNameFor(x => eventsData.categoryName)</th>
+                            <th>@Html.DisplayNameFor(x => eventsData.EventTypeListName)</th>
+                            <th>@Html.DisplayNameFor(x => eventsData.TotalAttendees)</th>
+                            <th>@Html.DisplayNameFor(x => eventsData.MessageChatEventCount)</th>
+                            <th>@Html.DisplayNameFor(x => eventsData.IsActive)</th>
+                            <th class=""></th>
+                        }
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+         @*End list events part*@
+      </div>
+ </div>
+
+
+@*@await Component.InvokeAsync("ActiveAppConfigration");*@
+@await Component.InvokeAsync("WhitelabelEventReports");
+@*@await Component.InvokeAsync("UserReports");*@
+
+
+@section scripts{
+    <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+
+    <script src="~/Components/view.js"></script>
+
+    <script src="https://unpkg.com/@@googlemaps/markerclusterer/dist/index.min.js"></script>
+   
+    @await Component.InvokeAsync("WhitelabelEventsGoogleMap")
+  
+    @*<script src="~/Components/UserInfoStatictes.js"></script>*@
+    <script src="~/Components/appConfigrationSingleEdit.js"></script>
+    <script src="~/Components/UsersGraph.js"></script>
+    <script src="~/Components/AppStatictesGraph.js"></script>
+    <script src="~/Components/whitelabelEventsStatictes.js"></script>
+    <script>
+        function ActiveEventMap() {
+            
+        }
+        function StopUserForPeriod(ID) {
+            let html = `<div class="row mw-100"><div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+StopFrom
+                                                        </label>
+
+                                                            <input type="date" class="form-control form-control-solid" Id="StopFrom" />
+                                                        </div>
+                                                    <div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+Stop To
+                                                        </label>
+                                                            <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
+
+
+                                                    </div></div>`
+            Swal.fire({
+                didOpen: () => {
+                    //    CreateSelect2DropDown(".", ".swal2-container");
+                },
+                title: 'Confirm Stop User ',
+                width: 800,
+                html: html,
+                padding: '1em',
+                //input: 'textarea',
+                icon: 'question',
+                iconHtml: '؟',
+                showCancelButton: true,
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                showLoaderOnConfirm: true,
+                preConfirm: (text) => {
+                    let StopFrom = $("#StopFrom").val();
+                    let StopTo = $("#StopTo").val();
+                    if (StopFrom == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopFromRequired")
+                        )
+                    }
+                    else if (StopTo == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopToRequired")
+                        )
+                    }
+                    else if (new Date(StopFrom) > new Date(StopTo)) {
+                        //Compare Two Dates
+                        Swal.showValidationMessage(
+                            getToken("Stop From Must Be Less Than Stop To")
+                        )
+                    }
+
+                    else {
+                        return { StopFrom: StopFrom, StopTo: StopTo };
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(`/Admin/Users/BanUser?ID=${ID}&BanFrom=${result.value.StopFrom}&BanTo=${result.value.StopTo}`, (res) => {
+                        if (res.Status == true) {
+                            ShowNotification("success", res.Message);
+                        }
+                        else {
+                            Swal.showValidationMessage(
+                                `${res.Message}`
+                            )
+                            ShowNotification("error", res.Message);
+                        }
+
+                    }).fail((xhr, textStatus, errorThrown) => {
+                        ShowNotification("error", "");
+
+                    });
+
+                }
+            })
+
+        }
+
+        function StopEventForPeriod(ID) {
+            let html = `<div class="row mw-100"><div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+StopFrom
+                                                        </label>
+
+                                                            <input type="date" class="form-control form-control-solid" Id="StopFrom" />
+                                                        </div>
+                                                    <div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+Stop To
+                                                        </label>
+                                                            <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
+
+
+                                                    </div></div>`
+            Swal.fire({
+                didOpen: () => {
+                    //    CreateSelect2DropDown(".", ".swal2-container");
+                },
+                title: 'Confirm Stop Event ',
+                width: 800,
+                html: html,
+                padding: '1em',
+                //input: 'textarea',
+                icon: 'question',
+                iconHtml: '؟',
+                showCancelButton: true,
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                showLoaderOnConfirm: true,
+                preConfirm: (text) => {
+                    let StopFrom = $("#StopFrom").val();
+                    let StopTo = $("#StopTo").val();
+                    if (StopFrom == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopFrom Required")
+                        )
+                    }
+                    else if (StopTo == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopTo Required")
+                        )
+                    }
+                    else if (new Date(StopFrom) > new Date(StopTo)) {
+                        //Compare Two Dates
+                        Swal.showValidationMessage(
+                            getToken("Stop From Must Be Less Than Stop To")
+                        )
+                    }
+
+                    else {
+                        return { StopFrom: StopFrom, StopTo: StopTo };
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(`/Whitelabel/Event/StopEvent?ID=${ID}&StopFrom=${result.value.StopFrom}&StopTo=${result.value.StopTo}`, (res) => {
+                        if (res.Status == true) {
+                            ShowNotification("success", res.Message);
+                        }
+                        else {
+                            Swal.showValidationMessage(
+                                `${res.Message}`
+                            )
+                            ShowNotification("error", res.Message);
+                        }
+
+                    }).fail((xhr, textStatus, errorThrown) => {
+                        ShowNotification("error", "");
+
+                    });
+
+                }
+            })
+
+        }
+        function RenderEventsInCityDatatable() {
+            let DatatableConfigration = {
+                TableID: "#TopTenEventsByCity",
+                Url:  "/Admin/AdminEvent/GetEventsInCity?CityID="+$("[name='CityID']").val(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                    {
+                        "data": "EventAttendCount",
+                    },
+
+                ]
+            }
+
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false);
+        }
+        function RenderEventsInCategoryDatatable() {
+            let DatatableConfigration = {
+                TableID: "#TopTenEventsByCategory",
+                Url: "/Admin/AdminEvent/GetEventsInCategory?CategoryID=" + $("[name='CategoryID']").val(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                    {
+                        "data": "EventAttendCount",
+                    },
+
+
+
+                ]
+            }
+
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false);
+        }
+        $(document).ready(() => {
+            CreateSelect2DropDown("[name='CityID']", "#dd");
+            CreateSelect2DropDown("[name='CategoryID']", "#EventInCategoryDivContainer");
+            RenderEventsInCityDatatable();
+            RenderEventsInCategoryDatatable();
+            RenderPageDatatable();
+            
+            $('#PageTable').on('click', 'tbody tr', function () {
+               
+                  var row = table.row($(this)).data();
+                  console.log(row);   
+                  console.log(row['EntityId']);
+                  let id=row['EntityId'];
+                  let url = `/Whitelabel/Home/EventDetails?EventID=${id}`;
+                  window.open(url);                 
+                });
+            //
+
+
+            $(document).on("RemoveReportedUser", function (event, ID, callBack) {
+                $.post(`/Admin/Users/RemoveObj?ID=${ID}`, (res) => {
+                    if (res.Status == true) {
+                        ShowNotification("success", res.Message);
+                        //new $.fn.dataTable.Api("#UserReportsTable").rows().every(function () {
+                        //    debugger
+                        //    console.log(this.data());
+                        //});
+                        new $.fn.dataTable.Api("#UserReportsTable").rows(`[ReportedUserID='${ID}']`).remove()
+                            .draw();
+                        //$(`[ReportedUserID='${ID}']`).remove();
+                    }
+                    else {
+                        ShowNotification("error", res.Message);
+                    }
+
+                }).fail((xhr, textStatus, errorThrown) => {
+                    ShowNotification("error", "");
+
+                });
+
+
+            });
+
+            $(document).on("RemoveReportedEvent", function (event, ID, callBack) {
+                $.post(`/Whitelabel/Event/RemoveObj?ID=${ID}`, (res) => {
+                    if (res.Status == true) {
+                        ShowNotification("success", res.Message);
+                        //new $.fn.dataTable.Api("#UserReportsTable").rows().every(function () {
+                        //    debugger
+                        //    console.log(this.data());
+                        //});
+                        new $.fn.dataTable.Api("#EventReportsTable").rows(`[reportedeventid='${ID}']`).remove().draw();
+                        //$(`[ReportedUserID='${ID}']`).remove();
+                    }
+                    else {
+                        ShowNotification("error", res.Message);
+                    }
+
+                }).fail((xhr, textStatus, errorThrown) => {
+                    ShowNotification("error", "");
+
+                });
+
+
+            });
+          
+        })
+
+          $("#ExportAllEmailsAsExcel").click(function () {
+             var xhr = new XMLHttpRequest();
+             xhr.open("GET", "ExportAllEmailsAsExcel", true);
+             xhr.responseType = "blob";
+             xhr.onload = function (e) {
+                 if (this.status == 200) {
+                     var blob = this.response;
+            
+                     /* Get filename from Content-Disposition header */
+                     var filename = "";
+                     var disposition = xhr.getResponseHeader('Content-Disposition');
+                     if (disposition && disposition.indexOf('attachment') !== -1) {
+                         var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                         var matches = filenameRegex.exec(disposition);
+                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                     }
+            
+                     var a = document.createElement('a');
+                     a.href = window.URL.createObjectURL(blob);
+                     a.download = filename;
+                     a.dispatchEvent(new MouseEvent('click'));
+                 }
+             }
+            xhr.send();
+          });
+
+
+            $("#ExportUsersLocationsAsExcel").click(function () {
+             var xhr = new XMLHttpRequest();
+             xhr.open("GET", "ExportUsersLocationsAsExcel", true);
+             xhr.responseType = "blob";
+             xhr.onload = function (e) {
+                 if (this.status == 200) {
+                     var blob = this.response;
+            
+                     /* Get filename from Content-Disposition header */
+                     var filename = "";
+                     var disposition = xhr.getResponseHeader('Content-Disposition');
+                     if (disposition && disposition.indexOf('attachment') !== -1) {
+                         var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                         var matches = filenameRegex.exec(disposition);
+                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                     }
+            
+                     var a = document.createElement('a');
+                     a.href = window.URL.createObjectURL(blob);
+                     a.download = filename;
+                     a.dispatchEvent(new MouseEvent('click'));
+                 }
+             }
+            xhr.send();
+          });    
+
+        
+        function RenderPageDatatable() {
+            $("#PageTable").removeClass("d-none")
+           // let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + "/Event" + "/GetAll?" + $("#SearchForm").serialize(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+
+                            let hidden = `<input type="hidden" value=/Whitelabel/Home/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "CreatedDate",
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                    {
+                        "data": "TotalAttendees", 
+                    },
+                    {
+                        "data": "MessageChatEventCount", 
+                    },
+                    {
+                        "className": "text-center",
+                        "data": "IsActive",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked = "checked";
+                            }
+                            let html = `<div ><div class="form-check form-switch form-check-custom form-check-solid p-0 m-0 d-inline">
+                                                                                                                    <input onchange="toogleActive(this,'${full.EntityId}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                                                                                </div></div>`;
+                            return html;
+                        }
+                    },
+                    //{
+
+                     //"data": "ID",
+                     //   "className": "text-center",
+                     //  "render": function (data, ypet, full, meta) {
+                     //       let ID = full.ID;
+                     //       data = ID ?? full.EntityId;
+
+
+                     //       let Edit = "";
+
+                     //       if (full.EventTypeListid != 3) {
+                     //           Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                     //                               <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                     //                           </a>`
+
+                     //       }
+                     //       let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                     //                               <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                     //                           </a>`
+                     //      let details = `<a href="javascript:OpenEventChatAttendModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                     //                                           <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventChatAttend")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
+                     //                                       </a>`
+                     //       let Report = `<a href="javascript:OpenEventReportsModal('${data}','${full.Title}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                     //                                           <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventReports")}"><i class="fas fa-bug"></i></span>
+                     //                                       </a>`
+                     //       return Edit + Remove + details + Report;
+                            
+                       //},
+                    //}
+
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false, "", true);
+        }
+
+    </script>
+}

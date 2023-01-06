@@ -1,0 +1,52 @@
+﻿@model EventDataadminMV
+@{
+    ViewData["Title"] = localizer["EventTypeLists"];
+    ViewData["PageTitle"] = localizer["EventTypeLists"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <!--begin::Header-->
+    <div class="card-header align-items-center border-0 pt-5">
+        <form id="PageForm" class="form Display">
+            <div class="d-flex flex-shrink-0">
+                <div class="row">
+                    <label asp-for="ImageFile" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                    </label>
+
+                    <input type="file" class="form-control form-control-solid" asp-for="ImageFile" />
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <span asp-validation-for="ImageFile"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="text-end">
+
+            <button form="PageForm" type="submit" class="btn btn-primary">
+                <span class="indicator-label">@localizer["Save"]</span>
+                <span class="indicator-progress">
+                    @(localizer["PleaseWait"]+" ...")
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+
+    <script>
+        function RefreshPageDatatable() {
+          
+        }
+</script>
+}

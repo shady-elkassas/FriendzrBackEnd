@@ -1,0 +1,876 @@
+﻿@model EventDataadminMV
+@{
+    ViewData["Title"] = localizer["EventDatas"];
+    ViewData["PageTitle"] = localizer["EventDatas"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+
+        .upload-file-div .filepond--drip {
+            opacity: 1;
+            border: 1px dashed #9c9c9c;
+        }
+
+        .filepond--root {
+            cursor: pointer
+        }
+
+        .filepond--drop-label label {
+            cursor: pointer;
+        }
+
+        .upload-img .filepond--drip {
+            opacity: 1;
+            border: 1px dashed #333;
+        }
+
+        .upload-img label {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <!--begin::Header-->
+    <div class="card-header align-items-center border-0 pt-5">
+
+        <div class="d-flex flex-shrink-0">
+            <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add a EventData">
+                <a href="javascript:OpenPageModal('0')" class="btn btn-sm btn-primary btn-active-light-primary">
+                    <span><i class="bi bi-plus fs-3"></i></span>
+                    @(localizer["Add"] +"  "+ @localizer["EventData"])
+                </a>
+            </div>            
+              <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to Export External Events">              
+                <button onclick="ExportExternalEvents()" type="button" class="btn btn-light-primary">  @(localizer["Export"] +"  "+ @localizer["External Events"])
+                                <span class="indicator-label"></span>
+                                <span class="indicator-progress">
+                                     @(localizer["PleaseWait"]+" ...")
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body py-3">
+        <div class="row mb-7">
+            <form id="SearchForm" class="form Display">
+                <div class="row g-9 align-items-end">
+                    <div class="col-md-5">
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            @Html.DisplayNameFor(x => x.categoryName)
+                        </label>
+                        <select name="Search_EventCategoryID" asp-items="@((IEnumerable<SelectListItem>)ViewBag.allCategories)" class="form-select form-select-solid" data-control="select2" data-placeholder="@localizer["SelectOption"]" data-allow-clear="true">
+                            <option></option>
+                        </select>
+
+                    </div>
+                    <div class="col-md-5">
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            @Html.DisplayNameFor(x=>x.EventTypeListName)
+                        </label>
+                        <select name="Search_EventTypeListID" asp-items="@((IEnumerable<SelectListItem>)ViewBag.EventTypeList)" class="form-select form-select-solid" data-control="select2" data-placeholder="@localizer["SelectOption"]" data-allow-clear="true">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-end">
+                            <button onclick="RenderPageDatatable()" type="button" class="btn btn-light-primary">
+                                <span class="indicator-label"><i class="fas fa-search"></i></span>
+                                <span class="indicator-progress">
+
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div><button type="button" id="deleteData" class="btn btn-danger">Delete</button></div>
+        <div class="table-responsive">
+            <table id="PageTable" class="d-none table  table-row-bordered gy-3 gs-5 border rounded cursor-pointer table-hover ">
+                <thead class="bg-light">
+                    <tr class="fw-bolder  text-gray-800 px-5">
+                        <th></th>
+                        <th>#</th>
+                        <th class="mw-200px">@Html.DisplayNameFor(x => x.Title)</th>
+                        <th>@Html.DisplayNameFor(x => x.CreatedDate)</th>
+                        <th>@Html.DisplayNameFor(x => x.eventdateto)</th>
+                        <th>@Html.DisplayNameFor(x => x.categoryName)</th>
+                        <th>@Html.DisplayNameFor(x => x.EventTypeListName)</th>
+                        <th>@Html.DisplayNameFor(x => x.Attendees)</th>
+                        <th>@Html.DisplayNameFor(x => x.IsActive)</th>
+                        <th class=""></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="modal fade" id="EventReportsModal" tabindex="-1" aria-hidden="true">
+    <input type="hidden" id="EventReportsModal_EventDataID" />
+    <div class="modal-dialog modal-dialog-centered modal-xl mw-850px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+
+            <div class="modal-body scroll-y pt-0">
+                <div class="mb-13 text-center">
+                    <h1 class="mb-3"> <span id="EventName"></span>    @localizer["Reports"]</h1>
+                </div>
+                <div class="card-body py-3">
+                    <div class="table-responsive">
+                        <table id="EventReportsTable" class="table  table-row-bordered gy-5 gs-7 border rounded table-hover cursor-pointer">
+                            <thead class="bg-light">
+                                <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                                    <th>#</th>
+                                    <th class="">User</th>
+                                    <th class="">Report reason</th>
+                                    <th class=""> message</th>
+                                    <th class="">Report Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@localizer["close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="EventChatAttendModal" tabindex="-1" aria-hidden="true">
+    <input type="hidden" id="EventChatAttendModal_EventDataID" />
+    <div class="modal-dialog modal-dialog-centered  mw-850px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+
+
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+            <div class="modal-body scroll-y pt-0">
+                <div class="mb-0 text-center">
+                    <h1 class="mb-0">@localizer["EventChatAttend"]</h1>
+                </div>
+                <div class="card-body py-3">
+                    <div class="table-responsive">
+                        <table id="EventChatAttendTable" class="table  table-row-bordered gy-5 gs-7 border rounded table-hover cursor-pointer">
+                            <thead class="bg-light">
+                                <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                                    <th>#</th>
+                                    <th>@localizer["UserName"]</th>
+                                    <th class="text-center mw-50">@localizer["Status"]</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@localizer["close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="PageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl mw-850px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+
+            <div class="modal-body scroll-y pt-0">
+                <div class="mb-13 text-center">
+                    <h1 class="mb-3" id="PageModalHeader"><span id="PageModalAction"></span> @localizer["EventData"]</h1>
+                </div>
+                <form id="PageForm" class="form Display">
+                    <input type="hidden" asp-for="Id" value="0" />
+                    <div class="row g-9">
+                        <div class="row">
+                            <div class="col-8 row">
+                                <div class="col-md-12">
+                                    <input type="hidden" asp-for="userid" />
+                                    <label asp-for="Title" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                    </label>
+                                    <div class="col-md-12 fv-row">
+                                        <label asp-for="Title" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                        </label>
+
+                                        <input type="text" class="form-control form-control-solid" asp-for="Title" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="Title"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 fv-row">
+                                        <label asp-for="description" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                        </label>
+                                        <input type="text" class="form-control form-control-solid" asp-for="description" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="description"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 fv-row">
+                                        <label asp-for="checkout_details" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                        </label>
+                                        <input type="text" class="form-control form-control-solid" asp-for="checkout_details" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="checkout_details"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 fv-row">
+                                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                            category
+                                        </label>
+                                        <select asp-for="categorieId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.allCategories)" class="form-select form-select-solid" data-control="select2" data-placeholder="@localizer["SelectOption"]" data-allow-clear="true">
+                                            <option></option>
+                                        </select>
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="categorieId"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 fv-row">
+                                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                            event type
+                                        </label>
+                                        <select asp-for="EventTypeListid" asp-items="@((IEnumerable<SelectListItem>)ViewBag.EventTypeList)" class="form-select form-select-solid" data-control="select2" data-placeholder="@localizer["SelectOption"]" data-allow-clear="true">
+                                            <option></option>
+                                        </select>
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="EventTypeListid"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6 fv-row">
+                                    <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                        total numbert Attend
+                                    </label>
+                                    <input type="number" class="form-control form-control-solid" asp-for="totalnumbert" />
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <span asp-validation-for="totalnumbert"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 "></div>
+                                <div class="col-md-6 ">
+                                    <div class="col-md-12 fv-row">
+                                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                            event date from
+                                        </label>
+                                        <input type="date" class="form-control form-control-solid" asp-for="eventdate" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="eventdate"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="col-md-12 fv-row">
+                                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                            event date to
+                                        </label>
+                                        <input type="date" class="form-control form-control-solid" asp-for="eventdateto" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="eventdateto"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 fv-row">
+                                    <label asp-for="allday" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                    </label>
+                                    <input onchange="displaytime(this)" asp-for="allday" class="form-check-input" type="checkbox" name="allday">
+
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="col-md-12 fv-row" id="timefromdiv">
+                                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                            time from
+                                        </label>
+
+                                        <input type="time" class="form-control form-control-solid" asp-for="eventfrom" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="eventfrom"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="col-md-12 fv-row" id="timetodiv">
+                                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                            time to
+                                        </label>
+                                        <input type="time" class="form-control form-control-solid" asp-for="eventto" />
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <span asp-validation-for="eventto"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                        @localizer["Location"]
+                                    </label>
+                                    <input type="hidden" class="form-control form-control-solid" id="Address_Latitude" asp-for="lat" />
+                                    <input type="hidden" class="form-control form-control-solid" id="Address_Longtude" asp-for="lang" />
+                                    <div id='map_canvas' style=" width: 100%; height: 300px;"></div>
+
+
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <span asp-validation-for="lang"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label asp-for="ImageFile" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                    </label>
+
+                                    <input type="file" accept="image/*" class="form-control form-control-solid" asp-for="ImageFile" />
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <span asp-validation-for="ImageFile"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </form>
+                <div class="text-end">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@localizer["Cancel"]</button>
+                    <button form="PageForm" type="submit" class="btn btn-primary">
+                        <span class="indicator-label">@localizer["Save"]</span>
+                        <span class="indicator-progress">
+                            @(localizer["PleaseWait"]+" ...")
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>    
+    <script>
+        const haightAshbury = { lat: 30.033333, lng: 31.233334 };
+
+        let FilePondObj = '';
+        function RefreshPageDatatable() {
+
+        }
+        $("#deleteData").hide()
+        let PageTableIds=[];
+            function DataChange(ID, checked) {
+                if(checked){
+                    PageTableIds.push(ID)
+                }else{
+                    PageTableIds = PageTableIds.filter(a=>a != ID);
+                }
+                PageTableIds.length > 0?$("#deleteData").show():$("#deleteData").hide()
+                
+    }
+    $(document).ready(function() {
+    
+        $("#deleteData").click(function() {
+            PageTableIds.forEach(id => {
+    DeleteDataFromTable(id);
+  });
+
+   $(document).ajaxStop(function(){
+    window.location.reload();
+});
+        });
+    });
+   function DeleteDataFromTable(Id){
+                 let host = window.location.origin;
+        $.ajax({
+            type: "POST",
+            url: host + '/Admin/AdminEvent/RemoveObj?ID='+Id,
+            dataType: "json",
+            success: function(data) {
+
+            }
+        });
+       
+
+    }
+
+RenderPageDatatable()
+        function RenderPageDatatable() {
+            $("#PageTable").removeClass("d-none")
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAll?" + $("#SearchForm").serialize(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "CreatedDate",
+                    },
+                    {
+                        "data": "eventdateto",
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                     {
+                        "data": "Attendees",
+                    },
+                    {
+                        "className": "text-center",
+                        "data": "IsActive",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked = "checked";
+                            }
+                            let html = `<div ><div class="form-check form-switch form-check-custom form-check-solid p-0 m-0 d-inline">
+                                                                                                                <input onchange="toogleActive(this,'${full.EntityId}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                                                                            </div></div>`;
+                            return html;
+                        }
+                    },
+                    {
+
+                        //"data": "ID",
+                        "className": "text-center",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            data = ID ?? full.EntityId;                             
+                           
+
+
+ let Edit ="";
+
+if(full.EventTypeListid!=3)
+
+{
+                             Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                                            </a>`
+
+}
+                            let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                                            </a>`
+                            let details = `<a href="javascript:OpenEventChatAttendModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                            <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventChatAttend")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
+                                                        </a>`
+                            let Report = `<a href="javascript:OpenEventReportsModal('${data}','${full.Title}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                            <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventReports")}"><i class="fas fa-bug"></i></span>
+                                                        </a>`
+                            let SharedLink = `<a href="javascript:CopyUrlLink('${full.SharedLink}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("CopyToShare")}"><i class="bi bi-link"></i></span>
+                            </a>`
+                            return Edit + Remove + details + Report + SharedLink ;
+                        },
+                    }
+
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false,"",true);
+        }
+        function displaytime(element) {
+            let isActive = $(element).is(":checked");
+            if (!isActive) {
+                $("#timetodiv").css("display", "block");
+                $("#timefromdiv").css("display", "block");
+                //$("#eventfrom").val("");
+                //$("#eventto").val("");
+            }
+            else {
+                $("#eventfrom").val("");
+                $("#eventto").val("");
+                $("#timetodiv").css("display", "none");
+                $("#timefromdiv").css("display", "none");
+            }
+        }
+        function OpenEventReportsModal(ID, EventName) {
+            $("#EventName").text(EventName);
+            $("#EventReportsModal_EventDataID").val(ID)
+            let TableID = "#EventReportsTable";
+            let Url = "/admin/Reports/GetEventReports?ID=" + ID;
+            if (!$.fn.DataTable.isDataTable(TableID)) {
+                $(TableID).DataTable({
+                    searching: true,
+                    dom: 'Blfrtip',
+                    "dom": "<'row'" +
+                        "<'col-sm-6 d-flex align-items-center justify-conten-start'l>" +
+                        "<'col-sm-6 d-flex align-items-center justify-content-end'f>" +
+                        ">" +
+                        "<'table-responsive'tr>" +
+
+                        "<'row'" +
+                        "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+                        "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+                        ">",
+
+                    "processing": true,
+                    "ajax": {
+                        "url": Url,
+                        "type": "Get",
+                        "datatype": "json",
+                    },
+                    "lengthMenu": [[5, 10, -1], [5, 10, getToken("All")]],
+                    'language': {
+                        'url': DataTableLanguageUrl(),
+                    },
+                    "columns": [
+                        {
+                            "data": "ID",
+                            "render": function (d, t, f, m) {
+                                return m.row + 1
+                            }
+                        },
+                        {
+                            "data": "CreatedBy_UserName",
+                            "render": function (d, t, f, m) {
+                                return `<a class="d-flex align-items-center text-dark text-hover-primary" target="_blank" href="/Admin/users/Userdetails?UserID=${f.CreatedBy_UserID}">${d} </a>`
+                            }
+                        },
+                        {
+                            "data": "ReportReasonName",
+
+                        },
+                        {
+                            "data": "Message",
+
+                        },
+                        {
+                            "data": "RegistrationDateStr",
+
+                        },
+                    ]
+
+                }).on('draw.dt', function () {
+
+                    $("#EventReportsModal").modal("show");
+                });
+            }
+            else {
+                new $.fn.dataTable.Api(TableID).ajax.url(Url).load((callback) => {
+
+
+                }, (rest) => {
+                });
+            }
+        }
+        function CopyUrlLink(SharedLink)
+        {        
+          navigator.clipboard.writeText(SharedLink);         
+          // Alert the copied value
+          //alert("Copied the text: " + SharedLink);
+        }
+        function ExportExternalEvents() {
+           
+            let totalEvents=0;
+            let offset=0;
+           
+            for (let i = -1; i < totalEvents/100; i++)
+            {
+               (function(index){
+                debugger;
+                    $.post("/admin/adminevent/ImportExternalEvents", (res) => {
+                    if (res.response.IsSuccessStatusCode === true) {
+                        debugger;                    
+                        offset= offset+res.responseData.Inserted_Events;
+                         totalEvents = res.responseData.Total_File_Events;
+                        ShowNotification("success", "Saved "+offset+" from: "+totalEvents);
+                   
+                    }
+                    else {
+                        debugger;
+                        ShowNotification("warning", res.response.ReasonPhrase);
+                    
+
+                        }
+                }
+            );  
+            })(i);
+
+           }
+        }
+
+        function OpenEventChatAttendModal(ID) {
+            $("#EventChatAttendModal_EventDataID").val(ID)
+            let TableID = "#EventChatAttendTable";
+            let Url = "/admin/adminevent/eventChatAttends?ID=" + ID;
+            if (!$.fn.DataTable.isDataTable(TableID)) {
+                $(TableID).DataTable({
+                    searching: true,
+                    dom: 'Blfrtip',
+                    "dom": "<'row'" +
+                        "<'col-sm-6 d-flex align-items-center justify-conten-start'l>" +
+                        "<'col-sm-6 d-flex align-items-center justify-content-end'f>" +
+                        ">" +
+
+                        "<'table-responsive'tr>" +
+
+                        "<'row'" +
+                        "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+                        "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+                        ">",
+
+                    "processing": true,
+                    "ajax": {
+                        "url": Url,
+                        "type": "Get",
+                        "datatype": "json",
+                    },
+                    "lengthMenu": [[5, 10, -1], [5, 10, getToken("All")]],
+                    'language': {
+                        'url': DataTableLanguageUrl(),
+                    },
+                    "columns": [
+                        {
+                            "data": "ID",
+
+                            "render": function (d, t, f, m) {
+                                return m.row + 1
+                            }
+                        },
+                        {
+                            "data": "UserName",
+                            "render": function (data, t, f, m) {
+                                let result = f.IsAdmin == true ? (data + `<span style="width:fit-content" class="border text-primary pl-3 border-dashed border-primary">Admin</span>`) : data;
+                                return result;
+                            }
+                        },
+                        {
+                            //"className": "row",
+                            "data": "Status",
+                            "render": function (data, ypet, full, meta) {
+                                let rownum = meta.row + 1;
+                                let IsAttend = (data != 1 && data != 2 && data != 3) ? "checked" : "";
+                                let IsDeleted = data == 1 ? "checked" : "";
+                                let Isblocked = data == 2 ? "checked" : "";
+                                let IsLeaved = data == 3 ? "checked" : "";
+                                let AttendBtn = `<div class="col-6">
+             <div class="form-check form-check-custom form-check-solid">
+                    <input  class="form-check-input"  ${IsAttend} name="UserAttend_${rownum}" onchange="ChangeAttendEventStatus(this,'0')" type="radio" value="${full.ID}" id="UserAttend_${rownum}">
+                    <label class="form-check-label" for="UserAttend_${rownum}">
+                        <div class="fw-bolder text-gray-800">Attend</div>
+                    </label>
+                </div>
+</div>`;
+                                let DeletedBtn = `<div class="col-6">
+             <div class="form-check form-check-custom form-check-solid">
+                    <input  class="form-check-input" ${IsDeleted} onchange="ChangeAttendEventStatus(this,'1')" name="UserAttend_${rownum}" type="radio" value="${full.ID}" id="UserDeleted_${rownum}">
+                    <label class="form-check-label" for="UserDeleted_${rownum}">
+                        <div class="fw-bolder text-gray-800">Delete</div>
+                    </label>
+                </div>
+</div>`;
+                                let LeaveBtn = `<div class="col-6">
+             <div class="form-check form-check-custom form-check-solid">
+                    <input  class="form-check-input" ${IsLeaved} disabled  name="UserAttend_${rownum}" type="radio" value="${full.ID}" id="UserLeaved_${rownum}">
+                    <label class="form-check-label" for="UserLeaved_${rownum}">
+                        <div class="fw-bolder text-gray-800">Leave</div>
+                    </label>
+                </div>
+</div>`;
+                                let blockedBtn = `<div class="col-6">
+             <div class="form-check form-check-custom form-check-solid">
+                    <input  class="form-check-input" ${Isblocked} onchange="ChangeAttendEventStatus(this,'2')"  name="UserAttend_${rownum}" type="radio" value="${full.ID}" id="Userblocked_${rownum}">
+                    <label class="form-check-label" for="Userblocked_${rownum}">
+                        <div class="fw-bolder text-gray-800">block</div>
+                    </label>
+                </div>
+</div>`;
+                                if (data == 3) {
+                                    //UserLeaved event can not re joined by admin
+                                    //return `<div class="row mb-2">${AttendBtn + LeaveBtn}</div><div class="row">${DeletedBtn + blockedBtn}</div>`;
+                                    return `<div class="row mb-2">${LeaveBtn}</div>`;
+
+                                }
+                                else {
+                                    return `<div class="row mb-2">${AttendBtn}</div><div class="row">${DeletedBtn + blockedBtn}</div>`;
+                                }
+                            }
+                        },
+                    ]
+
+                }).on('draw.dt', function () {
+                    $("#EventChatAttendModal").modal("show");
+                });
+            }
+            else {
+                new $.fn.dataTable.Api(TableID).ajax.url(Url).load((callback) => {
+
+
+                }, (rest) => {
+                });
+            }
+        }
+        function ChangeAttendEventStatus(elment, Status) {
+            let eventChantAttendID = $(elment).val();
+            $.post("/admin/adminevent/changeEventChatAttendStatus", { ID: eventChantAttendID, Status: Status }, (res) => {
+                if (res.Status == true) {
+                    ShowNotification("success", res.Message);
+                    OpenEventChatAttendModal($("#EventChatAttendModal_EventDataID").val())
+                }
+                else {
+                    ShowNotification("warning", res.Message);
+                    OpenEventChatAttendModal($("#EventChatAttendModal_EventDataID").val())
+
+                }
+            })
+        }
+        function toogleActive(element, ID) {
+            let isActive = $(element).is(":checked");
+            new swal({
+                title: getToken("alert"),
+                text: isActive == true ? getToken("confirmaciveconfigrationwithname") : getToken("confirmdeaciveconfigrationwithname"),
+                icon: "info",
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-info'
+                },
+                buttonsStyling: false,
+                showCancelButton: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete.value == true) {
+                        $.post(`/Admin/AdminEvent/changeStatus?ID=${ID}&IsActive=${isActive}`, (res) => {
+                            if (res.Status = true) {
+                                ShowNotification("success", res.Message);
+                            }
+                            else {
+                                ShowNotification("error", "somthing goes wrong");
+                            }
+                            RefreshPageDatatable();
+
+                        })
+                    }
+                    else {
+                        //swal("Your imaginary file is safe!");
+                        $(element).prop("checked", !isActive)
+                        RefreshPageDatatable();
+
+                    }
+                });
+        }
+        $(document).ready(() => {
+            $(document).on('click', '#PageTable tr td:not(.text-center)', function () {
+                var win = window.open($(this).parents("tr").find('input[type="hidden"]').val(), '_blank');
+                if (win) {
+                    win.focus();
+                } else {
+                    alert('Please allow popups for this website');
+                }
+                //window.location.replace($(this).parents("tr").find('input[type="hidden"]').val())
+                //Do something
+            });
+            $(document).on("populateJsonObj_ToForm_Finished", function (event, callBack, arg2) {
+                FilePondObj.addFiles(callBack.Image);
+                addMarker({ lat: parseFloat(callBack.lat), lng: parseFloat(callBack.lang) })
+
+            })
+            $(document).on("PageFormSubmit_Finished", function (event, callBack, arg2) {
+                addMarker(haightAshbury)
+                RemoveAllFilesFromFilePond(FilePondObj);
+            });
+            RefreshPageDatatable();
+            FilePondObj = CreateFilePondObj("#ImageFile", false);
+        });
+    </script>
+    <script>
+        let map;
+        let markers = [];
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map_canvas"), {
+                zoom: 12,
+                center: haightAshbury,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            // This event listener will call addMarker() when the map is clicked.
+            map.addListener("click", (event) => {
+                deleteMarkers()
+                $("#Address_Latitude").val(event.latLng.lat().toFixed(6));
+                $("#Address_Longtude").val(event.latLng.lng().toFixed(6));
+                addMarker(event.latLng);
+            });
+            // add event listeners for the buttons
+
+            // Adds a marker at the center of the map.
+            addMarker(haightAshbury);
+        }
+
+        // Adds a marker to the map and push to the array.
+        function addMarker(position) {
+            deleteMarkers()
+            const marker = new google.maps.Marker({
+                position,
+                map,
+            });
+            markers.push(marker);
+        }
+        // Sets the map on all markers in the array.
+        function setMapOnAll(map) {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+
+        // Removes the markers from the map, but keeps them in the array.
+        function hideMarkers() {
+            setMapOnAll(null);
+        }
+
+        // Shows any markers currently in the array.
+        function showMarkers() {
+            setMapOnAll(map);
+        }
+        // Deletes all markers in the array by removing references to them.
+        function deleteMarkers() {
+            hideMarkers();
+            markers = [];
+        }
+    </script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLmWYc00w0KZ-qj8hIymWCIs8K5Z0cG0g&callback=initMap&v=weekly&channel=2"></script>
+
+
+}
+

@@ -1,0 +1,109 @@
+﻿@model UserEditProfileViewModel
+@{
+    ViewData["Title"] = _localizer["UserProfile"];
+    ViewData["PageTitle"] = _localizer["UserProfile"];
+    ViewData["UserReports"] = ViewBag.UserReports;
+    Layout = "~/Areas/Whitelabel/Views/Shared/_LayoutWhiteLable.cshtml";
+}
+
+
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+
+    <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <!--begin::Header-->
+        <div class="card-header align-items-center border-0 pt-5">
+        @*<form id="updateForm" class="form Display" asp-controller="Account" asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">*@
+            <form id="updateForm" class="form Display">
+                <div class="d-flex flex-shrink-0" style="flex-direction:column;">
+
+                    <div class="row">
+
+                        <label asp-for="ProfilImage" class="d-flex align-items-center fs-6 fw-bold mb-2"></label>
+
+                        <input class="form-control form-control-solid" asp-for="ProfilImage" />
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            <span asp-validation-for="ProfilImage"></span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="text-end">
+                <button form="updateForm"  type="submit" class="btn btn-primary">
+                    <span class="indicator-label">@_localizer["Save"]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <script src="~/Assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/Assets/plugins/fileuploader/filepond.min.js"></script>
+
+
+    <script>
+
+$("#updateForm").on("submit", (e) => {
+
+    e.preventDefault();
+    clearValidation("#updateForm");
+    let Form = $(e.currentTarget);
+    let ID = $(Form).find("[name='ID']").val() ?? $(Form).find("[name='Id']").val();
+    let Action = "/UpdateProfileImage";
+    let Controller = "/" + CurrentPageUrlInfo.Controller;
+    let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+    let Url = Area + Controller + Action;
+
+    if ($(Form).valid()) {
+
+
+            let DataToSent = new FormData($(Form).get(0));
+            $(Form).find(".filepond--root").each((i, elment) => {
+                let filepondivID = "#" + $(elment).attr("id");
+                let InputFileDefaultName = $(elment).find("input[name][type='hidden']").attr("name") ?? "Attachment";
+                DataToSent = GetFilePondFilesInFormData(filepondivID, DataToSent, InputFileDefaultName)
+            });
+
+
+            $.ajax({
+                "url": Url,
+                "method": "Post",
+                "datatype": "json",
+                processData: false,
+                contentType: false,
+                "Content-Type": "multipart/form-data",
+                data: DataToSent,
+                success: function (res) {
+
+                    if (res.Status == true) {
+                          $("#updateForm").trigger("reset");
+
+                        ShowNotification("success", res.Message);
+
+                    }
+                    else {
+                        ShowNotification("warning", res.Message);
+                        $("#updateForm").trigger("reset");
+                    }
+
+                },
+                error: function (res, tt, ds) {
+                    ShowNotification("error", res.Message);
+
+                },
+
+            }).done(function (data) {
+            });
+        }
+    else {
+
+    }
+});
+
+    </script>
+
+

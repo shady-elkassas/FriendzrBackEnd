@@ -1,0 +1,316 @@
+﻿@model AppConfigrationVM
+@{
+    ViewData["Title"] = localizer["AppConfigrations"];
+    ViewData["PageTitle"] = localizer["AppConfigrations"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <!--begin::Header-->
+    <div class="card-header align-items-center border-0 pt-5">
+
+        <div class="d-flex flex-shrink-0">
+
+            <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add a AppConfigration">
+                <a href="javascript:OpenPageModal('0')" class="btn btn-sm btn-primary btn-active-light-primary">
+                    <span><i class="bi bi-plus fs-3"></i></span>
+                    @(localizer["Add"]+ " "+ localizer["AppConfigration"] )
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body py-3">
+        <div class="table-responsive">
+            <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border rounded">
+                <thead class="bg-light">
+                    <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                        <th>#</th>
+                        <th>@Html.DisplayNameFor(x => x.Name)</th>
+                        <th>@Html.DisplayNameFor(x => x.IsActive)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="PageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+            <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                <form id="PageForm" class="form Display">
+                    <input type="hidden" asp-for="ID" />
+
+                    <div class="mb-13 text-center">
+                        <h1 class="mb-3" id="PageModalHeader"><span id="PageModalAction"></span> @localizer["AppConfigration"]</h1>
+                    </div>
+                    <div class="row g-9 mb-8">
+                        <div class="col-md-12">
+                            <div class="fv-row">
+                                <label asp-for="Name" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                </label>
+                                <input type="text" class="form-control form-control-solid" asp-for="Name" />
+                                <div class="fv-plugins-message-container invalid-feedback">
+                                    <span asp-validation-for="Name"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="AgeFiltering_Max" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="AgeFiltering_Max" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="AgeFiltering_Max"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="AgeFiltering_Min" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="AgeFiltering_Min" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="AgeFiltering_Min"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="DistanceFiltering_Max" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="DistanceFiltering_Max" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="DistanceFiltering_Max"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="DistanceFiltering_Min" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="DistanceFiltering_Min" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="DistanceFiltering_Min"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="EventDetailsDescription_MaxLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="EventDetailsDescription_MaxLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="EventDetailsDescription_MaxLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="EventDetailsDescription_MinLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="EventDetailsDescription_MinLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="EventDetailsDescription_MinLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="Password_MaxLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="Password_MaxLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="Password_MaxLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="Password_MinLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="Password_MinLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="Password_MinLength"></span>
+                            </div>
+                        </div>
+                        @*<div class="col-md-6 fv-row">
+                            <label asp-for="PasswordAtleastNumbers" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="PasswordAtleastNumbers" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="PasswordAtleastNumbers"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="PasswordAtleastSpecialCharacters" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="PasswordAtleastSpecialCharacters" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="PasswordAtleastSpecialCharacters"></span>
+                            </div>
+                        </div>*@
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserBio_MaxLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserBio_MaxLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserBio_MaxLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserBio_MinLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserBio_MinLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserBio_MinLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserMaxAge" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserMaxAge" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserMaxAge"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserMinAge" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserMinAge" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserMinAge"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserName_MaxLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserName_MaxLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserName_MaxLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserName_MaxLength" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserName_MaxLength" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserName_MaxLength"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserTagM_MaxNumber" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserTagM_MaxNumber" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserTagM_MaxNumber"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="UserTagM_MinNumber" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="UserTagM_MinNumber" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="UserTagM_MinNumber"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="RecommendedPeopleArea_Max" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="RecommendedPeopleArea_Max" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="RecommendedPeopleArea_Max"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="RecommendedPeopleArea_Min" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="RecommendedPeopleArea_Min" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="RecommendedPeopleArea_Min"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="RecommendedEventArea_Max" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="RecommendedEventArea_Max" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="RecommendedEventArea_Max"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="RecommendedEventArea_Min" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="number" class="form-control form-control-solid" asp-for="RecommendedEventArea_Min" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="RecommendedEventArea_Min"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="text-end">
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@localizer["Cancel"]</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="indicator-label">@localizer["Save"]</span>
+                            <span class="indicator-progress">
+                                @(localizer["PleaseWait"]+" ...")
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function RefreshPageDatatable() {
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAll",
+                Columns: [
+                    {
+                        "data": "Name"
+                    },
+                    {
+                        "data": "IsActive",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked="checked";
+                            }
+
+                            let html = `<div class="form-check form-switch form-check-custom form-check-solid me-10">
+													<input class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+
+												</div>`;
+
+                                return html;
+                            }
+
+                    },
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration);
+        }
+
+
+        function DisplayDetails(ID) {
+        }
+
+        $(document).ready(() => {
+            RefreshPageDatatable();
+        })
+    </script>
+
+
+}

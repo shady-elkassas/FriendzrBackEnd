@@ -1,0 +1,295 @@
+﻿
+@{
+    ViewData["Title"] = localizer["Users"];
+    ViewData["PageTitle"] = localizer["PushNotfication"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+
+    <style>
+    
+    </style>
+}
+
+
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <!--begin::Header-->
+    <div class="card-header align-items-center border-0 pt-5">
+
+        <div class="d-flex flex-shrink-0">
+
+        </div>
+    </div>
+    <div class="card-body py-3">
+        <div class="row">
+            <form id="SearchForm" class="form Display">
+                <div class="row g-9 mb-8">
+                    <div class="col-md-4 fv-row">
+                        <label for="CountryID" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            @localizer["Country"]
+
+                        </label>
+                        <select name="CountryID" id="CountryID" onchange="SearchInUsers()" asp-items="@((IEnumerable<SelectListItem>)ViewBag.Countries)" class="form-select form-select-solid _Select2" data-placeholder="@localizer["All"]" data-allow-clear="true">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 fv-row">
+                        <label for="CityID" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            @localizer["City"]
+                        </label>
+                        <select name="CityID" id="CityID" onchange="SearchInUsers()" asp-items="@((IEnumerable<SelectListItem>)ViewBag.Cities)" class="form-select form-select-solid _Select2" data-placeholder="@localizer["All"]" data-allow-clear="true">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 fv-row">
+                        <label for="profileCompleted" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            @localizer["Status"]
+                        </label>
+                        <select name="profileCompleted" id="profileCompleted" onchange="SearchInUsers()" class="form-select form-select-solid _Select2" data-placeholder="@localizer["All"]" data-allow-clear="true"> 
+                            <option value= > </option>
+                            <option value=true > @localizer["FinishedRegistration"]</option>
+                            <option value=false > @localizer["UnfinishedRegistration"]</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class ="row">
+           <div class="text-end SentNotificationBtnContainer">
+            <button type="button" onclick="SentNotification()" class="btn btn-success">
+                <span class="indicator-label">@localizer["Send"]</span>
+                <span class="indicator-progress">
+                    @(localizer["PleaseWait"]+" ...")
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </button>
+        </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border cursor-pointer rounded">
+                    <thead class="bg-light">
+                        <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                            <th><input type="checkbox" name="selectAll" class="selectAll"></th>
+                            <th>@localizer["UserName"]</th>
+                            <th>@localizer["Country"]</th>
+                            <th>@localizer["City"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+       @* <div class="text-end SentNotificationBtnContainer">
+            <button type="button" onclick="SentNotification()" class="btn btn-success">
+                <span class="indicator-label">@localizer["Send"]</span>
+                <span class="indicator-progress">
+                    @(localizer["PleaseWait"]+" ...")
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </button>
+        </div>*@
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+        var DatatableObj = "";
+        function SentNotification() {
+            let SelectedUsers = DatatableObj?.rows({ selected: true }).data();
+            let html = `<div>
+    <form id="NotficationForm" class="form Display">
+        <div class="row g-9 mb-8">
+            <div class="col-md-6 fv-row">
+               
+                <input placeholder="NotificationTitle" type="text" class="form-control form-control-solid" id="NotificationTitle" name="NotificationTitle" />
+            </div>
+            <div class="col-md-6 fv-row">
+                <input type="file" class="form-control form-control-solid" id="NotificationImage" name="NotificationImage" />
+            </div>
+        </div>
+<div class="d-flex flex-column mb-8">
+                       
+                        <textarea placeholder="Notification Body" class="form-control form-control-solid" id="NotificationBody" rows="3"  name="NotificationBody"></textarea>
+                    </div>
+    </form>
+</div>`;
+            if (SelectedUsers.length > 0) {
+
+                Swal.fire({
+                    title: getToken("Send Notification To Selected Users"),
+                    width: 800,
+                    html: html,
+                    padding: '1em',
+                    //input: 'textarea',
+                    //inputAttributes: {
+                    //    autocapitalize: 'off',
+                    //    placeholder: getToken("NotificationBody"),
+                    //    class: 'form-control form-control-solid'
+                    //},
+                    icon: 'info',
+                    iconAttributes: {
+                        class:"text-success"
+                    },
+
+                    //iconHtml: '؟',
+                    showCancelButton: true,
+                    confirmButtonText: getToken("Confirm"),
+                    cancelButtonText: getToken("Cancele"),
+                    showLoaderOnConfirm: true,
+                    preConfirm: (text) => {
+                        //if (text == "") {
+                        //    Swal.showValidationMessage(
+                        //        getToken("Title is Required")
+                        //    )
+                        //}
+                         if($("#NotificationBody").val() == "") {
+                            Swal.showValidationMessage(
+                                getToken("Notification Body is Required")
+                            )
+                        }
+                        else if ($("#NotificationTitle").val() == "") {
+                            Swal.showValidationMessage(
+                                getToken("Notification Title is Required")
+                            )
+                        }
+                        else {
+                            return { Message: text };
+                        }
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        let Tokens = [];
+                        let UserPrimaryIds = [];
+                        $.each(SelectedUsers, (i, el) => {
+                            Tokens.push(el["FcmToken"])
+                            UserPrimaryIds.push(el["PrimaryID"])
+                        });
+                        //let DataToSend = JSON.stringify();
+                        //let DataToSend = decodeURIComponent($.param({ Tokens: Tokens, Message: result.value.Message }))
+                        //$.post(`/Admin/Users/SendNotification`, { Tokens: Tokens, Message: result.value.Message}, (res) => {
+                        //    ShowNotification("success", res.Message);
+                        //    SearchInUsers();
+                        //}).fail((xhr, textStatus, errorThrown) => {
+                        //    ShowNotification("error", "");
+                        //});
+                        let DataToSent = new FormData(document.querySelector("#NotficationForm"));
+                        $.each(SelectedUsers, (i, el) => {
+                            DataToSent.append(`Tokens[${i}]`, el["FcmToken"]);
+                            DataToSent.append(`UserPrimaryIds[${i}]`, el["PrimaryID"]);
+                        });
+                        //DataToSent.append("Tokens", Tokens);
+                        //DataToSent.append("UserPrimaryIds", UserPrimaryIds);
+                        $.ajax({
+                            "url": `/Admin/Users/SendNotification`,
+                            "method": "Post",
+                            "datatype": "json",
+                            processData: false,
+                            contentType: false,
+                            //"Content-Type": "application/json; charset=utf8",
+                            data: DataToSent,
+                            success: function (res) {
+
+                                if (res.Status == true) {
+                                    ShowNotification("success", res.Message);
+                                    SearchInUsers();
+                                }
+                                else {
+                                    ShowNotification("warning", res.Message);
+                                }
+
+                            },
+                            error: function (res, tt, ds) {
+                                ShowNotification("error", res.Message);
+
+                            },
+
+                        })
+                    }
+                })
+            }
+            else {
+                ShowNotification("warning", getToken("PleaseSelectAtLeastOneUser"));
+            }
+        }
+        function SearchInUsers() {            
+            $(".selectAll").prop("checked", false).change();
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url:  "/Admin/Users/SearchInUsers?" + $("#SearchForm").serialize(),
+            }
+            if (!$.fn.DataTable.isDataTable(DatatableConfigration.TableID)) {
+                DatatableObj = $(DatatableConfigration.TableID).DataTable({
+                    searching: true,
+                    columnDefs: [{
+                        orderable: false,
+                        className: 'select-checkbox',
+                        targets: 0
+                    }],
+                    select: {
+                        //style: 'os',
+                        style: 'multi',
+
+                        selector: 'td:first-child'
+                    },
+                    order: [[1, 'asc']],
+                    dom: 'Blfrtip',
+                    "dom": DomInDatatable(),
+                    "processing": true,
+                    "ajax": {
+                        "url": DatatableConfigration.Url,
+                        "type": "Get",
+                        "datatype": "json",
+                    },
+                    "lengthMenu": [[10, 50, 100], [10, 50, 100]],
+                    'language': {
+
+                        'url': DataTableLanguageUrl(),
+                    },
+                    "columns": [
+
+                        {
+                            "data": "ID",
+                            "render": function () { return "" }
+                        },
+                        { "data": "UserName" },
+                        { "data": "CountryName" },
+                        { "data": "CityName" }
+                    ],
+                    "drawCallback": function (settings) {
+
+                    },
+                    "initComplete": function (settings, json) {
+                    }
+                });
+            }
+            else {
+                new $.fn.dataTable.Api(DatatableConfigration.TableID).ajax.url(DatatableConfigration.Url).load((callback) => {
+
+                }, (rest) => {
+                });
+            }
+        }
+
+        $(document).ready(() => {
+
+            SearchInUsers();           
+            $(".selectAll").on("change", function (e) {
+                if ($(this).is(":checked") && DatatableObj != "") {
+                    DatatableObj.rows().select();
+                } else {
+                    DatatableObj.rows().deselect();
+                }
+            });
+            CreateSelect2DropDown("._Select2", "#SearchForm");
+
+        })
+    </script>
+
+
+}

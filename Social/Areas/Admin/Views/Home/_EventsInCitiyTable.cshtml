@@ -1,0 +1,50 @@
+﻿@{ Layout = null;}
+<div class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+    <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+        Top Ten Events
+    </h1>
+</div>
+<div class="container-xxl" id="dd">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="flex-lg-row-fluid">
+                <div class="card card-flush mb-6 mb-xl-9">
+                    <div class="card-header pt-5">
+                        <div class="card-title">
+                            <h2 class="d-flex align-items-center">
+                                Top Ten Events By City
+                                @*<span class="text-gray-600 fs-6 ms-1">(@Model.Count())</span>
+                <a class=" fs-8 ms-1" href="/Admin/Reports/Events"> see more </a>*@
+                            </h2>
+                        </div>
+                        <div class="w-50">
+                            <select onchange="RenderEventsInCityDatatable()" asp-items="@((IEnumerable<SelectListItem>)ViewBag.ListOFCities)" name="CityID" class="form-select form-select-solid Common_Select2" data-allow-clear="true">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                       
+                        <div class="table-responsive">
+                            <table id="TopTenEventsByCity" class="table  table-row-bordered gy-3 gs-5 border rounded cursor-pointer table-hover ">
+                                <thead class="bg-light">
+                                    <tr class="fw-bolder  text-gray-800 px-5">
+                                        <th class="mw-200px">@localizer["EventTilte"]</th>
+                                        <th>@localizer["EventCategory"]</th>
+                                        <th>@localizer["EventType"]</th>
+                                        <th>@localizer["AttendsCount"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

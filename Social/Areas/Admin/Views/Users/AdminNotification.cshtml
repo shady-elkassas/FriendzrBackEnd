@@ -1,0 +1,255 @@
+﻿
+@{
+    ViewData["Title"] = localizer["UsersNotifications"];
+    ViewData["PageTitle"] = localizer["UsersNotifications"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+
+    <div class="card-body py-3">
+        <div class="row">
+            <div class="table-responsive">
+                <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border rounded">
+                    <thead class="bg-light">
+                        <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                            <th class="text-center"><input type="checkbox" name="selectAll" class="selectAll"></th>
+                            <th class="min-w-150px">User</th>
+                            <th class="min-w-50px">Title</th>
+                            <th class="min-w-125px">Body</th>
+                            <th class="min-w-125px">CreatedAt</th>
+                             <th class="min-w-125px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="text-end SentNotificationBtnContainer">
+            <button type="button" onclick="ResendNotification()" class="btn btn-success">
+                <span class="indicator-label">@localizer["Resend"]</span>
+                <span class="indicator-progress">
+                    @(localizer["PleaseWait"]+" ...")
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+        var DatatableObj = "";
+        function ResendNotification() {
+            let SelectedUsers = DatatableObj?.rows({ selected: true }).data();
+            if (SelectedUsers.length > 0) {
+                Swal.fire({
+                    title: getToken("Resent Notification To Selected Users"),
+                    padding: '1em',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: getToken("Confirm"),
+                    cancelButtonText: getToken("Cancele"),
+                    showLoaderOnConfirm: true,
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let DataToSent = new FormData();
+                        $.each(SelectedUsers, (i, el) => {
+                            DataToSent.append(`IDs[${i}]`, el["ID"]);
+                        });
+                        $.ajax({
+                            "url": `/Admin/Users/ResentNotifications`,
+                            "method": "Post",
+                            "datatype": "json",
+                            processData: false,
+                            contentType: false,
+                            //"Content-Type": "application/json; charset=utf8",
+                            data: DataToSent,
+                            success: function (res) {
+
+                                if (res.Status == true) {
+                                    ShowNotification("success", res.Message);
+                                }
+                                else {
+                                    ShowNotification("warning", res.Message);
+                                }
+
+                            },
+                            error: function (res, tt, ds) {
+                                ShowNotification("error", res.Message);
+
+                            },
+
+                        })
+                    }
+                })
+            }
+            else {
+                ShowNotification("warning", getToken("PleaseSelectAtLeastOneUser"));
+            }
+        }
+
+        function RefreshPageDatatable() {
+            $(".selectAll").prop("checked", false).change();
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: "/Admin/Users/GetAllNotificationSentByAdmin?" + $("#SearchForm").serialize(),
+            }
+            if (!$.fn.DataTable.isDataTable(DatatableConfigration.TableID)) {
+                DatatableObj = $(DatatableConfigration.TableID).DataTable({
+                    searching: true,
+                    columnDefs: [{
+                        orderable: false,
+                        className: 'select-checkbox',
+                        targets: 0
+                    }],
+                    select: {
+                        //style: 'os',
+                        style: 'multi',
+
+                        selector: 'td:first-child'
+                    },
+                    order: [[1, 'asc']],
+                    dom: 'Blfrtip',
+                    "dom": DomInDatatable(),
+                    "processing": true,
+                    "ajax": {
+                        "url": DatatableConfigration.Url,
+                        "type": "Get",
+                        "datatype": "json",
+                    },
+                    "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, getToken("All")]],
+                    'language': {
+
+                        'url': DataTableLanguageUrl(),
+                    },
+                    "columns": [
+
+                        {
+                            "data": "ID",
+                            "render": function () { return "" }
+                        },
+                        {
+                            "className": "d-flex align-items-center",
+                            "render": function (data, ypet, full, meta) {
+                                return `   <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                        
+                                              <div class="symbol-label">
+                                                  <img src="${full.NotifiyedUserImageURl}" alt="${full.NotifiyedUserName}" class="w-100" />
+                                              </div>
+                                      </div>
+                        
+                                      <div class="d-flex flex-column">
+                                          <span  class="text-gray-800 text-hover-primary mb-1">${full.NotifiyedUserName}</span>
+                                          <span>${full.NotifiyedUserEmail}</span>
+                                      </div>`;
+                            }
+                        },
+                        {
+                            "data": "Title",
+
+                        },
+                        {
+                            "data": "Body",
+
+                        },
+                        {
+                            "data": "Date",
+
+                        },
+                        
+                    {
+
+                        "data": "ID",
+                        "className": "text-center",
+                        "render": function (data, ypet, full, meta) {
+                            
+                           
+                            let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                                </a>`
+                  
+                            return  Remove;
+                        }
+                    }
+                        
+                    ],
+                    "drawCallback": function (settings) {
+
+                    },
+                    "initComplete": function (settings, json) {
+                    }
+                });
+            }
+            else {
+                new $.fn.dataTable.Api(DatatableConfigration.TableID).ajax.url(DatatableConfigration.Url).load((callback) => {
+
+                }, (rest) => {
+                });
+            }
+        }
+        //function RefreshPageDatatable() {
+        //    let DatatableConfigration = {
+        //        TableID: "#PageTable",
+        //        Url:  "/Admin/Users/GetAllNotificationSentByAdmin",
+        //        Columns: [
+        //            {
+        //                "className": "d-flex align-items-center",
+        //                "render": function (data, ypet, full, meta) {
+        //                    return `   <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+
+        //                                <div class="symbol-label">
+        //                                    <img src="${full.NotifiyedUserImageURl}" alt="${full.NotifiyedUserName}" class="w-100" />
+        //                                </div>
+        //                        </div>
+
+        //                        <div class="d-flex flex-column">
+        //                            <span  class="text-gray-800 text-hover-primary mb-1">${full.NotifiyedUserName}</span>
+        //                            <span>${full.NotifiyedUserEmail}</span>
+        //                        </div>`;
+        //                }
+        //            },
+        //            {
+        //                "data": "Title",
+
+        //            },
+        //            {
+        //                "data": "Body",
+
+        //            },
+        //            {
+        //                "data": "Date",
+
+        //            },
+
+        //        ]
+        //    }
+        //    CreateCommonDatatableAjax(DatatableConfigration, "", true, false);
+        //}
+
+        $(document).ready(() => {
+
+            RefreshPageDatatable();
+            $(".selectAll").on("change", function (e) {
+                if ($(this).is(":checked") && DatatableObj != "") {
+                    DatatableObj.rows().select();
+                } else {
+                    DatatableObj.rows().deselect();
+                }
+            });
+        })
+    </script>
+
+
+}

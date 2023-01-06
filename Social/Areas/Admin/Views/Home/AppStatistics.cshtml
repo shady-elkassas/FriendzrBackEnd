@@ -1,0 +1,1591 @@
+﻿@model UserStatistics
+@{
+    ViewData["Title"] = localizer["statistics"];
+    ViewData["PageTitle"] = localizer["statistics"];
+
+
+    ViewData["UserReports"] = ViewBag.UserReports;
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutstatistics.cshtml";
+}
+
+<style>
+    .apexcharts-inner span.mySpan {
+        display: none !important;
+    }
+</style>
+
+
+ 
+
+<div class="toolbar py-5 py-lg-5" id="kt_toolbar">
+    <div id="kt_toolbar_container" class="container-xxl py-5 ">
+        <div class="row gy-0 gx-10 ">
+
+
+    <div class="d-flex justify-content-end">
+    <button class="btn btn-success" id="ExportAllStatisticsAsExcel"> Export all statistics</button>
+</div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1">App Statistics  </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <select id="Kt_App_Grapgh_allData_Years" onchange="UpdateAppYearGraphStatictis(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                                <option value="2022" selected="selected">2022</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="Kt_App_Grapgh_allData" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1">Users Statistics  </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <select id="Kt_Users_Grapgh_allData_Years" onchange="UpdateUsersYearGraphStatictis(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                                <option value="2022" selected="selected">2022</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+
+                        <div id="chart" class="card-rounded-bottom mw-100">
+                            <div id="Kt_Users_Grapgh_allData" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Event Statistics  </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <select id="Kt_Events_Grapgh_allData_Years" onchange="UpdateEventsYearGraphStatictis(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                                <option value="2022" selected="selected">2022</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="Kt_Events_Grapgh_allData" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+
+                    <div class="card-header mt-6">
+
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1">Events In Each Category</h3>
+
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body pt-10 pb-0 px-5">
+
+                        <div id="Kt_EventsInEachCategory_Grapgh" class="card-rounded-bottom" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+
+                    <div class="card-header mt-6">
+
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Filter In Each Category</h3>
+
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body pt-10 pb-0 px-5">
+
+                        <div id="FilterInEachCategory_Grapgh" class="card-rounded-bottom" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+             <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+
+                    <div class="card-header mt-6">
+
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1">Users In Each Interest</h3>
+
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="card-body pt-10 pb-0 px-5">
+
+                        <div id="UsersInEachInterestGrapgh" class="card-rounded-bottom" style="height: 300px"></div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<div class="toolbar py-5 py-lg-5">
+    <div class="container-xxl py-5">
+        <div class="row gy-0 gx-10">
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Share link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="ShareLinkClickStatistics_AgeAndGender" onchange="ShareLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="ShareLinkClickStatistics_Years" onchange="ShareLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="ShareLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="ShareLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Help link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="HelpLinkClickStatistics_AgeAndGender" onchange="HelpLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="HelpLinkClickStatistics_Years" onchange="HelpLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="HelpLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="HelpLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Tips And Guidance link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="TipsAndGuidanceLinkClickStatistics_AgeAndGender" onchange="TipsAndGuidanceLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="TipsAndGuidanceLinkClickStatistics_Years" onchange="TipsAndGuidanceLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="TipsAndGuidanceLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="TipsAndGuidanceLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> About Us link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="AboutUsLinkClickStatistics_AgeAndGender" onchange="AboutUsLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="AboutUsLinkClickStatistics_Years" onchange="AboutUsLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="AboutUsLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="AboutUsLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Terms And Conditions link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="TermsAndConditionsLinkClickStatistics_AgeAndGender" onchange="TermsAndConditionsLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="TermsAndConditionsLinkClickStatistics_Years" onchange="TermsAndConditionsLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="TermsAndConditionsLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="TermsAndConditionsLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Privacy Policy link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="PrivacyPolicyLinkClickStatistics_AgeAndGender" onchange="PrivacyPolicyLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="PrivacyPolicyLinkClickStatistics_Years" onchange="PrivacyPolicyLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="PrivacyPolicyLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="PrivacyPolicyLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Skip Tutorial link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="SkipTutorialLinkClickStatistics_AgeAndGender" onchange="SkipTutorialLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="SkipTutorialLinkClickStatistics_Years" onchange="SkipTutorialLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="SkipTutorialLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="SkipTutorialLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Support Request link click Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="SupportRequestLinkClickStatistics_AgeAndGender" onchange="SupportRequestLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="SupportRequestLinkClickStatistics_Years" onchange="SupportRequestLinkClickAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="SupportRequestLinkClickStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="SupportRequestLinkClickStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Sort by Interest match in feeds statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="SortByInterestMatchStatistics_AgeAndGender" onchange="SortByInterestMatchAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="SortByInterestMatchStatistics_Years" onchange="SortByInterestMatchAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="SortByInterestMatchStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="SortByInterestMatchStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="toolbar py-5 py-lg-5">
+    <div class="container-xxl py-5">
+        <div class="row gy-0 gx-10">
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Events Share Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="EventsShareStatistics_AgeAndGender" onchange="EventsShareAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="EventsShareStatistics_Years" onchange="EventsShareAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="EventsShareStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="EventsShareStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Events View Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="EventsViewStatistics_AgeAndGender" onchange="EventsViewAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="EventsViewStatistics_Years" onchange="EventsViewAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="EventsViewStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="EventsViewStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1"> Events Attend Statistics </h3>
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="p-2">
+                                <select style="padding: 7.15px; " id="EventsAttendStatistics_AgeAndGender" onchange="EventsAttendAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="SeeByGender" selected="selected">See by Gender</option>
+                                    <option value="SeeByAge">See by Age</option>
+                                </select>
+                            </div>
+                            <div class="p-2">
+                                <select id="EventsAttendStatistics_Years" onchange="EventsAttendAgeAndGenderStatistics(this)" data-hide-search="true" class="form-select form-select-solid form-select-sm fw-bolder w-100px">
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022" selected="selected">2022</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-10 pb-0 px-5">
+                        <div id="EventsAttendStatisticsGrapghDataByGender" class="card-rounded-bottom mw-100" style="height: 300px"></div>
+                        <div id="EventsAttendStatisticsGrapghDataByAge" class="card-rounded-bottom mw-100 d-none" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="align-items-start container-xxl">
+    <div class="row g-6 g-xl-9 mt-6">
+
+
+        <div class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+                Users Statistics
+            </h1>
+        </div>
+
+      
+        <!-- Finished registration Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1">Finished registration</h3>
+            </div>
+            <div class="card ">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="FRU_ByAgeRadio" name="FinishedRegistrationRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="FinishedRegistrationAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="FRU_ByGenderRadio" name="FinishedRegistrationRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="FinishedRegistrationGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="FinishedRegistrationByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_FRU" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                    </div>
+                                    <canvas id="FinishedRegistrationStatictisByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="FinishedRegistrationByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_FRU" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                    </div>
+                                    <canvas id="FinishedRegistrationStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Gender Of Users Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1">Gender of users </h3>
+            </div>
+            <div class="card card-flush">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+
+                    </div>
+                </div>
+                <div class="h-250px">
+                    <div id="GenderOfUsersStatictis" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="Total_GOU" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                    </div>
+                                    <canvas id="GenderOfUsersStatictis_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_GOU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_GOU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_GOU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users who enabled personal space Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1">Users who enabled personal space </h3>
+            </div>
+            <div class="card ">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="UEPS_ByAgeRadio" name="UsersWhoEnabledPersonalSpaceRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="UnverifiedUsersAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="UEPS_ByGenderRadio" name="UsersWhoEnabledPersonalSpaceRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="UsersWhoEnabledPersonalSpaceGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="UsersWhoEnabledPersonalSpaceByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_UEPS" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                    </div>
+                                    <canvas id="UsersWhoEnabledPersonalSpaceStatictisByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="UsersWhoEnabledPersonalSpaceByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_UEPS" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                    </div>
+                                    <canvas id="UsersWhoEnabledPersonalSpaceStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Number of connection requests sent Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1"> Number of connection requests sent </h3>
+            </div>
+            <div class="card">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="NRS_ByAgeRadio" name="NumberOfConnectionRequestsSentRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="NumberOfConnectionRequestsSentAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="NRS_ByGenderRadio" name="NumberOfConnectionRequestsSentRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="NumberOfConnectionRequestsSentGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="NumberOfConnectionRequestsSentByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_NRS" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All requests</span>
+                                    </div>
+                                    <canvas id="NumberOfConnectionRequestsSentStatictisByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="NumberOfConnectionRequestsSentByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_NRS" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All requests</span>
+                                    </div>
+                                    <canvas id="NumberOfConnectionRequestsSentStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_NRS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Number of connection requests accepted Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1"> Number of connection requests accepted  </h3>
+            </div>
+            <div class="card">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="NRSA_ByAgeRadio" name="NumberOfConnectionRequestsAcceptedRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="NumberOfConnectionRequestsAcceptedAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="NRSA_ByGenderRadio" name="NumberOfConnectionRequestsAcceptedRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="NumberOfConnectionRequestsAcceptedGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="NumberOfConnectionRequestsAcceptedByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_NRSA" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All requests</span>
+                                    </div>
+                                    <canvas id="NumberOfConnectionRequestsAcceptedStatictisByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="NumberOfConnectionRequestsAcceptedByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_NRSA" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All requests</span>
+                                    </div>
+                                    <canvas id="NumberOfConnectionRequestsAcceptedStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_NRSA" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Blocked users  Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1"> Blocked users  </h3>
+            </div>
+            <div class="card">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="BUS_ByAgeRadio" name="BlockedUsersRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="BlockedUsersAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="BUS_ByGenderRadio" name="BlockedUsersRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="BlockedUsersGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="BlockedUsersByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_BUS" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All requests</span>
+                                    </div>
+                                    <canvas id="BlockedUsersStatictisByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="BlockedUsersByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_BUS" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All requests</span>
+                                    </div>
+                                    <canvas id="BlockedUsersStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_BUS" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Active users  Chart -->
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1"> Active users  </h3>
+            </div>
+            <div class="card">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="ACU_ByAgeRadio" name="ActiveUsersRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="ActiveUsersAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="ACU_ByGenderRadio" name="ActiveUsersRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="ActiveUsersGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="ActiveUsersByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_ACU" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All users</span>
+                                    </div>
+                                    <canvas id="ActiveUsersStatictisByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="ActiveUsersByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_ACU" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All users</span>
+                                    </div>
+                                    <canvas id="ActiveUsersStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_ACU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-lg-6 col-sm-12">
+            <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1"> Percentage of users who created events  </h3>
+            </div>
+            <div class="card">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked id="UCE_ByAgeRadio" name="PercentageOfUsersWhoCreatedEventsRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="PercentageOfUsersWhoCreatedEventsAgeRadio">See by age </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" id="UCE_ByGenderRadio" name="PercentageOfUsersWhoCreatedEventsRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="PercentageOfUsersWhoCreatedEventsGenderRadio">See by gender</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-250px">
+                    <div id="PercentageOfUsersWhoCreatedEventsByGender" class="card card-flush h-lg-100 d-none">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByGender_UCE" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All users</span>
+                                    </div>
+                                    <canvas id="PercentageOfUsersWhoCreatedEventsStatictesByGender_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#009EF7;"></div>
+                                        <div class="text-gray-400">Male</div>
+                                        <div id="Male_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#D9214E;"></div>
+                                        <div class="text-gray-400">Female</div>
+                                        <div id="Female_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#181c32;"></div>
+                                        <div class="text-gray-400">Other </div>
+                                        <div id="Other_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="PercentageOfUsersWhoCreatedEventsByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_UCE" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">All users</span>
+                                    </div>
+                                    <canvas id="PercentageOfUsersWhoCreatedEventsStatictesByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_UCE" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="align-items-start container-xxl">
+
+        <div class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+                Event Statictis
+            </h1>
+        </div>
+
+
+        <!--  Friendzr Event Statictis -->
+        <div class="col-md-4">
+            <div class="card card-xl-stretch mb-xl-8">
+                <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                    <div id="FriendzrEvent_Rate" class="align-items-center mh-100" style="height: 250px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class=" align-items-start container-xxl">
+
+        <div class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+                Age Statistics
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UserWithLessThan18Age_Rate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UsersWith18_24Age_Rate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UsersWith25_34Age_Rate" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UsersWith35_54Age_Rate" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div> <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UsersWithMoreThan55Age_Rate" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+                Private Mode  Statistics
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="AppearenceEveryOneInGhostMode_Rate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="AppearenceMaleInGhostMode_Rate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="AppearenceFemaleInGhostMode_Rate" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="AppearenceOtherGenderInGhostMode_Rate" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+                Users Statistics
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="VerifiedUsersRate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UnVerifiedUsersRate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="ActiveUserRate" class="align-items-center mh-100" style="height: 250px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UseresEnableGhostModeRate" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="UsersWithPersonalSpaceEnabled" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="MostAgeFiltirngRangeUsed" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="PushNotificationsEnabled" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body align-items-center h-300px" style="margin-bottom: -5rem;">
+                        <div id="DeletedProfiles" class="align-items-center mh-100" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    @section scripts{
+        <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+
+        <script src="~/Components/view.js"></script>
+        <script src="~/Components/UserInfoStatictes.js"></script>
+        <script src="~/Components/UsersGraph.js"></script>
+        <script src="~/Components/AppStatictesGraph.js"></script>
+        <script src="~/Components/AppAgeAndGenderStatistics.js"></script>
+        <script src="~/Components/LinkClicksAgeAndGenderStatistics.js"></script>
+        <script src="~/Components/EventAgeAndGenderStatistics.js"></script>
+
+         <script>
+
+           
+          $("#ExportAllStatisticsAsExcel").click(function () {
+             var xhr = new XMLHttpRequest();
+             xhr.open("GET", "ExportAllStatisticsAsExcel", true);
+             xhr.responseType = "blob";
+             xhr.onload = function (e) {
+                 if (this.status == 200) {
+                     var blob = this.response;
+            
+                     /* Get filename from Content-Disposition header */
+                     var filename = "";
+                     var disposition = xhr.getResponseHeader('Content-Disposition');
+                     if (disposition && disposition.indexOf('attachment') !== -1) {
+                         var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                         var matches = filenameRegex.exec(disposition);
+                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                     }
+            
+                     var a = document.createElement('a');
+                     a.href = window.URL.createObjectURL(blob);
+                     a.download = filename;
+                     a.dispatchEvent(new MouseEvent('click'));
+                 }
+             }
+            xhr.send();
+          });
+
+         </script>
+
+    }

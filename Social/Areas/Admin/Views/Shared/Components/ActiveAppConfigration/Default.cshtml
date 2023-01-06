@@ -1,0 +1,1386 @@
+﻿@model AppConfigrationVM
+
+@{
+
+    //var Model = ViewData["ActiveAppConfig"] == null ? null : (ViewData["ActiveAppConfig"] as ModelVM);
+
+}
+<div id="AdminControleSectionStart" class="d-flex flex-column-fluid align-items-start container-xxl mb-10">
+
+
+<!--begin::Container-->
+<h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+    admin controls
+</h1>
+<!--end::Container-->
+</div>
+@{ if (Model != null)
+
+    {
+        <div id="appConfigDiv" class="container-xxl">
+            <form id="appConfigForm">
+                <input type="hidden" value="@Model.ID" name="ID" />
+                <input type="hidden" value="@Model.Name" name="Name" />
+            </form>
+            <span class="d-none" name="ID">@Model.ID</span>
+            <span class="d-none" name="Name">@Model.Name</span>
+       
+          
+     
+            <div class="row g-5 g-xl-8">
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["UserNameLength"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.UserName_MinLength" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserName_MinLength">
+                                                    @(Model.UserName_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class=" fw-bold text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+
+
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.UserName_MaxLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserName_MaxLength">
+                                                    @(Model.UserName_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-labeltext-dark fw-bolder text-hover-primary fs-5">@localizer["UserBioLength"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span>
+                                        <i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.UserBio_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserBio_MinLength">
+                                                    @(Model.UserBio_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.UserBio_MaxLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserBio_MaxLength">
+                                                    @(Model.UserBio_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["password length"]</span>
+
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.Password_MinLength" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="Password_MinLength">
+                                                    @(Model.Password_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.Password_MaxLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="Password_MaxLength">
+                                                    @(Model.Password_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["passwordspecialcharacters"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.Password_MinSpecialCharacters" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="Password_MinSpecialCharacters">
+                                                    @(Model.Password_MinSpecialCharacters?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.Password_MaxSpecialCharacters" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="Password_MaxSpecialCharacters">
+                                                    @(Model.Password_MaxSpecialCharacters?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-labeltext-dark fw-bolder text-hover-primary fs-5">@localizer["passwordallowednumbers"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span>
+                                        <i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.Password_MinNumbers" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="Password_MinNumbers">
+                                                    @(Model.Password_MinNumbers?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.Password_MaxNumbers" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="Password_MaxNumbers">
+                                                    @(Model.Password_MaxNumbers?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-labeltext-dark fw-bolder text-hover-primary fs-5">@localizer["alloweduserage"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span>
+                                        <i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.UserMinAge" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserMinAge">
+                                                    @(Model.UserMinAge?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.UserMaxAge" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserMaxAge">
+                                                    @(Model.UserMaxAge?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["allowedagefiltering"]</span>
+
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.AgeFiltering_Min" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-succes w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="AgeFiltering_Min">
+                                                    @(Model.AgeFiltering_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.AgeFiltering_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="AgeFiltering_Max">
+                                                    @(Model.AgeFiltering_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["Event details description’s length"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.EventDetailsDescription_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventDetailsDescription_MinLength">
+                                                    @(Model.EventDetailsDescription_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.EventDetailsDescription_MaxLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventDetailsDescription_MaxLength">
+                                                    @(Model.EventDetailsDescription_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["Distance to show nearby events"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.DistanceShowNearbyEvents_Min" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-succes w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceShowNearbyEvents_Min">
+                                                    @(Model.DistanceShowNearbyEvents_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.DistanceShowNearbyEvents_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceShowNearbyEvents_Max">
+                                                    @(Model.DistanceShowNearbyEvents_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-labeltext-dark fw-bolder text-hover-primary fs-5">@localizer["alloweddistancefiltering"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span>
+                                        <i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.DistanceFiltering_Min" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceFiltering_Min">
+                                                    @(Model.DistanceFiltering_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.DistanceFiltering_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceFiltering_Max">
+                                                    @(Model.DistanceFiltering_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["EventCreation"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.EventCreationLimitNumber_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventCreationLimitNumber_MinLength">
+                                                    @(Model.EventCreationLimitNumber_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.EventCreationLimitNumber_MaxLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventCreationLimitNumber_MaxLength">
+                                                    @(Model.EventCreationLimitNumber_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["EventTimeValidation"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.EventTimeValidation_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventTimeValidation_MinLength">
+                                                    @(Model.EventTimeValidation_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.EventTimeValidation_MaxLength" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventTimeValidation_MaxLength">
+                                                    @(Model.EventTimeValidation_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["I prefer to tags’ number"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.UserIPreferTo_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserIPreferTo_MinLength">
+                                                    @(Model.UserIPreferTo_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.UserIPreferTo_MaxLength" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserIPreferTo_MaxLength">
+                                                    @(Model.UserIPreferTo_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["I enjoy tags’ number"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.UserTagM_MinNumber" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserTagM_MinNumber">
+                                                    @(Model.UserTagM_MinNumber?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.UserTagM_MaxNumber" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserTagM_MaxNumber">
+                                                    @(Model.UserTagM_MaxNumber?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["I am tags’ number"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.UserIAM_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserIAM_MinLength">
+                                                    @(Model.UserIAM_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.UserIAM_MaxLength" />
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="UserIAM_MaxLength">
+                                                    @(Model.UserIAM_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["allowedDistanceShowNearbyAccountsInFeed"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.DistanceShowNearbyAccountsInFeed_Min" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceShowNearbyAccountsInFeed_Min">
+                                                    @(Model.DistanceShowNearbyAccountsInFeed_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.DistanceShowNearbyAccountsInFeed_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceShowNearbyAccountsInFeed_Max">
+                                                    @(Model.DistanceShowNearbyAccountsInFeed_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["Allowed distance to show events on map"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.DistanceShowNearbyEventsOnMap_Min" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceShowNearbyEventsOnMap_Min">
+                                                    @(Model.DistanceShowNearbyEventsOnMap_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.DistanceShowNearbyEventsOnMap_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="DistanceShowNearbyEventsOnMap_Max">
+                                                    @(Model.DistanceShowNearbyEventsOnMap_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["Event title’s length"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.EventTitle_MinLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventTitle_MinLength">
+                                                    @(Model.EventTitle_MinLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.EventTitle_MaxLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="EventTitle_MaxLength">
+                                                    @(Model.EventTitle_MaxLength?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["Allowed distance for recommended people"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.RecommendedPeopleArea_Min" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="RecommendedPeopleArea_Min">
+                                                    @(Model.RecommendedPeopleArea_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.RecommendedPeopleArea_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="RecommendedPeopleArea_Max">
+                                                    @(Model.RecommendedPeopleArea_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["Allowed distance for recommended Event"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.RecommendedEventArea_Min" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="RecommendedEventArea_Min">
+                                                    @(Model.RecommendedEventArea_Min?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MinCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="align-items-center">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-warning w-100">
+                                                <input type="hidden" value="@Model.RecommendedEventArea_Max" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-warning w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="RecommendedEventArea_Max">
+                                                    @(Model.RecommendedEventArea_Max?.ToString())
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["MaxCount"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                         
+                        </div>
+
+                    </div>
+                </div>
+                  <div class="col-xl-4">
+
+                    <div class="card card-xl-stretch mb-xl-8 appConfigrationcontainer">
+
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-dark fw-bolder text-hover-primary fs-5">@localizer["White Lable Code Length"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <button type="button" class="btn btn-sm btn-icon btn-color-danger btn-active-light-primary canclebtn d-none " onclick="ResetEditMode()">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="@localizer["cancle"]"><i class="bi bi-x-lg fs-5 text-danger text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" onclick="OpenEditMode(this)">
+                                    <span><i class="bi bi-pencil-fill fs-5 text-gray-600 text-hover-primary fs-6 fw-bolder"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-5">
+                            <div class="align-items-center mb-7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="symbol symbol-50px me-5 w-100">
+                                            <span class="symbol-label bg-light-success w-100">
+                                                <input type="hidden" value="@Model.WhiteLableCodeLength" />
+
+                                                <span class="svg-icon svg-icon-2x svg-icon-success w-100 h-100 mw-100 mh-100 d-flex justify-content-md-center align-items-center overflow-scroll" name="WhiteLableCodeLength">
+                                                    @(Model.WhiteLableCodeLength == null?0:Model.WhiteLableCodeLength)
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 text-hover-primary fs-6 fw-bolder">@localizer["Length"]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>                                               
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <div id="appConfigDiv" class="container-xxl text-center mb-10 border border-10 border-gray">
+            <span class=" text-danger fw-bolder text-hover-primary fs-5">sorry there is no active Configuration  for app !!</span>
+            <a class=" fs-8 ms-1" href="/admin/controlpanale/index"> add app Configuration from here   </a>
+        </div>
+    }
+}
+

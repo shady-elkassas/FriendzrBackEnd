@@ -1,0 +1,84 @@
+﻿@model List<GoogleMapMarker>
+<script>
+        //Google Map
+        //import { MarkerClusterer } from "googlemaps/markerclusterer";
+        const Usereslocation = @Html.Raw(Json.Serialize(Model));
+    function initMap() {
+        
+                const map = new google.maps.Map(document.getElementById("useresMap"), {
+                zoom: 3,
+                center: { lat:@(ViewBag.CenterLatitude), lng: @(ViewBag.CenterLongitude) },
+            });
+                const infoWindow = new google.maps.InfoWindow({
+                content: "all application useres location",
+                disableAutoPan: true,
+            });
+            // Create an array of alphabetical characters used to label the markers.
+                const labels = Usereslocation.map(x => x.displayName);
+            // Add some markers to the map.
+                const markers = Usereslocation.map((position, i) => {
+                    const label = labels[i % labels.length];
+                    
+                const marker = new google.maps.Marker({
+                    position,
+                    label,
+                });
+
+                // markers can only be keyboard focusable when they have click listeners
+                // open info window when marker is clicked
+                marker.addListener("click", () => {
+                    infoWindow.setContent(label);
+                    infoWindow.open(map, marker);
+                });
+                return marker;
+            });
+
+            // Add a marker clusterer to manage the markers.
+            //new MarkerClusterer({ markers, map });
+                const markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
+                initMap2();
+    }
+        function initMap2() {
+        const Eventslocation = @Html.Raw(Json.Serialize(ViewBag.EventsGoogleMapMarker as List<GoogleMapMarker>));
+
+         const map = new google.maps.Map(document.getElementById("eventsMap"), {
+                zoom: 3,
+                center: { lat:@(ViewBag.EventsCenterLatitude), lng: @(ViewBag.EventsCenterLongitude) },
+            });
+                const infoWindow = new google.maps.InfoWindow({
+                content: "all application useres location",
+                disableAutoPan: true,
+            });
+            // Create an array of alphabetical characters used to label the markers.
+                const labels = Eventslocation.map(x => x.displayName);
+            // Add some markers to the map.
+                const markers = Eventslocation.map((position, i) => {
+                    const label = labels[i % labels.length];
+                    
+                const marker = new google.maps.Marker({
+                    position,
+                    label,
+                });
+
+                // markers can only be keyboard focusable when they have click listeners
+                // open info window when marker is clicked
+                marker.addListener("click", () => {
+                    infoWindow.setContent(label);
+                    infoWindow.open(map, marker);
+                });
+                return marker;
+            });
+
+            // Add a marker clusterer to manage the markers.
+            //new MarkerClusterer({ markers, map });
+            const markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
+        }
+
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLmWYc00w0KZ-qj8hIymWCIs8K5Z0cG0g&callback=initMap&v=weekly" async></script>
+<script>
+    //document.readyState(() => {
+    //    initMap2();
+    //})
+</script>

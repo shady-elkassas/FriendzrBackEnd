@@ -1,0 +1,594 @@
+﻿@model UserStatistics
+@{
+    ViewData["Title"] = localizer["Home"];
+    ViewData["PageTitle"] = localizer["Home"];
+
+
+    ViewData["UserReports"] = ViewBag.UserReports;
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutstatistics.cshtml";
+}
+
+<style>
+    .apexcharts-inner span.mySpan {
+        display: none !important;
+    }
+</style>
+
+
+<div class="d-flex flex-column-fluid align-items-start container-xxl">
+
+    <div class="row g-6 g-xl-9 mt-6">
+
+        <div class="col-lg-6 col-sm-12">
+             <div class="d-flex justify-content-end">
+                <button class="btn btn-success" id="ExportAllEmailsAsExcel"> Export all emails</button>
+             </div>
+            <div class="card card-flush h-lg-100">
+            
+                <div class="card-header mt-6">
+                    <div class="card-title flex-column">
+                        <h3 class="fw-bolder mb-1">Total Users</h3>
+                    </div>
+                </div>
+                <div class="card-body p-9 pt-5">
+                    <div class="d-flex flex-wrap">
+                        <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                            <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                <span class="fs-2qx fw-bolder">@(Model.CurrenUsers_Count)</span>
+                                <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                            </div>
+                            <canvas id="project_overview_chart"></canvas>
+                        </div>
+
+                        <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                            <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                <div class="bullet bg-primary  me-3"></div>
+                                <div class="text-gray-400">Mail Confirmed</div>
+
+                                <div class="ms-auto fw-bolder text-gray-700">@(Model.ConfirmedMailUsers_Count)</div>
+                            </div>
+      
+                            <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                <div class="bullet bg-gray me-3"></div>
+                                <div class="text-gray-400">Mail Not Confirmed</div>
+                                <div class="ms-auto fw-bolder text-gray-700">@(Model.UnConfirmedMailUsers_Count)</div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-sm-12">
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-success" id="ExportUsersLocationsAsExcel"> Export users’ location</button>
+             </div>
+            <div class="card ">
+                <div class="card-header align-items-center pt-5">
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" checked value="user" id="UsersLocationRadio" name="LocationOnMapRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="UsersLocationRadio"> Users’ location </label>
+                        </div>
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
+                            <input class="form-check-input" type="radio" value="event" id="EventsLocationRadio" name="LocationOnMapRadio" />
+                            <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="EventsLocationRadio">Events’ Location</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="h-300px">
+                    <div id="useresMap" class="h-100 w-100"></div>
+                    <div id="eventsMap" class="h-100 w-100 d-none"></div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-6 col-sm-12">
+            <div class="card card-xl-stretch mb-xl-8">
+                <div class="align-items-center ">
+                    <div class="text-center m-2">
+                        <h3 class="">Users statistics</h3>
+                    </div>
+                    <div class="box shadow h-300px">
+                        <div class="h-100" id="allUserStatictes"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-12">
+            <div class="card card-xl-stretch mb-xl-8">
+                <div class="align-items-center ">
+                    <div class="text-center m-2">
+                        <h3 class="">Total Events</h3>
+                    </div>
+                    <div class="box shadow h-300px">
+                        <div class="h-100" id="allEventsStatictes"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+            Users’ Genders
+        </h1>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-danger-light">
+                                    <img src="~/assets/media/svg/avatars/029-boy-11.svg" class="h-50 align-self-center" alt="" />
+                                </span>
+                            </div>
+
+
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">
+                                    Male
+                                </span>
+                                <span class="text-muted fw-bold">count: @Model.Male_Count Users</span>
+                                <span class="text-muted fw-bold">percentage: @Model.Male_Rate %</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(Model.Male_Rate + "%")" aria-valuenow="@(Model.Male_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-primary-light">
+                                    <img src="~/assets/media/svg/avatars/014-girl-7.svg" class="h-50 align-self-center" alt="" />
+                                </span>
+                            </div>
+
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">Female </span>
+                                <span class="text-muted fw-bold">count: @Model.Female_Count Users</span>
+                                <span class="text-muted fw-bold">percentage: @Model.Female_Rate %</span>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: @(Model.Female_Rate + "%")" aria-valuenow="@(Model.Female_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-success-light">
+                                    <img src="~/assets/media/svg/avatars/User_Circle.png" class="h-50 align-self-center" alt="" />
+
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">other gender </span>
+                                <span class="text-muted fw-bold">count:@Model.Othergender_Count users</span>
+                                <span class="text-muted fw-bold">percentage: @Model.Othergender_Rate %</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-dark" role="progressbar" style="width: @(Model.Othergender_Rate + "%")" aria-valuenow="@(Model.Othergender_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@await Component.InvokeAsync("ActiveAppConfigration");
+@await Component.InvokeAsync("EventReports");
+@await Component.InvokeAsync("UserReports");
+@*@await Html.PartialAsync("/Areas/Admin/Views/Home/_EventsInCitiyTable.cshtml")
+    @await Html.PartialAsync("/Areas/Admin/Views/Home/_EventsInCategoryTable.cshtml")*@
+
+
+@section scripts{
+    <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+
+    <script src="~/Components/view.js"></script>
+
+    <script src="https://unpkg.com/@@googlemaps/markerclusterer/dist/index.min.js"></script>
+    @await Component.InvokeAsync("UsersOnGoogleMap")
+    @*@await Component.InvokeAsync("EventsOnGoogleMap")*@
+    <script src="~/Components/UserInfoStatictes.js"></script>s
+    <script src="~/Components/appConfigrationSingleEdit.js"></script>
+    <script src="~/Components/UsersGraph.js"></script>
+    <script src="~/Components/AppStatictesGraph.js"></script>
+    <script src="~/Components/allEventsStatictes.js"></script>
+    <script>
+        function ActiveEventMap() {
+
+        }
+        function StopUserForPeriod(ID) {
+            let html = `<div class="row mw-100"><div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+StopFrom
+                                                        </label>
+
+                                                            <input type="date" class="form-control form-control-solid" Id="StopFrom" />
+                                                        </div>
+                                                    <div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+Stop To
+                                                        </label>
+                                                            <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
+
+
+                                                    </div></div>`
+            Swal.fire({
+                didOpen: () => {
+                    //    CreateSelect2DropDown(".", ".swal2-container");
+                },
+                title: 'Confirm Stop User ',
+                width: 800,
+                html: html,
+                padding: '1em',
+                //input: 'textarea',
+                icon: 'question',
+                iconHtml: '؟',
+                showCancelButton: true,
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                showLoaderOnConfirm: true,
+                preConfirm: (text) => {
+                    let StopFrom = $("#StopFrom").val();
+                    let StopTo = $("#StopTo").val();
+                    if (StopFrom == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopFromRequired")
+                        )
+                    }
+                    else if (StopTo == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopToRequired")
+                        )
+                    }
+                    else if (new Date(StopFrom) > new Date(StopTo)) {
+                        //Compare Two Dates
+                        Swal.showValidationMessage(
+                            getToken("Stop From Must Be Less Than Stop To")
+                        )
+                    }
+
+                    else {
+                        return { StopFrom: StopFrom, StopTo: StopTo };
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(`/Admin/Users/BanUser?ID=${ID}&BanFrom=${result.value.StopFrom}&BanTo=${result.value.StopTo}`, (res) => {
+                        if (res.Status == true) {
+                            ShowNotification("success", res.Message);
+                        }
+                        else {
+                            Swal.showValidationMessage(
+                                `${res.Message}`
+                            )
+                            ShowNotification("error", res.Message);
+                        }
+
+                    }).fail((xhr, textStatus, errorThrown) => {
+                        ShowNotification("error", "");
+
+                    });
+
+                }
+            })
+
+        }
+
+        function StopEventForPeriod(ID) {
+            let html = `<div class="row mw-100"><div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+StopFrom
+                                                        </label>
+
+                                                            <input type="date" class="form-control form-control-solid" Id="StopFrom" />
+                                                        </div>
+                                                    <div class="col-md-6 fv-row">
+                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+Stop To
+                                                        </label>
+                                                            <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
+
+
+                                                    </div></div>`
+            Swal.fire({
+                didOpen: () => {
+                    //    CreateSelect2DropDown(".", ".swal2-container");
+                },
+                title: 'Confirm Stop Event ',
+                width: 800,
+                html: html,
+                padding: '1em',
+                //input: 'textarea',
+                icon: 'question',
+                iconHtml: '؟',
+                showCancelButton: true,
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                showLoaderOnConfirm: true,
+                preConfirm: (text) => {
+                    let StopFrom = $("#StopFrom").val();
+                    let StopTo = $("#StopTo").val();
+                    if (StopFrom == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopFromRequired")
+                        )
+                    }
+                    else if (StopTo == "") {
+                        Swal.showValidationMessage(
+                            getToken("StopToRequired")
+                        )
+                    }
+                    else if (new Date(StopFrom) > new Date(StopTo)) {
+                        //Compare Two Dates
+                        Swal.showValidationMessage(
+                            getToken("Stop From Must Be Less Than Stop To")
+                        )
+                    }
+
+                    else {
+                        return { StopFrom: StopFrom, StopTo: StopTo };
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(`/Admin/AdminEvent/StopEvent?ID=${ID}&StopFrom=${result.value.StopFrom}&StopTo=${result.value.StopTo}`, (res) => {
+                        if (res.Status == true) {
+                            ShowNotification("success", res.Message);
+                        }
+                        else {
+                            Swal.showValidationMessage(
+                                `${res.Message}`
+                            )
+                            ShowNotification("error", res.Message);
+                        }
+
+                    }).fail((xhr, textStatus, errorThrown) => {
+                        ShowNotification("error", "");
+
+                    });
+
+                }
+            })
+
+        }
+        function RenderEventsInCityDatatable() {
+            let DatatableConfigration = {
+                TableID: "#TopTenEventsByCity",
+                Url:  "/Admin/AdminEvent/GetEventsInCity?CityID="+$("[name='CityID']").val(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                    {
+                        "data": "EventAttendCount",
+                    },
+
+                ]
+            }
+
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false);
+        }
+        function RenderEventsInCategoryDatatable() {
+            let DatatableConfigration = {
+                TableID: "#TopTenEventsByCategory",
+                Url: "/Admin/AdminEvent/GetEventsInCategory?CategoryID=" + $("[name='CategoryID']").val(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                    {
+                        "data": "EventAttendCount",
+                    },
+
+
+
+                ]
+            }
+
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false);
+        }
+        $(document).ready(() => {
+            CreateSelect2DropDown("[name='CityID']", "#dd");
+            CreateSelect2DropDown("[name='CategoryID']", "#EventInCategoryDivContainer");
+            RenderEventsInCityDatatable();
+            RenderEventsInCategoryDatatable();
+            $(document).on("RemoveReportedUser", function (event, ID, callBack) {
+                $.post(`/Admin/Users/RemoveObj?ID=${ID}`, (res) => {
+                    if (res.Status == true) {
+                        ShowNotification("success", res.Message);
+                        //new $.fn.dataTable.Api("#UserReportsTable").rows().every(function () {
+                        //    debugger
+                        //    console.log(this.data());
+                        //});
+                        new $.fn.dataTable.Api("#UserReportsTable").rows(`[ReportedUserID='${ID}']`).remove()
+                            .draw();
+                        //$(`[ReportedUserID='${ID}']`).remove();
+                    }
+                    else {
+                        ShowNotification("error", res.Message);
+                    }
+
+                }).fail((xhr, textStatus, errorThrown) => {
+                    ShowNotification("error", "");
+
+                });
+
+
+            });
+
+            $(document).on("RemoveReportedEvent", function (event, ID, callBack) {
+                $.post(`/Admin/AdminEvent/RemoveObj?ID=${ID}`, (res) => {
+                    if (res.Status == true) {
+                        ShowNotification("success", res.Message);
+                        //new $.fn.dataTable.Api("#UserReportsTable").rows().every(function () {
+                        //    debugger
+                        //    console.log(this.data());
+                        //});
+                        new $.fn.dataTable.Api("#EventReportsTable").rows(`[reportedeventid='${ID}']`).remove().draw();
+                        //$(`[ReportedUserID='${ID}']`).remove();
+                    }
+                    else {
+                        ShowNotification("error", res.Message);
+                    }
+
+                }).fail((xhr, textStatus, errorThrown) => {
+                    ShowNotification("error", "");
+
+                });
+
+
+            });
+            $("[name='LocationOnMapRadio']").change((e) => {                
+                $("#useresMap").toggleClass("d-none")
+                $("#eventsMap").toggleClass("d-none")
+
+            })
+        })
+
+          $("#ExportAllEmailsAsExcel").click(function () {
+             var xhr = new XMLHttpRequest();
+             xhr.open("GET", "ExportAllEmailsAsExcel", true);
+             xhr.responseType = "blob";
+             xhr.onload = function (e) {
+                 if (this.status == 200) {
+                     var blob = this.response;
+            
+                     /* Get filename from Content-Disposition header */
+                     var filename = "";
+                     var disposition = xhr.getResponseHeader('Content-Disposition');
+                     if (disposition && disposition.indexOf('attachment') !== -1) {
+                         var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                         var matches = filenameRegex.exec(disposition);
+                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                     }
+            
+                     var a = document.createElement('a');
+                     a.href = window.URL.createObjectURL(blob);
+                     a.download = filename;
+                     a.dispatchEvent(new MouseEvent('click'));
+                 }
+             }
+            xhr.send();
+          });
+
+
+            $("#ExportUsersLocationsAsExcel").click(function () {
+             var xhr = new XMLHttpRequest();
+             xhr.open("GET", "ExportUsersLocationsAsExcel", true);
+             xhr.responseType = "blob";
+             xhr.onload = function (e) {
+                 if (this.status == 200) {
+                     var blob = this.response;
+            
+                     /* Get filename from Content-Disposition header */
+                     var filename = "";
+                     var disposition = xhr.getResponseHeader('Content-Disposition');
+                     if (disposition && disposition.indexOf('attachment') !== -1) {
+                         var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                         var matches = filenameRegex.exec(disposition);
+                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                     }
+            
+                     var a = document.createElement('a');
+                     a.href = window.URL.createObjectURL(blob);
+                     a.download = filename;
+                     a.dispatchEvent(new MouseEvent('click'));
+                 }
+             }
+            xhr.send();
+          });
+
+
+    </script>
+}

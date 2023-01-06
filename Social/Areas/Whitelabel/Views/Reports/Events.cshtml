@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = _localizer["EventReports"];
+    ViewData["PageTitle"] = _localizer["EventReports"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+   
+    <div class="card-body py-3">
+        <div class="table-responsive">
+            <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border rounded">
+                <thead class="bg-light">
+                    <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                        <th>#</th>
+                        <th class="min-w-150px">Event</th>
+                        <th class="min-w-50px">User</th>
+                        <th class="min-w-125px">Report reason</th>
+                        <th class="min-w-125px"> message</th>
+                        <th class="min-w-125px">Report Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+        function RefreshPageDatatable() {
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAllEventReports",
+                Columns: [
+                    {
+                        "className": "d-flex align-items-center",
+                        "render": function (data, ypet, full, meta) {
+                            return `   <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                  
+                                        <div class="symbol-label">
+                                            <img src="${full.EventImageUrl}" alt="${full.EventTitle}" class="w-100" />
+                                        </div>
+                                </div>
+                                <!--end::Avatar-->
+                                <!--begin::User details-->
+                                <div class="d-flex flex-column">
+                                    <span  class="text-gray-800 text-hover-primary mb-1">${full.EventTitle}</span>
+                                    <span>${full.Eventdescription}</span>
+                                </div>`;
+                        }
+                    },
+                    {
+                        "data": "CreatedBy_UserName",
+
+                    },
+                    {
+                        "data": "ReportReasonName",
+
+                    },
+                    {
+                        "data": "Message",
+
+                    },
+                    {
+                        "data": "RegistrationDateStr",
+
+                    },
+              
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", true, false);
+        }
+      
+        $(document).ready(() => {
+     
+            RefreshPageDatatable();
+        })
+    </script>
+
+
+}

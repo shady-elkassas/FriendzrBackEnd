@@ -1,0 +1,814 @@
+﻿@model Social.Entity.Models.EventData
+@{
+    ViewData["Title"] = localizer["EventDetails"];
+    ViewData["PageTitle"] = localizer["EventDetails"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+        /* padding-bottom and top for image */
+        .mfp-no-margins img.mfp-img {
+            padding: 0;
+        }
+
+        /* position of shadow behind the image */
+        .mfp-no-margins .mfp-figure:after {
+            top: 0;
+            bottom: 0;
+        }
+        /* padding for main container */
+        .mfp-no-margins .mfp-container {
+            padding: 0;
+        }
+
+
+        /*
+
+        for zoom animation
+        uncomment this part if you haven't added this code anywhere else
+
+        */
+
+
+        .mfp-with-zoom .mfp-container,
+        .mfp-with-zoom.mfp-bg {
+            opacity: 0;
+            -webkit-backface-visibility: hidden;
+            -webkit-transition: all 0.3s ease-out;
+            -moz-transition: all 0.3s ease-out;
+            -o-transition: all 0.3s ease-out;
+            transition: all 0.3s ease-out;
+        }
+
+        .mfp-with-zoom.mfp-ready .mfp-container {
+            opacity: 1;
+        }
+
+        .mfp-with-zoom.mfp-ready.mfp-bg {
+            opacity: 0.8;
+        }
+
+        .mfp-with-zoom.mfp-removing .mfp-container,
+        .mfp-with-zoom.mfp-removing.mfp-bg {
+            opacity: 0;
+        }
+
+        .show-read-more .more-text {
+            display: none;
+        }
+
+
+      .my-card
+{
+    position:absolute;
+    left:40%;
+    top:-20px;
+    border-radius:50%;
+}
+
+    </style>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+}
+<div id="" class="">
+    <div class="d-flex flex-column flex-lg-row">
+        <div class="flex-column flex-lg-row-auto w-lg-250px w-xl-350px mb-10">
+            <div class="card mb-5 mb-xl-8">
+                <div class="card-body">
+                    <div class="d-flex flex-center flex-column py-5">
+                        <div class="symbol symbol-100px symbol-circle mb-7">
+                            <a class="image-magnific" href="@(Model.image??"/assets/media/avatars/blank.png")" title="Event Image">
+                                <img class="mw-100 mh-100" src="@(Model.image??"/assets/media/avatars/blank.png")" alt="Event Image" />
+                            </a>
+                        </div>
+
+                        <span class="fs-3 text-gray-800  fw-bolder mb-3">@Model.Title</span>
+
+
+                        <div class="fw-bolder mb-3">
+                            @localizer["description"]
+                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="@(localizer["Event Describtion"])"></i>
+                        </div>
+                        <div class="d-flex flex-wrap flex-center">
+                            @{
+                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
+                                        <div class="fs-4 fw-bolder text-gray-700">
+                                            <span class="w-75px">@Model.description </span>
+                                        </div>
+                                    </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-stack fs-4 py-3">
+                        <div class="fw-bolder rotate collapsible" data-bs-toggle="collapse" href="#kt_user_view_details" role="button" aria-expanded="false" aria-controls="kt_user_view_details">
+                            Details
+                            <span class="ms-2 rotate-180">
+
+                                <span class="svg-icon svg-icon-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="separator"></div>
+                    <div id="kt_user_view_details" class="collapse show">
+                        <div class="pb-5 fs-6">
+                            <div class="fw-bolder mt-5">Event Category</div>
+                            <div class="text-gray-600">@(Model.categorie?.name??"Not Selected")</div>
+                            <div class="fw-bolder mt-5">Event From</div>
+                            <div class="text-gray-600">@(Model.eventdate?.ToString("dd MMM yyyy")??""+Model.eventfrom?.ToString(",hh:mm tt"))</div>
+                            <div class="fw-bolder mt-5">Event To</div>
+                            <div class="text-gray-600">@(Model.eventdateto?.ToString("dd MMM yyyy")??""+Model.eventto?.ToString(",hh:mm tt"))</div>
+                            <div class="fw-bolder mt-5">Attendance Count</div>
+                            <div class="text-gray-600">
+                                @(Model.EventChatAttend.Where(x=>x.stutus!=1&&x.stutus!=2&&x.stutus!=3).Count() + "  User Attend")
+                            </div>
+                            <div class="fw-bolder mt-5">Reports Count</div>
+                            <div class="text-gray-600">
+                                @(Model.EventReports.Count() + "   Report For Event")
+                            </div>
+                            <div class="fw-bolder mt-5">Blocked</div>
+                            <div class="text-gray-600">
+                                @(Model.EventChatAttend.Where(x=>x.stutus==2).Count() + "   User Blocked From Event")
+                            </div>
+                            <div class="fw-bolder mt-5">Leaved</div>
+                            <div class="text-gray-600">
+                                @(Model.EventChatAttend.Where(x=>x.stutus==3).Count() + "   User Leaving The Event")
+                            </div>
+                            <div class="fw-bolder mt-5">Deleted</div>
+                            <div class="text-gray-600">
+                                @(Model.EventChatAttend.Where(x=>x.stutus==1).Count() + "   User Deleted From Event")
+                            </div>
+                            <div class="fw-bolder mt-5">Messages Count</div>
+                            <div class="text-gray-600">
+                                @Model.Messagedata.Count Message
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+<div class="flex-lg-row-fluid ms-lg-15">
+
+<div class="jumbotron">
+<div class="row w-100">
+
+        <div class="col-md-3">
+            <div class="card border-success mx-sm-1 p-3">
+                <div class="card border-success shadow text-success p-3 my-card"><span class="fa fa-eye" aria-hidden="true"></span></div>
+                <div class="text-success text-center mt-3"><h4>Views</h4></div>
+                <div class="text-success text-center mt-2"><h1>@Model.Views</h1></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-danger mx-sm-1 p-3">
+                <div class="card border-danger shadow text-danger p-3 my-card" ><span class="fa fa-share-alt-square" aria-hidden="true"></span></div>
+                <div class="text-danger text-center mt-3"><h4>Shared</h4></div>
+                <div class="text-danger text-center mt-2"><h1>@Model.Shars</h1></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning mx-sm-1 p-3">
+                <div class="card border-warning shadow text-warning p-3 my-card" ><span class="fa fa-users" aria-hidden="true"></span></div>
+                <div class="text-warning text-center mt-3"><h4>Attended</h4></div>
+                <div class="text-warning text-center mt-2"><h1>@Model.Attendees </h1></div>
+            </div>
+        </div>
+     </div>
+</div>
+
+
+            <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-8">
+                <li class="nav-item">
+                    <a class="nav-link text-active-primary pb-4 active"
+                       data-bs-toggle="tab" href="#EventAttendance_tab">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-active-primary pb-4"
+                       data-bs-toggle="tab" href="#EventLocation_tab">Location</a>
+                </li>
+            </ul>
+
+
+
+
+            <div class="tab-content" id="myTabContent">
+
+                <div class="tab-pane fade show active" id="EventAttendance_tab" role="tabpanel">
+                    @{
+                        var EventAttendance = Model.EventChatAttend.Where(x => x.stutus != 1 && x.stutus != 2 && x.stutus != 3).OrderByDescending(x => x.JoinDate).ThenBy(x => x.Id).ToList();
+                    }
+                    <div class="card card-flush mb-6 mb-xl-9">
+                        <div class="card-header">
+                            @*<div class="card-title flex-column">
+
+                                <div class="fs-6 fw-bold text-muted">@Model.DisplayedUserName Created @UserEvetntsData.Count Event</div>
+                                </div>*@
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 mw-100" id="EventAttendanceTable">
+                                <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-50px">User</th>
+                                        <th class="min-w-125px">Join Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fw-bold text-gray-600">
+                                    @foreach (var item in EventAttendance)
+                                    {
+                                            <tr class="max-w-70px cursor-pointer mw-100 EventAttendanceRow" data-url="/admin/Users/UserDetails?UserID=@item.Userattend.UserId">
+                                                <td class="d-flex align-items-center">
+                                                    <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                                        <div class="symbol-label">
+                                                            <a class="image-magnific" href="@(item.Userattend.UserImage??"/assets/media/avatars/blank.png")" title="Event Image">
+                                                                <img class="mw-100 mh-100" src="@(item.Userattend.UserImage??"/assets/media/avatars/blank.png")" alt="Event Image" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-column">
+                                                        <span class="fs-5 fw-bolder text-dark text-hover-primary mb-2">
+                                                        @item.Userattend.User.DisplayedUserName
+                                                        @if (item.UserattendId == Model.User.PrimaryId)
+                                                        {
+                                                                    <span style="width:fit-content" class="border text-primary pl-3 border-dashed border-primary">Admin</span>
+                                                        }
+                                                        </span>
+                                                        <span class="fw-bolder show-read-more">@item.Userattend.Email</span>
+                                                    </div>
+                                                </td>
+                                                <td>@(item.JoinDate?.ToString("dd MMM yyyy")??""+item.Jointime?.ToString(",hh:mm tt"))</td>
+                                            </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="EventLocation_tab" role="tabpanel">
+                    <div class="card card-flush mb-6 mb-xl-9">
+
+                        <div class="card-body d-flex flex-column">
+                            <div id='map_canvas' style=" width: 100%; height: 300px;"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="kt_user_view_overview_security" role="tabpanel">
+
+                </div>
+                <!--end:::Tab pane-->
+                <!--begin:::Tab pane-->
+                <div class="tab-pane fade" id="kt_user_view_overview_events_and_logs_tab" role="tabpanel">
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Login Sessions</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <!--begin::Card toolbar-->
+                            <div class="card-toolbar">
+                                <!--begin::Filter-->
+                                <button type="button" class="btn btn-sm btn-flex btn-light-primary" id="kt_modal_sign_out_sesions">
+                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
+                                    <span class="svg-icon svg-icon-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect opacity="0.3" x="4" y="11" width="12" height="2" rx="1" fill="black" />
+                                            <path d="M5.86875 11.6927L7.62435 10.2297C8.09457 9.83785 8.12683 9.12683 7.69401 8.69401C7.3043 8.3043 6.67836 8.28591 6.26643 8.65206L3.34084 11.2526C2.89332 11.6504 2.89332 12.3496 3.34084 12.7474L6.26643 15.3479C6.67836 15.7141 7.3043 15.6957 7.69401 15.306C8.12683 14.8732 8.09458 14.1621 7.62435 13.7703L5.86875 12.3073C5.67684 12.1474 5.67684 11.8526 5.86875 11.6927Z" fill="black" />
+                                            <path d="M8 5V6C8 6.55228 8.44772 7 9 7C9.55228 7 10 6.55228 10 6C10 5.44772 10.4477 5 11 5H18C18.5523 5 19 5.44772 19 6V18C19 18.5523 18.5523 19 18 19H11C10.4477 19 10 18.5523 10 18C10 17.4477 9.55228 17 9 17C8.44772 17 8 17.4477 8 18V19C8 20.1046 8.89543 21 10 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3H10C8.89543 3 8 3.89543 8 5Z" fill="#C4C4C4" />
+                                        </svg>
+                                    </span>
+                                    <!--end::Svg Icon-->Sign out all sessions
+                                </button>
+                                <!--end::Filter-->
+                            </div>
+                            <!--end::Card toolbar-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0 pb-5">
+                            <!--begin::Table wrapper-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle table-row-dashed gy-5" id="kt_table_users_login_session">
+                                    <!--begin::Table head-->
+                                    <thead class="border-bottom border-gray-200 fs-7 fw-bolder">
+                                        <!--begin::Table row-->
+                                        <tr class="text-start text-muted text-uppercase gs-0">
+                                            <th class="min-w-100px">Location</th>
+                                            <th>Device</th>
+                                            <th>IP Address</th>
+                                            <th class="min-w-125px">Time</th>
+                                            <th class="min-w-70px">Actions</th>
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody class="fs-6 fw-bold text-gray-600">
+                                        <tr>
+                                            <!--begin::Invoice=-->
+                                            <td>Australia</td>
+                                            <!--end::Invoice=-->
+                                            <!--begin::Status=-->
+                                            <td>Chome - Windows</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Amount=-->
+                                            <td>207.32.35.62</td>
+                                            <!--end::Amount=-->
+                                            <!--begin::Date=-->
+                                            <td>23 seconds ago</td>
+                                            <!--end::Date=-->
+                                            <!--begin::Action=-->
+                                            <td>Current session</td>
+                                            <!--end::Action=-->
+                                        </tr>
+                                        <tr>
+                                            <!--begin::Invoice=-->
+                                            <td>Australia</td>
+                                            <!--end::Invoice=-->
+                                            <!--begin::Status=-->
+                                            <td>Safari - iOS</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Amount=-->
+                                            <td>207.10.23.302</td>
+                                            <!--end::Amount=-->
+                                            <!--begin::Date=-->
+                                            <td>3 days ago</td>
+                                            <!--end::Date=-->
+                                            <!--begin::Action=-->
+                                            <td>
+                                                <a href="#" data-kt-users-sign-out="single_user">Sign out</a>
+                                            </td>
+                                            <!--end::Action=-->
+                                        </tr>
+                                        <tr>
+                                            <!--begin::Invoice=-->
+                                            <td>Australia</td>
+                                            <!--end::Invoice=-->
+                                            <!--begin::Status=-->
+                                            <td>Chrome - Windows</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Amount=-->
+                                            <td>207.33.32.374</td>
+                                            <!--end::Amount=-->
+                                            <!--begin::Date=-->
+                                            <td>last week</td>
+                                            <!--end::Date=-->
+                                            <!--begin::Action=-->
+                                            <td>Expired</td>
+                                            <!--end::Action=-->
+                                        </tr>
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table wrapper-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Logs</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <!--begin::Card toolbar-->
+                            <div class="card-toolbar">
+                                <!--begin::Button-->
+                                <button type="button" class="btn btn-sm btn-light-primary">
+                                    <!--begin::Svg Icon | path: icons/duotune/files/fil021.svg-->
+                                    <span class="svg-icon svg-icon-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path opacity="0.3" d="M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z" fill="black" />
+                                            <path d="M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z" fill="black" />
+                                            <path opacity="0.3" d="M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z" fill="black" />
+                                        </svg>
+                                    </span>
+                                    <!--end::Svg Icon-->Download Report
+                                </button>
+                                <!--end::Button-->
+                            </div>
+                            <!--end::Card toolbar-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body py-0">
+                            <!--begin::Table wrapper-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle table-row-dashed fw-bold text-gray-600 fs-6 gy-5" id="kt_table_users_logs">
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                        <!--begin::Table row-->
+                                        <tr>
+                                            <!--begin::Badge=-->
+                                            <td class="min-w-70px">
+                                                <div class="badge badge-light-success">200 OK</div>
+                                            </td>
+                                            <!--end::Badge=-->
+                                            <!--begin::Status=-->
+                                            <td>POST /v1/invoices/in_2499_5664/payment</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Timestamp=-->
+                                            <td class="pe-0 text-end min-w-200px">15 Apr 2021, 5:20 pm</td>
+                                            <!--end::Timestamp=-->
+                                        </tr>
+                                        <!--end::Table row-->
+                                        <!--begin::Table row-->
+                                        <tr>
+                                            <!--begin::Badge=-->
+                                            <td class="min-w-70px">
+                                                <div class="badge badge-light-success">200 OK</div>
+                                            </td>
+                                            <!--end::Badge=-->
+                                            <!--begin::Status=-->
+                                            <td>POST /v1/invoices/in_8920_4270/payment</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Timestamp=-->
+                                            <td class="pe-0 text-end min-w-200px">05 May 2021, 5:20 pm</td>
+                                            <!--end::Timestamp=-->
+                                        </tr>
+                                        <!--end::Table row-->
+                                        <!--begin::Table row-->
+                                        <tr>
+                                            <!--begin::Badge=-->
+                                            <td class="min-w-70px">
+                                                <div class="badge badge-light-danger">500 ERR</div>
+                                            </td>
+                                            <!--end::Badge=-->
+                                            <!--begin::Status=-->
+                                            <td>POST /v1/invoice/in_7268_8138/invalid</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Timestamp=-->
+                                            <td class="pe-0 text-end min-w-200px">25 Jul 2021, 2:40 pm</td>
+                                            <!--end::Timestamp=-->
+                                        </tr>
+                                        <!--end::Table row-->
+                                        <!--begin::Table row-->
+                                        <tr>
+                                            <!--begin::Badge=-->
+                                            <td class="min-w-70px">
+                                                <div class="badge badge-light-success">200 OK</div>
+                                            </td>
+                                            <!--end::Badge=-->
+                                            <!--begin::Status=-->
+                                            <td>POST /v1/invoices/in_5444_4816/payment</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Timestamp=-->
+                                            <td class="pe-0 text-end min-w-200px">21 Feb 2021, 6:43 am</td>
+                                            <!--end::Timestamp=-->
+                                        </tr>
+                                        <!--end::Table row-->
+                                        <!--begin::Table row-->
+                                        <tr>
+                                            <!--begin::Badge=-->
+                                            <td class="min-w-70px">
+                                                <div class="badge badge-light-success">200 OK</div>
+                                            </td>
+                                            <!--end::Badge=-->
+                                            <!--begin::Status=-->
+                                            <td>POST /v1/invoices/in_5444_4816/payment</td>
+                                            <!--end::Status=-->
+                                            <!--begin::Timestamp=-->
+                                            <td class="pe-0 text-end min-w-200px">10 Mar 2021, 9:23 pm</td>
+                                            <!--end::Timestamp=-->
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table wrapper-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Events</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <!--begin::Card toolbar-->
+                            <div class="card-toolbar">
+                                <!--begin::Button-->
+                                <button type="button" class="btn btn-sm btn-light-primary">
+                                    <!--begin::Svg Icon | path: icons/duotune/files/fil021.svg-->
+                                    <span class="svg-icon svg-icon-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path opacity="0.3" d="M19 15C20.7 15 22 13.7 22 12C22 10.3 20.7 9 19 9C18.9 9 18.9 9 18.8 9C18.9 8.7 19 8.3 19 8C19 6.3 17.7 5 16 5C15.4 5 14.8 5.2 14.3 5.5C13.4 4 11.8 3 10 3C7.2 3 5 5.2 5 8C5 8.3 5 8.7 5.1 9H5C3.3 9 2 10.3 2 12C2 13.7 3.3 15 5 15H19Z" fill="black" />
+                                            <path d="M13 17.4V12C13 11.4 12.6 11 12 11C11.4 11 11 11.4 11 12V17.4H13Z" fill="black" />
+                                            <path opacity="0.3" d="M8 17.4H16L12.7 20.7C12.3 21.1 11.7 21.1 11.3 20.7L8 17.4Z" fill="black" />
+                                        </svg>
+                                    </span>
+                                    <!--end::Svg Icon-->Download Report
+                                </button>
+                                <!--end::Button-->
+                            </div>
+                            <!--end::Card toolbar-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body py-0">
+                            <!--begin::Table-->
+                            <table class="table align-middle table-row-dashed fs-6 text-gray-600 fw-bold gy-5" id="kt_table_customers_events">
+                                <!--begin::Table body-->
+                                <tbody>
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#DER-45645</a>status has changed from
+                                            <span class="badge badge-light-info me-1">In Progress</span>to
+                                            <span class="badge badge-light-primary">In Transit</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">22 Sep 2021, 2:40 pm</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#DER-45645</a>status has changed from
+                                            <span class="badge badge-light-info me-1">In Progress</span>to
+                                            <span class="badge badge-light-primary">In Transit</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">20 Dec 2021, 8:43 pm</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#KIO-45656</a>status has changed from
+                                            <span class="badge badge-light-succees me-1">In Transit</span>to
+                                            <span class="badge badge-light-success">Approved</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">10 Mar 2021, 11:30 am</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#SEP-45656</a>status has changed from
+                                            <span class="badge badge-light-warning me-1">Pending</span>to
+                                            <span class="badge badge-light-info">In Progress</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">19 Aug 2021, 8:43 pm</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            <a href="#" class="text-gray-600 text-hover-primary me-1">Max Smith</a>has made payment to
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary">#SDK-45670</a>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">25 Jul 2021, 10:30 am</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#KIO-45656</a>status has changed from
+                                            <span class="badge badge-light-succees me-1">In Transit</span>to
+                                            <span class="badge badge-light-success">Approved</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">25 Jul 2021, 6:05 pm</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#DER-45645</a>status has changed from
+                                            <span class="badge badge-light-info me-1">In Progress</span>to
+                                            <span class="badge badge-light-primary">In Transit</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">20 Jun 2021, 11:05 am</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            Invoice
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary me-1">#DER-45645</a>status has changed from
+                                            <span class="badge badge-light-info me-1">In Progress</span>to
+                                            <span class="badge badge-light-primary">In Transit</span>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">20 Dec 2021, 5:30 pm</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            <a href="#" class="text-gray-600 text-hover-primary me-1">Emma Smith</a>has made payment to
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary">#XRS-45670</a>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">15 Apr 2021, 5:30 pm</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <!--begin::Event=-->
+                                        <td class="min-w-400px">
+                                            <a href="#" class="text-gray-600 text-hover-primary me-1">Emma Smith</a>has made payment to
+                                            <a href="#" class="fw-bolder text-gray-900 text-hover-primary">#XRS-45670</a>
+                                        </td>
+                                        <!--end::Event=-->
+                                        <!--begin::Timestamp=-->
+                                        <td class="pe-0 text-gray-600 text-end min-w-200px">10 Mar 2021, 10:30 am</td>
+                                        <!--end::Timestamp=-->
+                                    </tr>
+                                    <!--end::Table row-->
+                                </tbody>
+                                <!--end::Table body-->
+                            </table>
+                            <!--end::Table-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end:::Tab pane-->
+            </div>
+            <!--end:::Tab content-->
+        </div>
+        <!--end::Content-->
+    </div>
+</div>
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        var EventName ='@(Model.Title)'
+        var EventLat = parseFloat((parseFloat(@(Model.lat))).toFixed(6));
+        var Eventlang =parseFloat((parseFloat(@(Model.lang))).toFixed(6));
+        $(document).ready(() => {
+            var maxLength = 100;
+            $(".show-read-more").each(function () {
+                var myStr = $(this).text();
+                if ($.trim(myStr).length > maxLength) {
+                    var newStr = myStr.substring(0, maxLength);
+                    var removedStr = myStr.substring(maxLength, $.trim(myStr).length);
+                    $(this).empty().html(newStr);
+                    $(this).append(' <a href="javascript:void(0);" class="read-more">read more...</a>');
+                    $(this).append('<span class="more-text">' + removedStr + '</span>');
+                }
+            });
+            $(".read-more").click(function () {
+                $(this).siblings(".more-text").contents().unwrap();
+                $(this).remove();
+            });
+            let DatatableObj = {
+                //scrollY: 300,
+                searching: true,
+                dom: 'Blfrtip',
+                "ordering": false,
+                "dom": "<'row'" +
+                    "<'col-sm-6 d-flex align-items-center justify-conten-start'l>" +
+                    "<'col-sm-6 d-flex align-items-center justify-content-end'f>" +
+                    ">" +
+
+                    "<'table-responsive'tr>" +
+
+                    "<'row'" +
+                    "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+                    "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+                    ">",
+
+
+
+                "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, getToken("All")]],
+                'language': {
+                    'url': DataTableLanguageUrl(),
+                },
+
+
+            };
+            $('.image-magnific').magnificPopup({ type: 'image' });
+            $("#EventAttendanceTable").DataTable(DatatableObj);
+            $(document).on('click', 'tr.EventAttendanceRow', function (e) {
+                if (e.target.tagName != "IMG" && e.target.type != "checkbox") {
+                    var win = window.open($(this).attr("data-url"), '_blank');
+                    if (win) {
+                        win.focus();
+                    } else {
+                        alert('Please allow popups for this website');
+                    }
+                }
+
+                //window.location.replace($(this).parents("tr").find('input[type="hidden"]').val())
+                //Do something
+            });
+        });
+    </script>
+    <script>
+        let map;
+        let markers = [];
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map_canvas"), {
+                zoom: 12,
+                center: { lat: EventLat, lng: Eventlang },
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            addMarker({ lat: EventLat, lng: Eventlang, displayName: EventName}, EventName)
+        }
+        // Adds a marker to the map and push to the array.
+        function addMarker(position,lable) {
+            deleteMarkers()
+            const marker = new google.maps.Marker({
+                position,
+                map,
+                lable
+            });
+            markers.push(marker);
+        }
+        // Sets the map on all markers in the array.
+        function setMapOnAll(map) {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+        // Removes the markers from the map, but keeps them in the array.
+        function hideMarkers() {
+            setMapOnAll(null);
+        }
+        // Shows any markers currently in the array.
+        function showMarkers() {
+            setMapOnAll(map);
+        }
+        function deleteMarkers() {
+            hideMarkers();
+            markers = [];
+        }
+    </script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLmWYc00w0KZ-qj8hIymWCIs8K5Z0cG0g&callback=initMap&v=weekly&channel=2"></script>
+
+}

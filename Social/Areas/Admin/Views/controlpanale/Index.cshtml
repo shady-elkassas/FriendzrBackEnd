@@ -1,0 +1,732 @@
+﻿@model AppConfigrationVM_Required
+@{
+    ViewData["Title"] = localizer["AppConfigrations"];
+    ViewData["PageTitle"] = localizer["AppConfigrations"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <!--begin::Header-->
+    <div class="card-header align-items-center border-0 pt-5">
+
+        <div class="d-flex flex-shrink-0">
+
+            <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add a AppConfigration">
+                <a href="javascript:OpenPageModal('0')" class="btn btn-sm btn-primary btn-active-light-primary">
+                    <span><i class="bi bi-plus fs-3"></i></span>
+                    @(localizer["Add"]+ " "+ localizer["AppConfigration"] )
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body py-3">
+        <div class="table-responsive">
+            <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border rounded table-hover cursor-pointer">
+                <thead class="bg-light">
+                    <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                        <th>#</th>
+                        <th>@Html.DisplayNameFor(x => x.Name)</th>
+                        <th>@Html.DisplayNameFor(x => x.IsActive)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="PageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl mw-850px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+
+            <div class="mb-0 text-center">
+                <h1 class="mb-0" id="PageModalHeader"><span id="PageModalAction"></span> @localizer["AppConfigration"]</h1>
+            </div>
+            <div class="modal-body scroll-y pt-0">
+                <form id="PageForm" class="form Display">
+                    <input type="hidden" asp-for="ID" />
+                    <div class="row g-9 ">
+                        <div class="col-md-12">
+                            <div class="fv-row">
+                                <label asp-for="Name" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                </label>
+                                <input type="text" class="form-control form-control-solid" asp-for="Name" />
+                                <div class="fv-plugins-message-container invalid-feedback">
+                                    <span asp-validation-for="Name"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="py-5 pt-0">
+                        <div class="d-flex flex-column flex-md-row rounded border p-10">
+
+                            <ul class="nav nav-tabs nav-pills flex-row border-0 flex-md-column me-5 mb-3 mb-md-0 fs-6">
+                                <li class="nav-item me-0 mb-md-0">
+                                    <a class="nav-link btn btn-flex btn-active-light-success active" data-bs-toggle="tab" href="#UserSettingTab">
+                                        <i class="far fa-user"></i>
+                                        <span class="d-flex flex-column align-items-start">
+                                            <span class="fs-7">@localizer["User"]</span>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item me-0 mb-md-2">
+                                    <a class="nav-link btn btn-flex btn-active-light-info" data-bs-toggle="tab" href="#PasswordSettingTab">
+                                        <i class="fas fa-key"></i>
+                                        <span class="d-flex flex-column align-items-start">
+                                            <span class="fs-7">@localizer["Password"]</span>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item me-0 mb-md-2">
+                                    <a class="nav-link btn btn-flex btn-active-light-info" data-bs-toggle="tab" href="#AgeSettingTab">
+                                        <i class="fas fa-key"></i>
+                                        <span class="d-flex flex-column align-items-start">
+                                            <span class="fs-7">@localizer["Age"]</span>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item me-0 mb-md-2">
+                                    <a class="nav-link btn btn-flex btn-active-light-info" data-bs-toggle="tab" href="#EventSettingTab">
+                                        <i class="fas fa-key"></i>
+                                        <span class="d-flex flex-column align-items-start">
+                                            <span class="fs-7">@localizer["Event"]</span>
+                                        </span>
+                                    </a>
+                                </li>     
+                                <li class="nav-item me-0 mb-md-2">
+                                    <a class="nav-link btn btn-flex btn-active-light-info" data-bs-toggle="tab" href="#DistanceSettingTab">
+                                        <i class="fas fa-key"></i>
+                                        <span class="d-flex flex-column align-items-start">
+                                            <span class="fs-7">@localizer["Distance"]</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade active show" id="UserSettingTab" role="tabpanel">
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["UserNameLength"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="UserName_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserName_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="UserName_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserName_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["UserBioLength"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="UserBio_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserBio_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="UserBio_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserBio_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["I enjoy tags"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="UserTagM_MinNumber" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserTagM_MinNumber"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="UserTagM_MaxNumber" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserTagM_MaxNumber"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["I prefer to tags’ number"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="UserIPreferTo_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserIPreferTo_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="UserIPreferTo_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserIPreferTo_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["I am tags’ number"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="UserIAM_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserIAM_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="UserIAM_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserIAM_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["White Lable Code"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Length</span>
+                                                <input type="number" asp-for="WhiteLableCodeLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="WhiteLableCodeLength"></span>
+                                            </div>
+                                        </div>                                      
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="PasswordSettingTab" role="tabpanel">
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["PasswordLength"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="Password_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="Password_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="Password_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="Password_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["passwordspecialcharacters"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="Password_MinSpecialCharacters" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="Password_MinSpecialCharacters"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="Password_MaxSpecialCharacters" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="Password_MaxSpecialCharacters"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["passwordallowednumbers"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="Password_MinNumbers" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="Password_MinNumbers"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="Password_MaxNumbers" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="Password_MaxNumbers"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="AgeSettingTab" role="tabpanel">
+                                      <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["alloweduserage"]  </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="UserMinAge" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserMinAge"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="UserMaxAge" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="UserMaxAge"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["allowedagefiltering"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="AgeFiltering_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="AgeFiltering_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="AgeFiltering_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="AgeFiltering_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div class="tab-pane fade" id="EventSettingTab" role="tabpanel">
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["Event details description’s length"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="EventDetailsDescription_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventDetailsDescription_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="EventDetailsDescription_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventDetailsDescription_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div><div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["Event title’s length"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="EventTitle_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventTitle_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="EventTitle_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventTitle_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["Distance to show nearby events"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="DistanceShowNearbyEvents_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceShowNearbyEvents_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="DistanceShowNearbyEvents_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceShowNearbyEvents_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["EventTimeValidation"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="EventTimeValidation_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventTimeValidation_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="EventTimeValidation_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventTimeValidation_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["EventCreation"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="EventCreationLimitNumber_MinLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventCreationLimitNumber_MinLength"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="EventCreationLimitNumber_MaxLength" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="EventCreationLimitNumber_MaxLength"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="DistanceSettingTab" role="tabpanel">
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["alloweddistancefiltering"]</span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="DistanceFiltering_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceFiltering_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="DistanceFiltering_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceFiltering_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["allowedDistanceShowNearbyAccountsInFeed"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="DistanceShowNearbyAccountsInFeed_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceShowNearbyAccountsInFeed_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="DistanceShowNearbyAccountsInFeed_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceShowNearbyAccountsInFeed_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["Allowed distance to show events on map"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="DistanceShowNearbyEventsOnMap_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceShowNearbyEventsOnMap_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="DistanceShowNearbyEventsOnMap_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="DistanceShowNearbyEventsOnMap_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["Allowed distance for recommended people"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="RecommendedPeopleArea_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="RecommendedPeopleArea_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="RecommendedPeopleArea_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="RecommendedPeopleArea_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-9 mb-10 border border-gray-300">
+                                        <span class="d-flex flex-column align-items-left mt-0">
+                                            <span class="fs-7 fw-bolder pt-2">@localizer["Allowed distance for recommended event"] </span>
+                                        </span>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" asp-for="RecommendedEventArea_Min" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="RecommendedEventArea_Min"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 fv-row mt-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" asp-for="RecommendedEventArea_Max" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="RecommendedEventArea_Max"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+                <div class="text-end">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@localizer["Cancel"]</button>
+                    <button form="PageForm" type="submit" class="btn btn-primary">
+                        <span class="indicator-label">@localizer["Save"]</span>
+                        <span class="indicator-progress">
+                            @(localizer["PleaseWait"]+" ...")
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function RefreshPageDatatable() {
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAll",
+                Columns: [
+                    {
+                        "data": "Name"
+                    },
+                    {
+                        "className": "text-center",
+
+                        "data": "IsActive",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked = "checked";
+                            }
+                            let html = `<div class="form-check form-switch form-check-custom form-check-solid me-10">
+                                                            <input onchange="toogleActive(this,'${full.ID}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                        </div>`;
+                            return html;
+                        }
+                    },
+                    {
+                        "className": "text-center",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            data = ID ?? full.EntityId;
+                            let Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                                </a>`;
+                            //let Edit = `<a href="/admin/controlpanale/Edit?ID=${data}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            //        <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                            //    </a>`
+                            let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                                </a>`
+                            //let Details = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            //                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Detailss")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
+                            //                </a>`
+                            let hidden = `<input type="hidden" value="/admin/controlpanale/Edit?ID=${data}"/>`
+                            return Edit + Remove + hidden;
+                        },
+                    }
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", true, false);
+        }
+
+
+        function toogleActive(element, ID) {
+            
+            let isActive = $(element).is(":checked");
+            new swal({
+                title: getToken("alert"),
+                text: isActive == true ? getToken("confirmaciveconfigrationwithname") : getToken("confirmdeaciveconfigrationwithname"),
+                icon: "info",
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-info'
+                },
+                buttonsStyling: false,
+                showCancelButton: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete.value == true) {
+                        $.post(`/Admin/controlpanale/changeStatus?ID=${ID}&IsActive=${isActive}`, (res) => {
+                            if (res.Status = true) {
+                                ShowNotification("success", res.Message);
+                            }
+                            else {
+                                ShowNotification("error", "somthing goes wrong");
+                            }
+                            RefreshPageDatatable();
+
+                        })
+                    }
+                    else {
+                        //swal("Your imaginary file is safe!");
+                        $(element).prop("checked", !isActive)
+                        RefreshPageDatatable();
+
+                    }
+                });
+        }
+
+        $(document).ready(() => {
+            $(document).on('click', '#PageTable tr td:not(.text-center)', function () {
+                window.location.replace($(this).parents("tr").find('input[type="hidden"]').val())
+                //Do something
+            });
+       
+
+            RefreshPageDatatable();
+        })
+    </script>
+
+
+}

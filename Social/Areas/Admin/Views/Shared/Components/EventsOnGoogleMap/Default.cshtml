@@ -1,0 +1,38 @@
+﻿@model List<GoogleMapMarker>
+<script>
+        //Google Map
+
+        const Eventslocation = @Html.Raw(Json.Serialize(Model));
+            function initEventMap() {
+                const map_event = new google.maps.Map(document.getElementById("EventsMap"), {
+                zoom: 3,
+                center: { lat:@(ViewBag.CenterLatitude), lng: @(ViewBag.CenterLongitude) },
+            });
+            const infoWindow_events = new google.maps.InfoWindow({
+                content: "all application events location",
+                disableAutoPan: true,
+            });
+            // Create an array of alphabetical characters used to label the markers.
+                const labels_event = Eventslocation.map(x => x.displayName);
+           
+                const markers_events = Eventslocation.map((position, i) => {
+                    const label_event = labels_event[i % labels_event.length];
+                const marker_event = new google.maps.Marker({
+                    position,
+                    label_event,
+                });
+
+        
+                    marker_event.addListener("click", () => {
+                        infoWindow_events.setContent(label_event);
+                        infoWindow_events.open(map_event, marker_event);
+                });
+                    return marker_event;
+            });
+
+      
+                const markerCluster_event = new markerClusterer.MarkerClusterer({ map_event, markers_events });
+        }
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLmWYc00w0KZ-qj8hIymWCIs8K5Z0cG0g&callback=initEventMap&v=weekly" async></script>

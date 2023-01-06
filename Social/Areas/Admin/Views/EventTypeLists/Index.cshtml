@@ -1,0 +1,229 @@
+﻿@model EventTypeListVM
+@{
+    ViewData["Title"] = localizer["EventTypeLists"];
+    ViewData["PageTitle"] = localizer["EventTypeLists"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+    </style>
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <!--begin::Header-->
+    <div class="card-header align-items-center border-0 pt-5">
+
+        <div class="d-flex flex-shrink-0">
+
+            <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add a EventType">
+                <a href="javascript:OpenPageModal('0')" class="btn btn-sm btn-primary btn-active-light-primary">
+                    <span><i class="bi bi-plus fs-3"></i></span>
+                    @(localizer["Add"]+ " "+ localizer["EventType"] )
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body py-3">
+        <div class="table-responsive">
+            <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border rounded">
+                <thead class="bg-light">
+                    <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                        <th>#</th>
+                        <th>@Html.DisplayNameFor(x => x.Name)</th>
+                        <th>@Html.DisplayNameFor(x => x.color)</th>
+                        <th>@Html.DisplayNameFor(x => x.Privtekey)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="PageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+            <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                <form id="PageForm" class="form Display">
+                    <input type="hidden" asp-for="ID" />
+                    <input type="hidden" asp-for="EntityId" />
+
+                    <div class="mb-13 text-center">
+                        <h1 class="mb-3" id="PageModalHeader"><span id="PageModalAction"></span> @localizer["EventTypeList"]</h1>
+                    </div>
+                    <div class="row g-9 mb-8 align-content-center">
+                        <div class="col-md-6 fv-row">
+                            <label asp-for="Name" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="text" class="form-control form-control-solid" asp-for="Name" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="Name"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 fv-row">
+                            <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                hex code
+                            </label>
+                            <input type="text" class="form-control form-control-solid" onkeyup="ColorHexCodeKeyUp(this)" id="colorHexCode" />
+                        </div>
+                        <div class="col-md-3 fv-row">
+                            <label asp-for="color" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            </label>
+                            <input type="color" onchange="ColorInputChanged(this)"  class="form-control form-control-solid" asp-for="color" />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                                <span asp-validation-for="color"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <div class="form-check form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" asp-for="Privtekey" />
+                                <label class="form-check-label" asp-for="Privtekey">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@localizer["Cancel"]</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="indicator-label">@localizer["Save"]</span>
+                            <span class="indicator-progress">
+                                @(localizer["PleaseWait"]+" ...")
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        function ColorHexCodeKeyUp(el) {
+            let colorHexCode = $("#colorHexCode").val();
+            $("#color").val(colorHexCode);
+        }
+        function ColorInputChanged(el) {
+            
+            let color = $("#color").val();
+            $("#colorHexCode").val(color);
+        }
+        function RefreshPageDatatable() {
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAll",
+                Columns: [
+                    {
+                        "data": "Name"
+                    },
+                    {
+                        "data": "color",
+                        "render": function (data, ypet, full, meta) {
+                            let html = `<input disabled readonly type="color" value="${data}" class="" />`
+                            return html;
+                        }
+                    },
+                    {
+                        "data": "Privtekey",
+                        "className":"text-center",
+                        "render": function (data, ypet, full, meta) {
+                            return data == true ? `<i class="fas fa-check fs-5 text-dark"></i>` : `<i class="fas fa-times fs-5 text-dark"></i>`;
+                        }
+                    },
+                    {
+
+                        "data": "EntityId",
+                        "className": "text-center",
+                        "render": function (data, ypet, full, meta) {
+                            
+                            let Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                                </a>`
+                            let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                                </a>`
+                  
+                            return Edit + Remove;
+                        }
+                    }
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", true, false);
+        }
+        function uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        function ResetPageForm() {
+            $("#PageForm").trigger("reset");
+            $("#ID").val(0);
+            $("#colorHexCode").val("#000000");
+            $("#EntityId").val(uuidv4());
+            clearValidation("#PageForm");
+            $("#PageForm input[type='checkbox']").change();
+        }
+        function toogleActive(element, ID) {
+
+            let isActive = $(element).is(":checked");
+            new swal({
+                title: getToken("alert"),
+                text: isActive == true ? getToken("confirmaciveconfigrationwithname") : getToken("confirmdeaciveconfigrationwithname"),
+                icon: "info",
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-info'
+                },
+                buttonsStyling: false,
+                showCancelButton: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete.value == true) {
+                        $.post(`/Admin/EventTypeLists/changeStatus?ID=${ID}&IsActive=${isActive}`, (res) => {
+                            if (res.Status = true) {
+                                ShowNotification("success", res.Message);
+                            }
+                            else {
+                                ShowNotification("error", "somthing goes wrong");
+                            }
+                            RefreshPageDatatable();
+
+                        })
+                    }
+                    else {
+                        //swal("Your imaginary file is safe!");
+                        $(element).prop("checked", !isActive)
+                        RefreshPageDatatable();
+
+                    }
+                });
+        }
+        $(document).ready(() => {
+            $("#PageModal").on('show.bs.modal', function () {
+             
+            });
+            RefreshPageDatatable();
+        })
+    </script>
+
+
+}

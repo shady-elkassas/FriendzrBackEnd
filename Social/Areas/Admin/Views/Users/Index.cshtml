@@ -1,0 +1,403 @@
+﻿
+@{
+    ViewData["Title"] = localizer["Users"];
+    ViewData["PageTitle"] = localizer["Users"];
+    Layout = "~/Areas/Admin/Views/Shared/_Layoutcontrolpanel.cshtml";
+
+}
+@section Styless{
+    <style>
+        .form-check.form-check-solid .form-check-input:checked {
+            background-color: #00f78b !important;
+        }
+        /* padding-bottom and top for image */
+        .mfp-no-margins img.mfp-img {
+            padding: 0;
+        }
+        /* position of shadow behind the image */
+        .mfp-no-margins .mfp-figure:after {
+            top: 0;
+            bottom: 0;
+        }
+        /* padding for main container */
+        .mfp-no-margins .mfp-container {
+            padding: 0;
+        }
+
+
+        /*
+
+        for zoom animation
+        uncomment this part if you haven't added this code anywhere else
+
+        */
+
+
+        .mfp-with-zoom .mfp-container,
+        .mfp-with-zoom.mfp-bg {
+            opacity: 0;
+            -webkit-backface-visibility: hidden;
+            -webkit-transition: all 0.3s ease-out;
+            -moz-transition: all 0.3s ease-out;
+            -o-transition: all 0.3s ease-out;
+            transition: all 0.3s ease-out;
+        }
+
+        .mfp-with-zoom.mfp-ready .mfp-container {
+            opacity: 1;
+        }
+
+        .mfp-with-zoom.mfp-ready.mfp-bg {
+            opacity: 0.8;
+        }
+
+        .mfp-with-zoom.mfp-removing .mfp-container,
+        .mfp-with-zoom.mfp-removing.mfp-bg {
+            opacity: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+}
+<div class="card card-xl-stretch mb-5 mb-xl-8">
+    <div class="card-body py-3">
+        <div class="row g-9 mb-8">
+            <div class="col-md-12 fv-row">
+                <div class="text-center">
+                    <div class="form-check form-check-custom form-check-solid d-inline-block">
+                        <button onclick="AllowAdsForAll(true)" type="button" class="btn btn-light-success">
+                            <span class="indicator-label">Allow Ads For All Users</span>
+                            <span class="indicator-progress">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </span>
+                        </button>
+                    </div> 
+                    <div class="form-check form-check-custom form-check-solid d-inline-block">
+                        <button onclick="AllowAdsForAll(false)" type="button" class="btn btn-light-danger">
+                            <span class="indicator-label">Disallow Ads For All Users</span>
+                            <span class="indicator-progress">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+        <div class="table-responsive">
+            <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border cursor-pointer rounded">
+                <thead class="bg-light">
+                    <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                        <th>#</th>
+                        <th>@localizer["UserName"]</th>
+                        <th>@localizer["Gender"]</th>
+                        <th>@localizer["RegistrationDate"]</th>
+                        <th>@localizer["AllowAds"]</th>
+                        <th>@localizer["IsActive"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="UserReportsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+
+            <div class="modal-body scroll-y  pt-0">
+                <div class="mb-13 text-center">
+                    <h1 class="mb-3" > @localizer["User Reports"]</h1>
+                </div>
+                <div class="card-body py-3">
+                    <div class="table-responsive">
+                        <table id="UserReportsTable" class="table  table-row-bordered gy-5 gs-7 border rounded">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th class="w-50 mw-50 ">@localizer["Reporter"]</th>
+                                    <th>@localizer["ReportReason"]</th>
+                                    <th>@localizer["Message"]</th>
+                                    <th>@localizer["Date"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function RefreshPageDatatable() {
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAll",
+                Columns: [
+                    {
+                        "data": "UserName",
+                        "className": "d-flex align-items-center",
+                        "render": function (data, a, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+                            let hidden = `<input type="hidden" value="/admin/users/Userdetails?UserID=${full.ID}"/>`
+
+                            let ImageUrl = full.UserImage == null || full.UserImage == "" ? "/images/NoImageFound.jpg" : full.UserImage;
+                            let html = ` <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                                    <div class="symbol-label">
+<a class="image-magnific text-center" href="${ImageUrl}" title="User Image">
+                                                        <img src="${ImageUrl}"  alt="${full.UserName}" class="text-center w-100">
+
+              </a>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-gray-800 text-hover-primary mb-1">${full.UserName}</span>
+
+                                                    <span>${full.Email}</span>
+</div>`
+                            return html + hidden;
+                        }
+                    },
+                    { "data": "Gender" },
+                    { "data": "RegistrationDate" },
+
+
+                    {
+                        "data": "AllowAds",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked = "checked";
+                            }
+                            let html = `<div class="form-check form-switch form-check-custom form-check-solid me-10">
+                                                                                                    <input onchange="toogleAllowAds(this,'${full.ID}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                                                                </div>`;
+                            return html;
+                        }
+                    },  {
+                        "data": "IsActive",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked = "checked";
+                            }
+                            let html = `<div class="form-check form-switch form-check-custom form-check-solid me-10">
+                                                                                                    <input onchange="toogleActive(this,'${full.ID}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                                                                </div>`;
+                            return html;
+                        }
+                    },
+
+                    {
+                        "className": "text-center",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            data = ID ?? full.EntityId;
+                            //let Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            //                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                            //                </a>`
+                            let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                                                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                                                            </a>`
+                            let Details = `<a href="javascript:GetUserReports('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("UserReports")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
+                                                </a>`
+                            return Remove + Details;
+                        },
+                    },
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", true, false, () => {
+                $('.image-magnific').magnificPopup({
+                    type: 'image',
+                    closeOnContentClick: true,
+                    image: {
+                        verticalFit: false
+                    }
+                });
+            });
+        }
+        function GetUserReports(UserID) {
+            let DatatableConfigration = {
+                TableID: "#UserReportsTable",
+                Url: "/admin/Reports/GetUserReports?UserID=" + UserID,
+                Columns: [
+                    {
+                        "data": "CreatedBy_UserName",
+                        //"className": "d-flex align-items-center",
+                        "render": function (data, a, full, meta) {
+                            let ImageUrl = full.CreatedBy_ImageUrl == null || full.CreatedBy_ImageUrl == "" ? "/images/NoImageFound.jpg" : full.CreatedBy_ImageUrl;
+                            let html = ` <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                                    <div class="symbol-label">
+                                                        <img src="${ImageUrl}"  alt="${full.CreatedBy_UserName}" class="w-100">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-gray-800 text-hover-primary mb-1">${full.CreatedBy_UserName}</span>
+                                                    <span>${full.CreatedBy_Email}</span>
+                                                </div>`
+                            return html;
+                        }
+                    },
+                    { "data": "ReportReasonName" },
+                    { "data": "Message" },
+                    { "data": "RegistrationDateStr" },
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", true, false, () => {
+                //$('.image-magnific').magnificPopup({
+                //    type: 'image',
+                //    closeOnContentClick: true,
+                //    image: {
+                //        verticalFit: false
+                //    }
+                //});
+                $("#UserReportsModal").modal("show");
+
+            });
+        }
+        function toogleActive(element, ID) {
+
+            let isActive = $(element).is(":checked");
+            new swal({
+                title: getToken("alert"),
+                text: isActive == true ? getToken("confirmaciveconfigrationwithname") : getToken("confirmdeaciveconfigrationwithname"),
+                icon: "info",
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-info'
+                },
+                buttonsStyling: false,
+                showCancelButton: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete.value == true) {
+                        $.post(`/Admin/Users/changeStatus?ID=${ID}&IsActive=${isActive}`, (res) => {
+                            if (res.Status = true) {
+                                ShowNotification("success", res.Message);
+                            }
+                            else {
+                                ShowNotification("error", "somthing goes wrong");
+                            }
+                            RefreshPageDatatable();
+
+                        })
+                    }
+                    else {
+                        //swal("Your imaginary file is safe!");
+                        $(element).prop("checked", !isActive)
+                        RefreshPageDatatable();
+
+                    }
+                });
+        }
+        function AllowAdsForAll(AllowAds = true) {
+            new swal({
+                title: getToken("alert"),
+                text: AllowAds == true ? getToken("confirmAllowAdsForAllUsers") : getToken("confirmDisAllowAdsForAllUsers"),
+                icon: "info",
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-info'
+                },
+                buttonsStyling: false,
+                showCancelButton: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                    if (willDelete.value == true) {
+                        $.post(`/Admin/Users/AllowAdsForAll?AllowAds=${AllowAds}`, (res) => {
+                            if (res.Status = true) {
+                                ShowNotification("success", res.Message);
+                            }
+                            else {
+                                ShowNotification("error", "somthing goes wrong");
+                            }
+                            RefreshPageDatatable();
+
+                        })
+                    }
+                    else {
+                        
+                    }
+                });
+        }
+        function toogleAllowAds(element, ID) {
+            let AllowAds = $(element).is(":checked");
+            new swal({
+                title: getToken("alert"),
+                text: AllowAds == true ? getToken("confirmAllowAds") : getToken("confirmDisAllowAds"),
+                icon: "info",
+                confirmButtonText: getToken("Confirm"),
+                cancelButtonText: getToken("Cancele"),
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-info'
+                },
+                buttonsStyling: false,
+                showCancelButton: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete.value == true) {
+                        $.post(`/Admin/Users/changeAllowAdsStatus?ID=${ID}&AllowAds=${AllowAds}`, (res) => {
+                            if (res.Status = true) {
+                                ShowNotification("success", res.Message);
+                            }
+                            else {
+                                ShowNotification("error", "somthing goes wrong");
+                            }
+                            RefreshPageDatatable();
+
+                        })
+                    }
+                    else {
+                        //swal("Your imaginary file is safe!");
+                        $(element).prop("checked", !isActive)
+                        RefreshPageDatatable();
+
+                    }
+                });
+        }
+        $(document).ready(() => {
+            $('.image-magnific').magnificPopup({ type: 'image' });
+            $(document).on('click', '#PageTable tr td:not(.text-center)', function (e) {
+                if (e.target.tagName != "IMG" && e.target.type!="checkbox") {
+                    var win = window.open($(this).parents("tr").find('input[type="hidden"]').val(), '_blank');
+                    if (win) {
+                        win.focus();
+                    } else {
+                        alert('Please allow popups for this website');
+                    }
+                }
+              
+                //window.location.replace($(this).parents("tr").find('input[type="hidden"]').val())
+                //Do something
+            });
+            RefreshPageDatatable();
+        })
+    </script>
+
+
+}
