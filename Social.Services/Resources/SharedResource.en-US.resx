@@ -1,0 +1,558 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="401eror" xml:space="preserve">
+    <value>Sorry your session is expired, Please login again!</value>
+  </data>
+  <data name="AccounthasbeenDeleted" xml:space="preserve">
+    <value>Account has been Deleted</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>Added</value>
+  </data>
+  <data name="Age" xml:space="preserve">
+    <value>age</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AllDayIsRequired" xml:space="preserve">
+    <value>All day Is Required</value>
+  </data>
+  <data name="allowedagefiltering" xml:space="preserve">
+    <value>allowed age filtering</value>
+  </data>
+  <data name="alloweddistancefiltering" xml:space="preserve">
+    <value>allowed distance filtering</value>
+  </data>
+  <data name="allowedDistanceShowNearbyAccountsInFeed" xml:space="preserve">
+    <value>allowed distance show near by accounts InFeed</value>
+  </data>
+  <data name="alloweddistanceshowNearbyeventsonmap" xml:space="preserve">
+    <value>allowed distance  show Near by events on map</value>
+  </data>
+  <data name="alloweduserage" xml:space="preserve">
+    <value>allowed user age</value>
+  </data>
+  <data name="AlreadyExist" xml:space="preserve">
+    <value>AlreadyExist</value>
+  </data>
+  <data name="AppConfigration" xml:space="preserve">
+    <value>app Configuration</value>
+  </data>
+  <data name="AttendeesNumbershouldnotbelessthan2" xml:space="preserve">
+    <value>Attendees Number should not be less than 2</value>
+  </data>
+  <data name="AttendsCount" xml:space="preserve">
+    <value>AttendsCount</value>
+  </data>
+  <data name="back" xml:space="preserve">
+    <value>back</value>
+  </data>
+  <data name="CanNotAddMoreThan" xml:space="preserve">
+    <value>Can Not Add More Than</value>
+  </data>
+  <data name="CategoryIsRequired" xml:space="preserve">
+    <value>Category Is Required</value>
+  </data>
+  <data name="CheckOutDetailsIsRequired" xml:space="preserve">
+    <value>Check Out Details Is Required</value>
+  </data>
+  <data name="checkyourE-mailorpassword!" xml:space="preserve">
+    <value>Sorry, please check your E-mail or password!</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="codeincorrect" xml:space="preserve">
+    <value>Sorry, the code you entered is incorrect</value>
+  </data>
+  <data name="codeinvalid" xml:space="preserve">
+    <value>Sorry, the code you entered is now invalid!</value>
+  </data>
+  <data name="CodeNotCorrect" xml:space="preserve">
+    <value>University code isn't correct</value>
+  </data>
+  <data name="codesentsuccessfully" xml:space="preserve">
+    <value>The code has been sent successfully</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="ConfigrationName" xml:space="preserve">
+    <value>Configuration name</value>
+  </data>
+  <data name="controlpanale" xml:space="preserve">
+    <value>Control Panal</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="CreatDateisrequired" xml:space="preserve">
+    <value>Creat Date is required</value>
+  </data>
+  <data name="CreatedTimeIsRequired" xml:space="preserve">
+    <value>Created Time Is Required</value>
+  </data>
+  <data name="descriptionismustNotmorethan150characters." xml:space="preserve">
+    <value>Description must not exceed 150 characters.</value>
+  </data>
+  <data name="DescriptionIsRequired" xml:space="preserve">
+    <value>Description Is Required</value>
+  </data>
+  <data name="DisplayName" xml:space="preserve">
+    <value>DisplayName</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="DistanceShowNearbyEvents" xml:space="preserve">
+    <value>Distance Show Near by Events</value>
+  </data>
+  <data name="DONE" xml:space="preserve">
+    <value>It was completed</value>
+  </data>
+  <data name="editappconfigration" xml:space="preserve">
+    <value>edit application configration</value>
+  </data>
+  <data name="emailexists" xml:space="preserve">
+    <value>!Sorry, the email already exists</value>
+  </data>
+  <data name="emailhasnotconfirmed" xml:space="preserve">
+    <value>this email is not verified, please go to your mail inbox to verify it then login</value>
+  </data>
+  <data name="emailincorrect" xml:space="preserve">
+    <value>Sorry, the email is incorrect !</value>
+  </data>
+  <data name="Emailisrequired" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="EventCategories" xml:space="preserve">
+    <value>Event Categories</value>
+  </data>
+  <data name="EventCategory" xml:space="preserve">
+    <value>Event Category</value>
+  </data>
+  <data name="EventCreation" xml:space="preserve">
+    <value>event creation limite</value>
+  </data>
+  <data name="EventData" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="EventDataReqired" xml:space="preserve">
+    <value>Event Data Reqired</value>
+  </data>
+  <data name="EventdatemustNotinthepast" xml:space="preserve">
+    <value>Event date must Not in the past and Not after one year from now.</value>
+  </data>
+  <data name="Eventdetailsdescription" xml:space="preserve">
+    <value>event details description</value>
+  </data>
+  <data name="EventDetailsDescriptionMaxLengthIs" xml:space="preserve">
+    <value>Event Details Description Max Length Is</value>
+  </data>
+  <data name="EventDetailsDescriptionMinLengthIs" xml:space="preserve">
+    <value>Event Details Description Min Length Is</value>
+  </data>
+  <data name="EventImageIsRequired" xml:space="preserve">
+    <value>Event Image Is Required</value>
+  </data>
+  <data name="EventstartdatemustNotolderthanEventenddate" xml:space="preserve">
+    <value>Event start date must Not older than Event end date</value>
+  </data>
+  <data name="EventstarttimemustNotolderthanEventendtime" xml:space="preserve">
+    <value>Event start time must Not older than Event end time</value>
+  </data>
+  <data name="EventTilte" xml:space="preserve">
+    <value>Event Tilte</value>
+  </data>
+  <data name="EventTimeValidation" xml:space="preserve">
+    <value>event time validation (H)</value>
+  </data>
+  <data name="EventTitleMaxLengthIs" xml:space="preserve">
+    <value>Event Title Max Length is</value>
+  </data>
+  <data name="EventTitleMinLengthIs" xml:space="preserve">
+    <value>Event  Title Min Length is</value>
+  </data>
+  <data name="EventType" xml:space="preserve">
+    <value>Event Type</value>
+  </data>
+  <data name="EventTypeLists" xml:space="preserve">
+    <value>Event Types</value>
+  </data>
+  <data name="FinishedRegistration" xml:space="preserve">
+    <value>Finished Registration</value>
+  </data>
+  <data name="GoogleName" xml:space="preserve">
+    <value>GoogleName</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Iam" xml:space="preserve">
+    <value>I am</value>
+  </data>
+  <data name="Ienjoy" xml:space="preserve">
+    <value>I enjoy</value>
+  </data>
+  <data name="InvalidNumber" xml:space="preserve">
+    <value>Invalid Number</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>is active</value>
+  </data>
+  <data name="JsonFileIsEmpty" xml:space="preserve">
+    <value>Json File Is Empty</value>
+  </data>
+  <data name="JsonFileIsReqired" xml:space="preserve">
+    <value>Json File Is Reqired</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LocationsIsRequired" xml:space="preserve">
+    <value>Locations Is Required</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Log In</value>
+  </data>
+  <data name="mailconfirmed" xml:space="preserve">
+    <value>The email has been confirmed successfully</value>
+  </data>
+  <data name="MaxCount" xml:space="preserve">
+    <value>maximum count</value>
+  </data>
+  <data name="Maximumallowedeventperiod" xml:space="preserve">
+    <value>Maximum allowed event period is one month</value>
+  </data>
+  <data name="MinCount" xml:space="preserve">
+    <value>minimum count</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="newpassword" xml:space="preserve">
+    <value>Please enter the new password !</value>
+  </data>
+  <data name="NotAdded" xml:space="preserve">
+    <value>Not Added</value>
+  </data>
+  <data name="NotLogin" xml:space="preserve">
+    <value>Please Relogin again!</value>
+  </data>
+  <data name="NotValidEmail" xml:space="preserve">
+    <value>Not Valid Email</value>
+  </data>
+  <data name="NumberMoreThan" xml:space="preserve">
+    <value>number must be more than {0}</value>
+  </data>
+  <data name="NumberOfInterests" xml:space="preserve">
+    <value>Number of #interests# tags must not be less than 4.</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>password</value>
+  </data>
+  <data name="passwordallowednumbers" xml:space="preserve">
+    <value>password allowed numbers</value>
+  </data>
+  <data name="Passwordchangedsuccessfully" xml:space="preserve">
+    <value>Password changed successfully</value>
+  </data>
+  <data name="PasswordContent" xml:space="preserve">
+    <value>Password should be a combination of letters and numbers.</value>
+  </data>
+  <data name="Passwordfieldisemptyitismusthavevalue" xml:space="preserve">
+    <value>Password field is empty it is must have value</value>
+  </data>
+  <data name="PasswordIsRequired" xml:space="preserve">
+    <value>Password is Required</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>password length</value>
+  </data>
+  <data name="Passwordmusthavemorethan8charactersandlessthan32characters" xml:space="preserve">
+    <value>Password must have more than 8 characters and less than 32 characters</value>
+  </data>
+  <data name="passwordspecialcharacters" xml:space="preserve">
+    <value>password special characters</value>
+  </data>
+  <data name="passwordvalid" xml:space="preserve">
+    <value>Sorry, the password must not be less than 8 letters or numbers!</value>
+  </data>
+  <data name="Pleaseenterthecurrentpassword!" xml:space="preserve">
+    <value>Please enter the current password!</value>
+  </data>
+  <data name="Pleaseenterthenewpassword!" xml:space="preserve">
+    <value>Please enter the new password!</value>
+  </data>
+  <data name="Pleasere-login" xml:space="preserve">
+    <value>Please re-login</value>
+  </data>
+  <data name="PleaseSelectAttendeesForYourEvent" xml:space="preserve">
+    <value>Please select attendees for your event</value>
+  </data>
+  <data name="Privtekey" xml:space="preserve">
+    <value>Privte key</value>
+  </data>
+  <data name="PushNotfication" xml:space="preserve">
+    <value>Push Notfication</value>
+  </data>
+  <data name="ReportReason" xml:space="preserve">
+    <value>Report Reason</value>
+  </data>
+  <data name="ReportReasons" xml:space="preserve">
+    <value>Report Reasons</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="SelectOption" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="Sorry,Therearenoplaces" xml:space="preserve">
+    <value>Sorry , There are no places</value>
+  </data>
+  <data name="Sorry,Therearenoplaces!" xml:space="preserve">
+    <value>Sorry , There are no places!</value>
+  </data>
+  <data name="StartAndEndDateIsRequired" xml:space="preserve">
+    <value>Start And End Date Is Required</value>
+  </data>
+  <data name="StartAndEndTimeIsRequired" xml:space="preserve">
+    <value>Start And End Time Is Required</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="String2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="String3" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="String4" xml:space="preserve">
+    <value />
+  </data>
+  <data name="successfullyregistered" xml:space="preserve">
+    <value>successfully registered</value>
+  </data>
+  <data name="SuccessfulSent" xml:space="preserve">
+    <value>Successful Sent</value>
+  </data>
+  <data name="Theeventdoesnotbelongtoyou" xml:space="preserve">
+    <value>The event does not belong to you</value>
+  </data>
+  <data name="ThisEventAlreadyExists" xml:space="preserve">
+    <value>This Event Already Exists</value>
+  </data>
+  <data name="TitleIsRequired" xml:space="preserve">
+    <value>Title Is Required</value>
+  </data>
+  <data name="TitlemustNotmorethan32characters." xml:space="preserve">
+    <value>Title must not exceed 32 characters.</value>
+  </data>
+  <data name="TotalNumberIsRequired" xml:space="preserve">
+    <value>Total Number Is Required</value>
+  </data>
+  <data name="TotalNumbermustnottobemorethan5000" xml:space="preserve">
+    <value>Total Number must  not to be more than 5000</value>
+  </data>
+  <data name="UnfinishedRegistration" xml:space="preserve">
+    <value>Unfinished Registration</value>
+  </data>
+  <data name="UpdatedSuccessfully" xml:space="preserve">
+    <value>Updated Successfully</value>
+  </data>
+  <data name="updateprofiledata" xml:space="preserve">
+    <value>Your data has been changed successfully !</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="UserAllowedTags" xml:space="preserve">
+    <value>user allowed tags</value>
+  </data>
+  <data name="UserBioLength" xml:space="preserve">
+    <value>user bio length</value>
+  </data>
+  <data name="userdoesnotexist" xml:space="preserve">
+    <value>Sorry, this user does not exist!</value>
+  </data>
+  <data name="useridinvalid" xml:space="preserve">
+    <value>Sorry, the userid you entered is now invalid!</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>user name</value>
+  </data>
+  <data name="UserNameexists" xml:space="preserve">
+    <value>Sorry, the UserName number already exists !</value>
+  </data>
+  <data name="usernamefieldisemptyitismusthavevalue" xml:space="preserve">
+    <value>user name field is empty it is must have value</value>
+  </data>
+  <data name="UserNameLength" xml:space="preserve">
+    <value>user name length</value>
+  </data>
+  <data name="Usernamemusthavemorethan2charactersandlessthan32characters" xml:space="preserve">
+    <value>Username must be at least 2 characters and at most 32 characters.</value>
+  </data>
+  <data name="UserReports" xml:space="preserve">
+    <value>User Reports</value>
+  </data>
+  <data name="Youarealreadysubscribed" xml:space="preserve">
+    <value>You are already subscribed</value>
+  </data>
+  <data name="YouareBlocked" xml:space="preserve">
+    <value>You are Blocked</value>
+  </data>
+  <data name="Youarenotsubscribed" xml:space="preserve">
+    <value>You are not subscribed</value>
+  </data>
+  <data name="YouhavesuccessfullyleaveEvent" xml:space="preserve">
+    <value> You have successfully left this event</value>
+  </data>
+  <data name="YouhavesuccessfullyReturntoevent" xml:space="preserve">
+    <value>You have successfully Return to event</value>
+  </data>
+  <data name="Youhavesuccessfullysubscribedtoevent" xml:space="preserve">
+    <value>You have successfully subscribed to event</value>
+  </data>
+  <data name="YourEventhasbeenAddedsuccessfully" xml:space="preserve">
+    <value>Your Event has been Added successfully</value>
+  </data>
+  <data name="YourEventhasbeenDeletedsuccessfully" xml:space="preserve">
+    <value>Your Event has been Deleted successfully</value>
+  </data>
+  <data name="YourEventhasbeenUpdatedsuccessfully" xml:space="preserve">
+    <value>Your Event has been Updated successfully</value>
+  </data>
+</root>

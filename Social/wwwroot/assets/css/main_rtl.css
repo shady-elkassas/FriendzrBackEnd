@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap');
+
+html, body {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px !important;
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: left;
+}
+table.dataTable > thead > tr > td:not(.sorting_disabled), table.dataTable > thead > tr > th:not(.sorting_disabled) {
+    padding-right: 0.75rem;
+}
+
+/* table */
+table.dataTable td, table.dataTable th {
+    border-left: 1px solid #EFF2F5 !important;
+    border-right: 0 !important;
+}
+table.dataTable td:last-child, table.dataTable th:last-child {
+    border-left: 0 !important;
+}
+
+/* select2 */
+.select2-container--open .select2-dropdown {
+    transform: translate(100%, 0);
+}
+
+/* Info Details List */
+.info-details-list > .list-group-item:nth-child(odd):after {
+    left: -4%;
+    right: auto;
+}

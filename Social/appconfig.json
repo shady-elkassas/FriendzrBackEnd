@@ -1,0 +1,49 @@
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning",
+        "System.Net.Http.HttpClient": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Async",
+        "Args": {
+          "configure": [
+            {
+              "Name": "Console",
+              "Args": {
+                "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+                "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} <s:{SourceContext}>{NewLine}{Exception}"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Name": "Async",
+        "Args": {
+          "configure": [
+            {
+              "Name": "File",
+              "Args": {
+                "path": "logs/log.txt",
+                "formatter": "Serilog.Formatting.Json.JsonFormatter",
+                "rollingInterval": "Day",
+                "retainedFileCountLimit": 7,
+                "buffered": true
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId", "WithThreadName" ],
+    "Properties": {
+      "Application": "AspNetCoreSerilogDemo"
+    }
+  }
+}

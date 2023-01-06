@@ -1,0 +1,17 @@
+﻿{
+  "Confirm": "تاكيد",
+  "Cancel": "الغاء",
+  "Add": "اضافه",
+  "Edit": "تعديل",
+  "Save": "حفظ",
+  "Cancele": "الغاء",
+  "SendNotificationToSelectedUsers": "ارسال اشعار للمستخدمين",
+  "AreYouShure": "هل انت متاكد",
+  "RemoveConfirmation": "تاكيد",
+  "alert": "تنبيه",
+  "NotificationBody": "محتوي الاشعار",
+  "PleaseSelectAtLeastOneUser": "برجاء اختيار مستخدم واحد علي الاقل",
+  "AppConfigration": "اعدادات",
+  "confirmaciveconfigrationwithname": "تاكيد تفعيل الاعداد ب اسم ",
+  "confirmdeaciveconfigrationwithname": "تاكيد الغاء تفعيل الاعداد ب اسم "
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "87922557452",
+    "project_id": "baitwatan-fb724",
+    "storage_bucket": "baitwatan-fb724.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87922557452:android:ed8008233c2ae7dc0aa429",
+        "android_client_info": {
+          "package_name": "com.example.bait_watan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "87922557452-f9vn2b76bvi5gkqch5c411370tohlbkq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgVJXNvkAytbp6IZzU28Zh0RtUl_A3lJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "87922557452-f9vn2b76bvi5gkqch5c411370tohlbkq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

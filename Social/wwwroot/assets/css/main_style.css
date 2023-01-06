@@ -1,0 +1,109 @@
+/* Filepond */
+.upload-file-div .filepond--drip {
+    opacity: 1;
+    border: 1px dashed #9c9c9c;
+}
+
+.filepond--root {
+    cursor: pointer
+}
+
+.filepond--drop-label label {
+    cursor: pointer;
+}
+
+.upload-img .filepond--drip {
+    opacity: 1;
+    border: 1px dashed #333;
+}
+
+.upload-img label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* table */
+table.dataTable td, table.dataTable th {
+    border-right: 1px solid #EFF2F5 !important;
+    border-left: 0 !important;
+}
+table.dataTable td:last-child, table.dataTable th:last-child {
+    border-right: 0 !important;
+}
+
+
+.toolbar h1 {
+    font-weight: 700 !important;
+}
+#kt_content_container .card-header a.btn-icon i {
+    color: #818493;
+}
+.modal [data-bs-dismiss] i {
+    color: red !important;
+    font-size: 20px;
+}
+.modal .modal-body button[data-bs-dismiss] {
+    background-color: #F1416C;
+    border-color: #F1416C;
+    color: #fff;
+}
+.modal .modal-body button[data-bs-dismiss]:hover {
+    background-color: #D9214E !important;
+    border-color: #D9214E !important;
+    color: #fff;
+}
+.select2-container--bootstrap5 .select2-dropdown .select2-results__option.select2-results__option--highlighted {
+    background-color: #9cd9fb;
+    color: #5E6278;
+}
+#toastr-container .toastr {
+    width:35rem;
+}
+div .flatpickr-calendar {
+    top: 0 !important;
+    left: 0 !important;
+    /*position:relative;*/
+}
+
+/* Info Details List */
+.info-details-list > .list-group-item {
+    width: 48%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 0;
+    position: relative;
+}
+.info-details-list > .list-group-item:nth-child(odd):after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -4%;
+    background-color: #ddd;
+    width: 1px;
+    height: 100%;
+}
+.info-details-list > .list-group-item span.btn {
+    margin: 0;
+    padding: 0 !important;
+}
+@media(max-width: 767px) {
+    .info-details-list > .list-group-item {
+        width: 100%;
+    }
+    .info-details-list > .list-group-item:nth-child(odd):after {
+        display: none;
+    }
+}
+#swal2-html-container {
+    overflow: hidden;
+}
+
+.swal2-icon.swal2-info {
+    border-color: #428159 !important;
+    color: #43825a !important;
+}
+
+.swal2-styled.swal2-confirm {
+    background-color: #43825a !important;
+}

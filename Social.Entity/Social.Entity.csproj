@@ -1,0 +1,112 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20211215211841_intial2.cs" />
+    <Compile Remove="Migrations\20211215211841_intial2.Designer.cs" />
+    <Compile Remove="Migrations\20211215212244_intial2.cs" />
+    <Compile Remove="Migrations\20211215212244_intial2.Designer.cs" />
+    <Compile Remove="Migrations\20211215212445_intial2.cs" />
+    <Compile Remove="Migrations\20211215212445_intial2.Designer.cs" />
+    <Compile Remove="Migrations\20211216165918_Cascade.cs" />
+    <Compile Remove="Migrations\20211216165918_Cascade.Designer.cs" />
+    <Compile Remove="Migrations\20211216183249_Cascade.cs" />
+    <Compile Remove="Migrations\20211216183249_Cascade.Designer.cs" />
+    <Compile Remove="Migrations\20211218111212_testmmig.cs" />
+    <Compile Remove="Migrations\20211218111212_testmmig.Designer.cs" />
+    <Compile Remove="Migrations\20211228191925_AddRegistrationDate.cs" />
+    <Compile Remove="Migrations\20211228191925_AddRegistrationDate.Designer.cs" />
+    <Compile Remove="Migrations\20211229202729_addappconfigrations.cs" />
+    <Compile Remove="Migrations\20211229202729_addappconfigrations.Designer.cs" />
+    <Compile Remove="Migrations\20211229202843_addappconfigrations.cs" />
+    <Compile Remove="Migrations\20211229202843_addappconfigrations.Designer.cs" />
+    <Compile Remove="Migrations\20211229203027_addappconfigrations.cs" />
+    <Compile Remove="Migrations\20211229203027_addappconfigrations.Designer.cs" />
+    <Compile Remove="Migrations\20211230210333_editappconfig.cs" />
+    <Compile Remove="Migrations\20211230210333_editappconfig.Designer.cs" />
+    <Compile Remove="Migrations\20211230211108_editappconfig.cs" />
+    <Compile Remove="Migrations\20211230211108_editappconfig.Designer.cs" />
+    <Compile Remove="Migrations\20211230211202_editappconfig.cs" />
+    <Compile Remove="Migrations\20211230211202_editappconfig.Designer.cs" />
+    <Compile Remove="Migrations\20220103215647_adddReporteason.cs" />
+    <Compile Remove="Migrations\20220103215647_adddReporteason.Designer.cs" />
+    <Compile Remove="Migrations\20220103220913_adddReporteason2.cs" />
+    <Compile Remove="Migrations\20220103220913_adddReporteason2.Designer.cs" />
+    <Compile Remove="Migrations\20220104201628_addreportforeventanduser.cs" />
+    <Compile Remove="Migrations\20220104201628_addreportforeventanduser.Designer.cs" />
+    <Compile Remove="Migrations\20220104220415_UpdateInterestes2.cs" />
+    <Compile Remove="Migrations\20220104220415_UpdateInterestes2.Designer.cs" />
+    <Compile Remove="Migrations\20220104224027_UpdateInterestes2.cs" />
+    <Compile Remove="Migrations\20220104224027_UpdateInterestes2.Designer.cs" />
+    <Compile Remove="Migrations\20220220222816_editrole.cs" />
+    <Compile Remove="Migrations\20220220222816_editrole.Designer.cs" />
+    <Compile Remove="Migrations\20220321201809_eventtype2.cs" />
+    <Compile Remove="Migrations\20220321201809_eventtype2.Designer.cs" />
+    <Compile Remove="Migrations\20220321202315_typenullp.cs" />
+    <Compile Remove="Migrations\20220321202315_typenullp.Designer.cs" />
+    <Compile Remove="Migrations\20220321215943_updatedas.cs" />
+    <Compile Remove="Migrations\20220321215943_updatedas.Designer.cs" />
+    <Compile Remove="Migrations\20220403225626_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403225626_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403225900_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403225900_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403230137_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403230137_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403230822_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403230822_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403230923_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403230923_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403231356_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403231356_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403231603_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403231603_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403231726_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403231726_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403232045_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403232045_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220403232228_adduserrole.cs" />
+    <Compile Remove="Migrations\20220403232228_adduserrole.Designer.cs" />
+    <Compile Remove="Migrations\20220720073215_test.cs" />
+    <Compile Remove="Migrations\20220720073215_test.Designer.cs" />
+    <Compile Remove="Migrations\20220720073813_Trrr.cs" />
+    <Compile Remove="Migrations\20220720073813_Trrr.Designer.cs" />
+    <Compile Remove="Migrations\20220828181116_AddNewTablesForRecommendedPeopleAndEvents.cs" />
+    <Compile Remove="Migrations\20220828181116_AddNewTablesForRecommendedPeopleAndEvents.Designer.cs" />
+    <Compile Remove="Migrations\20220828181929_AddNewTablesForRecommendedPeopleAndEvents.cs" />
+    <Compile Remove="Migrations\20220828181929_AddNewTablesForRecommendedPeopleAndEvents.Designer.cs" />
+    <Compile Remove="Migrations\20220918172907_AddIsWhiteLabelInUserDetail.cs" />
+    <Compile Remove="Migrations\20220918172907_AddIsWhiteLabelInUserDetail.Designer.cs" />
+    <Compile Remove="Migrations\20220918173132_AddDefaultValueForIsWhiteLabel.cs" />
+    <Compile Remove="Migrations\20220918173132_AddDefaultValueForIsWhiteLabel.Designer.cs" />
+    <Compile Remove="Migrations\20221204101940_MessagesandchatattendConstaraint.cs" />
+    <Compile Remove="Migrations\20221204101940_MessagesandchatattendConstaraint.Designer.cs" />
+    <Compile Remove="Migrations\20230102091846_cascadeDeleteeventchatattent.cs" />
+    <Compile Remove="Migrations\20230102091846_cascadeDeleteeventchatattent.Designer.cs" />
+    <Compile Remove="Migrations\20230102101834_eventdatawithuserdetails.cs" />
+    <Compile Remove="Migrations\20230102101834_eventdatawithuserdetails.Designer.cs" />
+    <Compile Remove="Migrations\20230102113103_eventdatawithuserdetails.cs" />
+    <Compile Remove="Migrations\20230102113103_eventdatawithuserdetails.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Models\ChatGroupSubscribers.cs~RFe47637a.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

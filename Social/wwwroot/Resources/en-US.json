@@ -1,0 +1,20 @@
+﻿{
+  "Confirm": "Confirm",
+  "Cancele": "Cancel",
+  "Add": "Add",
+  "Edit": "Edit",
+  "SendNotificationToSelectedUsers": "SendNotificationToSelectedUsers",
+  "Save": "Save",
+
+  "AreYouShure": "Are You sure",
+  "RemoveConfirmation": "Remove Confirmation",
+  "alert": "alert",
+  "NotificationBody": "Notification Body",
+  "PleaseSelectAtLeastOneUser": "Please Select AtLeast One User",
+  "AppConfigration": "app configration",
+  "confirmaciveconfigrationwithname": "confirm acive Configuration with name ",
+  "confirmdeaciveconfigrationwithname": "confirm deacive Configuration with name "
+
+
+
+}
