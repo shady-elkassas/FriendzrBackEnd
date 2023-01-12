@@ -110,7 +110,7 @@ namespace Social.Areas.WhiteLable.Controllers
             }
             else
             {
-               bool isCorrect= this.CheckListOfDate(new { eventdateList= model.eventdateList, eventdatetoList=model.eventdatetoList });
+               bool isCorrect= this.CheckListOfDate(new { eventdateList= model.eventdateList, eventdatetoList=model.eventdatetoList },model.eventfrom,model.eventto,model.allday);
 
                 if(!isCorrect)
                 {
@@ -149,6 +149,8 @@ namespace Social.Areas.WhiteLable.Controllers
                             Messagestime = DateTime.Now.TimeOfDay
                         }, userData);
                     }
+
+                    Result= CommonResponse<EventDataadminMV>.GetResult(200, true, _localizer["SavedSuccessfully"]);
                 }
                
                 
@@ -157,7 +159,7 @@ namespace Social.Areas.WhiteLable.Controllers
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
         }
 
-        private bool CheckListOfDate(dynamic dateList)
+        private bool CheckListOfDate(dynamic dateList, TimeSpan? from, TimeSpan? to, bool? allday)
         {  
             var eventtolist= (List<DateTime>)dateList.eventdatetoList;
             if(((List<DateTime>)dateList.eventdateList).Count ==0 || ((List<DateTime>)dateList.eventdateList).Count != eventtolist.Count)
@@ -168,15 +170,20 @@ namespace Social.Areas.WhiteLable.Controllers
            {
                 if(value != null && eventtolist[i] !=null)
                 {
-                    var isNotCorrect = value.Date.Subtract(DateTime.Now).TotalDays < 1 || eventtolist[i].Date.Subtract(DateTime.Now.Date).TotalDays < 1
-                                     || eventtolist[i].Date.Subtract(value.Date).TotalDays < 1;
-                    if (isNotCorrect)
+                    var isCorrect = value.Date.Subtract(DateTime.Now.Date).TotalDays >0 && eventtolist[i].Date.Subtract(DateTime.Now.Date).TotalDays > 0
+                                     && eventtolist[i].Date.Subtract(value.Date).TotalDays >=0;
+                  
+                    var isInSameDay = (value.Date.Subtract(DateTime.Now.Date).TotalDays == 0 && eventtolist[i].Date.Subtract(DateTime.Now.Date).TotalDays > 0)
+                        || ((value.Date.Subtract(DateTime.Now.Date).TotalDays == 0 && eventtolist[i].Date.Subtract(DateTime.Now.Date).TotalDays >= 0 && allday == false &&
+                        to?.Subtract(from.Value).TotalHours > 1));
+                    if (isCorrect || isInSameDay)
                     {
-                        return false;
+                        //return false;
+                        continue;
                     }
                     else
                     {
-                        continue;
+                        return false ;
                     }
                 }
                 return false;
@@ -199,7 +206,7 @@ namespace Social.Areas.WhiteLable.Controllers
             {
                 model.eventdatetoList = new List<DateTime>() { model.eventdatetoList.FirstOrDefault() };
                 model.eventdateList = new List<DateTime>() { model.eventdateList.FirstOrDefault() };
-                bool isCorrect = this.CheckListOfDate(new { eventdateList = model.eventdateList, eventdatetoList = model.eventdatetoList });
+                bool isCorrect = this.CheckListOfDate(new { eventdateList = model.eventdateList, eventdatetoList = model.eventdatetoList }, model.eventfrom, model.eventto, model.allday);
 
                 if (!isCorrect)
                 {

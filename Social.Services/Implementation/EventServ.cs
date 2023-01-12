@@ -1501,29 +1501,7 @@ namespace Social.Services.Implementation
                 await _authContext.SaveChangesAsync();
                 var Obj = ObjectList.FirstOrDefault();
                 var createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
-                
-                //await UpdateEventAddressFromGoogle(Obj);
-               // createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
-
-               // createdEvents = createdEvents.Skip(1).ToList();
-               
-                //foreach (var obj in createdEvents)
-                //{
-                //    try
-                //    {
-                //        obj.CountryID = Obj.CountryID;
-                //        obj.CityID = Obj.CityID;
-                //        _authContext.EventData.Update(obj);                      
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        continue;
-                //    }
-                //}
-                // to make sure from changes were happened
-                //await _authContext.SaveChangesAsync();
-               // createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
-             
+                           
                 foreach (var obj in createdEvents)
                     {
                         try
@@ -1563,18 +1541,6 @@ namespace Social.Services.Implementation
 
         public async Task<CommonResponse<EventDataadminMV>> Edit(EventDataadminMV VM)
         {
-            //var ObjectList = Converter(VM);
-            //await _authContext.EventData.AddRangeAsync(ObjectList);
-            //foreach (var obj in ObjectList)
-            //{
-            //    await UpdateEventAddressFromGoogle(obj);
-            //    await _authContext.SaveChangesAsync();
-            //    var a = await InsertEventChatAttend(new EventChatAttend { Jointime = DateTime.Now.TimeOfDay, EventDataid = obj.Id, UserattendId = httpContextAccessor.HttpContext.GetUser().User.UserDetails.PrimaryId, JoinDate = DateTime.Now.Date, ISAdmin = true });
-            //    VM.Id = a.Id;
-            //}
-
-         
-
             try
             {
                 var ObjectList = Converter(VM);

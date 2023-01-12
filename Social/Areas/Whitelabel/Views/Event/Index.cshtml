@@ -275,13 +275,13 @@
                                 <div class="col-md-6 fv-row"> </div>
                               <div class="col-md-6 fv-row">                                    
                               <button type="button"  class="btn btn-light me-3" id="addTime" onclick="appearDateRow();">Add New Date +</button>  
-                              <button type="button"  class="btn btn-light me-3" id="removeTime" onclick="DisappearDateRow();">Remove Date -</button>
+                              
                                </div>
                               
                              @for(int i=0; i<10;i++)
                                 {   
                                     <div class="col-md-12 fv-row div_float" >                                 
-                                    <div class="col-md-6" id="eventdatedev@i">
+                                    <div class="col-md-4" id="eventdatedev@i">
                                     <div class="col-md-11 fv-row">
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                             Event Date From
@@ -292,7 +292,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6" id="eventdatetodev@i">
+                                <div class="col-md-4" id="eventdatetodev@i">
                                     <div class="col-md-11 fv-row">
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                             Event Date To
@@ -302,6 +302,12 @@
                                             <span asp-validation-for="eventdatetoList"></span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="d-flex align-items-center fs-6 fw-bold mb-2" style="color:white">
+                                           Delete
+                                        </label>
+                                    <button type="button"  class="btn btn-light me-3" id="removeTime" onclick="DisappearDateRow();">Delete</button>
                                 </div>
                                </div>
                                 }
@@ -355,7 +361,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label asp-for="ImageFile" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                    <label asp-for="ImageFile" class="d-flex align-items-center fs-6 fw-bold mb-2">                                    
                                     </label>
 
                                     <input type="file" accept="image/*" class="form-control form-control-solid" asp-for="ImageFile" />
@@ -421,11 +427,7 @@
                 });
             });
 
-            hideDiv();
-            $(".bi-pencil-fill a").click(function() {
-                console.log("test");
-                 $("#addTime").toggle();
-                 });
+            hideDiv();           
             
         });
 
@@ -440,7 +442,8 @@
                     $(this).val(i);                    
                     $(this).toggle();
                 });
-                $("#row0").toggle();
+                $("#row0").toggle();               
+                
         }
 
        function appearDateRow()
@@ -473,18 +476,26 @@
        function showButton()
        {
           $("#addTime").show(); 
-           $("#removeTime").show();
+          $("#removeTime").show();
        }
         
        function DisappearDateRow()
        {
-           $("#row"+counter).toggle();
+           if(counter === 0)
+           {
+              $("#removeTime").hide();
+              
+           }
+           else{
+                $("#row"+counter).toggle();
           
-           var rowvalue =`#row${counter} input`;
+            var rowvalue =`#row${counter} input`;
                      $(rowvalue).each(function(){                    
                       $(this).val("");
                 });    
             counter--;
+           }
+          
        }
 
         function Refresh()
