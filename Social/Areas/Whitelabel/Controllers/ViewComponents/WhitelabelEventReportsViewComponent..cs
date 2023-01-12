@@ -31,8 +31,7 @@ namespace Social.Areas.WhiteLable.Controllers.ViewComponents
             if (loggedinUser == null)
             {
                 throw new Exception($"No User Found:{ StatusCodes.Status404NotFound }");
-            }
-           // var userId = loggedinUser.User.UserDetails.PrimaryId;
+            }         
             var allEvents = _authDBContext.EventData.Where(n => n.UserId == loggedinUser.User.UserDetails.PrimaryId 
             && n.IsActive == true && (n.EventTypeListid == 5 || n.EventTypeListid == 6)).ToList();
             return View(eventReportService.GetData(allEvents.Select(e=>e.Id).ToList()).OrderByDescending(x => x.RegistrationDate));

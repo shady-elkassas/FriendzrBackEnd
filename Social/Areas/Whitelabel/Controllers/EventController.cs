@@ -110,31 +110,78 @@ namespace Social.Areas.WhiteLable.Controllers
             }
             else
             {
-                UserDetails userData = null;
-                string imageName = null;
-                if (model.ImageFile != null)
+               bool isCorrect= this.CheckListOfDate(new { eventdateList= model.eventdateList, eventdatetoList=model.eventdatetoList });
+
+                if(!isCorrect)
                 {
-                    var UniqName = await _globalMethodsService.uploadFileAsync("/Images/EventData/", model.ImageFile);
-
-                    imageName = "/Images/EventData/" + UniqName;
-                    model.Image = imageName;
+                    Result = CommonResponse<EventDataadminMV>.GetResult("Some Date in the past", ModelState.GetModelStateErrors());
                 }
-
-                if (authorizationToken.Count == 0)
+                else
                 {
-                    authorizationToken = _httpContextAccessor.HttpContext.Request.Cookies["Authorization"];
-                    model.userid = (await _userService.GetLoggedInUser(authorizationToken)).User.UserDetails.PrimaryId;
-                    userData= (await _userService.GetLoggedInUser(authorizationToken)).User.UserDetails;
-                }
+                    UserDetails userData = null;
+                    string imageName = null;
+                    if (model.ImageFile != null)
+                    {
+                        var UniqName = await _globalMethodsService.uploadFileAsync("/Images/EventData/", model.ImageFile);
 
-                Result = await _Event.Create(model);               
+                        imageName = "/Images/EventData/" + UniqName;
+                        model.Image = imageName;
+                    }
+
+                    if (authorizationToken.Count == 0)
+                    {
+                        authorizationToken = _httpContextAccessor.HttpContext.Request.Cookies["Authorization"];
+                        model.userid = (await _userService.GetLoggedInUser(authorizationToken)).User.UserDetails.PrimaryId;
+                        userData = (await _userService.GetLoggedInUser(authorizationToken)).User.UserDetails;
+                    }
+
+                    var result = await _Event.Create(model);
+                    foreach (var item in result.Data)
+                    {
+                        await _MessageServes.addeventmessage(new EventMessageDTO
+                        {
+                            EventChatAttendid = item,
+                            eventjoin = false,
+                            Message = "",
+                            Messagetype = 1,
+                            EventId = model.EntityId,
+                            Messagesdate = DateTime.Now.Date,
+                            Messagestime = DateTime.Now.TimeOfDay
+                        }, userData);
+                    }
+                }
+               
                 
-                 await _MessageServes.addeventmessage(new EventMessageDTO { EventChatAttendid = Result.Data.Id, eventjoin = false, Message = "", Messagetype = 1, EventId = model.EntityId,
-                    Messagesdate = DateTime.Now.Date, Messagestime = DateTime.Now.TimeOfDay
-                 }, userData);
             }
 
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
+        }
+
+        private bool CheckListOfDate(dynamic dateList)
+        {  
+            var eventtolist= (List<DateTime>)dateList.eventdatetoList;
+            if(((List<DateTime>)dateList.eventdateList).Count ==0 || ((List<DateTime>)dateList.eventdateList).Count != eventtolist.Count)
+            {
+                return false;
+            }
+           foreach (var (value,i) in ((List<DateTime>)dateList.eventdateList).Select((value, i)=>(value,i)))
+           {
+                if(value != null && eventtolist[i] !=null)
+                {
+                    var isNotCorrect = value.Date.Subtract(DateTime.Now).TotalDays < 1 || eventtolist[i].Date.Subtract(DateTime.Now.Date).TotalDays < 1
+                                     || eventtolist[i].Date.Subtract(value.Date).TotalDays < 1;
+                    if (isNotCorrect)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                return false;
+           }            
+           return true;
         }
 
         [HttpPost]
@@ -147,67 +194,80 @@ namespace Social.Areas.WhiteLable.Controllers
             {
                 Result = CommonResponse<EventDataadminMV>.GetResult(_localizer["invalidData"], ModelState.GetModelStateErrors());
             }
-            else
+            
+          else
             {
-                string imageName = null;
-                if (model.ImageFile != null)
-                {
-                    var UniqName = await _globalMethodsService.uploadFileAsync("/Images/EventData/", model.ImageFile);
+                model.eventdatetoList = new List<DateTime>() { model.eventdatetoList.FirstOrDefault() };
+                model.eventdateList = new List<DateTime>() { model.eventdateList.FirstOrDefault() };
+                bool isCorrect = this.CheckListOfDate(new { eventdateList = model.eventdateList, eventdatetoList = model.eventdatetoList });
 
-                    imageName = "/Images/EventData/" + UniqName;
-                    model.Image = imageName;
+                if (!isCorrect)
+                {
+                    Result = CommonResponse<EventDataadminMV>.GetResult("Some Date in the past", ModelState.GetModelStateErrors());
                 }
-
-                int loggedinUser = 0;
-
-                if (authorizationToken.Count == 0)
+                else
                 {
-                    authorizationToken = _httpContextAccessor.HttpContext.Request.Cookies["Authorization"];
-                    loggedinUser = _userService.GetLoggedInUser(authorizationToken).Result.User.UserDetails.PrimaryId;
-                }
-
-                if (loggedinUser != model.userid)
-                {
-                    Result = CommonResponse<EventDataadminMV>.GetResult(_localizer["You can't edit this event"], ModelState.GetModelStateErrors());
-                    return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
-                }                
-                Result = await _Event.Edit(model);
-                var allateend = _Event.allattendevent();
-                var Eventattend = _Event.getallChatattendevent(model.EntityId, allateend).ToList();
-
-                foreach (var even in Eventattend)
-                {
-                    //if (even.UserattendId != Result.userid)
+                    
+                    string imageName = null;
+                    if (model.ImageFile != null)
                     {
-                        try
+                        var UniqName = await _globalMethodsService.uploadFileAsync("/Images/EventData/", model.ImageFile);
+
+                        imageName = "/Images/EventData/" + UniqName;
+                        model.Image = imageName;
+                    }
+
+                    int loggedinUser = 0;
+
+                    if (authorizationToken.Count == 0)
+                    {
+                        authorizationToken = _httpContextAccessor.HttpContext.Request.Cookies["Authorization"];
+                        loggedinUser = _userService.GetLoggedInUser(authorizationToken).Result.User.UserDetails.PrimaryId;
+                    }
+
+                    if (loggedinUser != model.userid)
+                    {
+                        Result = CommonResponse<EventDataadminMV>.GetResult(_localizer["You can't edit this event"], ModelState.GetModelStateErrors());
+                        return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
+                    }
+                    Result = await _Event.Edit(model);
+                    var allateend = _Event.allattendevent();
+                    var Eventattend = _Event.getallChatattendevent(model.EntityId, allateend).ToList();
+
+                    foreach (var even in Eventattend)
+                    {
+                        //if (even.UserattendId != Result.userid)
                         {
-                            var userto = this._userService.GetUserDetails(even.Userattend.UserId);
-
-                            FireBaseData fireBaseInfo = new FireBaseData()
+                            try
                             {
-                                Title = "update Event Data",
-                                Body = model.Title,
-                                imageUrl = _configuration["BaseUrl"] + model.Image,
-                                muit = false,
-                                Action_code = model.EntityId,
-                                Action = "event_Updated"
-                            };
+                                var userto = this._userService.GetUserDetails(even.Userattend.UserId);
 
-                            SendNotificationcs sendNotificationcs = new SendNotificationcs();
-                            if (userto.FcmToken != null)
-                            {
+                                FireBaseData fireBaseInfo = new FireBaseData()
+                                {
+                                    Title = "update Event Data",
+                                    Body = model.Title,
+                                    imageUrl = _configuration["BaseUrl"] + model.Image,
+                                    muit = false,
+                                    Action_code = model.EntityId,
+                                    Action = "event_Updated"
+                                };
 
-                                await _firebaseManager.SendNotification(userto.FcmToken, fireBaseInfo);
+                                SendNotificationcs sendNotificationcs = new SendNotificationcs();
+                                if (userto.FcmToken != null)
+                                {
+
+                                    await _firebaseManager.SendNotification(userto.FcmToken, fireBaseInfo);
+                                }
+
                             }
-
-                        }
-                        catch
-                        {
-                            continue;
+                            catch
+                            {
+                                continue;
+                            }
                         }
                     }
-                }
 
+                } 
             }
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
         }
@@ -229,9 +289,20 @@ namespace Social.Areas.WhiteLable.Controllers
             if(Result!= null)
             {
                 Result= FixEventName(Result);
+                Result.eventdateList = new List<DateTime> { Result.eventdate };
+                Result.eventdatetoList = new List<DateTime> { Result.eventdateto };
             }
-            return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
+            var data = JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() });
+            // Fix serialization issue
+            var listDateto=data.SelectToken("eventdatetoList");
+            var dateto = data.SelectToken("eventdateto");
+            listDateto.Replace(dateto);
+            var listDate = data.SelectToken("eventdateList");
+            var date = data.SelectToken("eventdate");
+            listDate.Replace(date);
 
+           // return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
+           return Ok(data);
 
         }
 

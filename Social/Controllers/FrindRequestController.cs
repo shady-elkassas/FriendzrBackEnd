@@ -695,32 +695,30 @@ namespace Social.Controllers
 
 
                         await _FrindRequest.deleterequest(Requestes);
-                        FireBaseData fireBaseInfo = new FireBaseData()
-                        {
-                            muit = false,
-                            Title = "Friend request cancelled",
-                            imageUrl = _configuration["BaseUrl"] + meDeatils.UserImage,
-                            Body = "Friend request cancelled " + " from   " + meDeatils.User.DisplayedUserName,
-                            Action_code = meDeatils.UserId,
-                            Action = "Friend_request_cancelled"
-                        };
-                        try
-                        {
-                            SendNotificationcs sendNotificationcs = new SendNotificationcs();
-                            if (Deatils.FcmToken != null)
-                                await firebaseManager.SendNotification(Deatils.FcmToken, fireBaseInfo);
-                            //await sendNotificationcs.SendMessageAsync(Deatils.FcmToken, " Request", fireBaseInfo, _environment.WebRootPath);
+                        //FireBaseData fireBaseInfo = new FireBaseData()
+                        //{
+                        //    muit = false,
+                        //    Title = "Friend request cancelled",
+                        //    imageUrl = _configuration["BaseUrl"] + meDeatils.UserImage,
+                        //    Body = "Friend request cancelled " + " from   " + meDeatils.User.DisplayedUserName,
+                        //    Action_code = meDeatils.UserId,
+                        //    Action = "Friend_request_cancelled"
+                        //};
+                        //    try
+                        //    {
+                        //        SendNotificationcs sendNotificationcs = new SendNotificationcs();
+                        //        if (Deatils.FcmToken != null)
+                        //            await firebaseManager.SendNotification(Deatils.FcmToken, fireBaseInfo);
+                        //        //await sendNotificationcs.SendMessageAsync(Deatils.FcmToken, " Request", fireBaseInfo, _environment.WebRootPath);
 
-                            //var addnoti = MessageServes.getFireBaseData(Deatils.PrimaryId, fireBaseInfo);
-                            //await MessageServes.addFireBaseDatamodel(addnoti);
-                        }
-                        catch
-                        { }
+                        //        //var addnoti = MessageServes.getFireBaseData(Deatils.PrimaryId, fireBaseInfo);
+                        //        //await MessageServes.addFireBaseDatamodel(addnoti);
+                        //    }
+                        //    catch
+                        //    { }
                         return StatusCode(StatusCodes.Status200OK,
                           new ResponseModel<object>(StatusCodes.Status200OK, true,
                          " you cancelled this account request", null));
-
-
                     }
                     else
                     {

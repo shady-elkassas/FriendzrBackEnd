@@ -1,5 +1,4 @@
-﻿
-@model EventDataadminMV
+﻿@model EventDataadminMV
 @{
     ViewData["Title"] = _localizer["EventDatas"];
     ViewData["PageTitle"] = _localizer["EventDatas"];
@@ -34,6 +33,13 @@
             font-weight: bold;
             color: #333;
         }
+
+        .div_float {            
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
     </style>
 }
 <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -42,7 +48,7 @@
 
         <div class="d-flex flex-shrink-0">
             <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add a EventData">
-                <a href="javascript:OpenPageModal('0'); Refresh()" class="btn btn-sm btn-primary btn-active-light-primary">
+                <a href="javascript:showButton();OpenPageModal('0'); Refresh()" class="btn btn-sm btn-primary btn-active-light-primary">
                     <span><i class="bi bi-plus fs-3"></i></span>
                     @*@(_localizer["Add"] +"  "+ @_localizer["EventData"])*@
                     Add Event
@@ -266,30 +272,40 @@
                                         <span asp-validation-for="totalnumbert"></span>
                                     </div>
                                 </div>
-
-                                <div class="col-md-6 "></div>
-                                <div class="col-md-6 ">
-                                    <div class="col-md-12 fv-row">
+                                <div class="col-md-6 fv-row"> </div>
+                              <div class="col-md-6 fv-row">                                    
+                              <button type="button"  class="btn btn-light me-3" id="addTime" onclick="appearDateRow();">Add New Date +</button>  
+                              <button type="button"  class="btn btn-light me-3" id="removeTime" onclick="DisappearDateRow();">Remove Date -</button>
+                               </div>
+                              
+                             @for(int i=0; i<10;i++)
+                                {   
+                                    <div class="col-md-12 fv-row div_float" >                                 
+                                    <div class="col-md-6" id="eventdatedev@i">
+                                    <div class="col-md-11 fv-row">
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                             Event Date From
                                         </label>
-                                        <input type="date" class="form-control form-control-solid" asp-for="eventdate" />
+                                        <input type="date" class="form-control form-control-solid" asp-for="eventdateList" />
                                         <div class="fv-plugins-message-container invalid-feedback">
-                                            <span asp-validation-for="eventdate"></span>
+                                            <span asp-validation-for="eventdateList"></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="col-md-12 fv-row">
+                                <div class="col-md-6" id="eventdatetodev@i">
+                                    <div class="col-md-11 fv-row">
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                             Event Date To
                                         </label>
-                                        <input type="date" class="form-control form-control-solid" asp-for="eventdateto" />
+                                        <input type="date" class="form-control form-control-solid" asp-for="eventdatetoList" />
                                         <div class="fv-plugins-message-container invalid-feedback">
-                                            <span asp-validation-for="eventdateto"></span>
+                                            <span asp-validation-for="eventdatetoList"></span>
                                         </div>
                                     </div>
                                 </div>
+                               </div>
+                                }
+                              
                                 <div class="col-md-12 fv-row">
                                     <label asp-for="allday" class="d-flex align-items-center fs-6 fw-bold mb-2">
                                         All day
@@ -373,6 +389,8 @@
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
     <script>const haightAshbury = { lat: 51.51146787570306, lng: -0.12768389274135644 };
 
+        let counter=0;
+
         let FilePondObj = '';
         function RefreshPageDatatable() {
           
@@ -402,7 +420,73 @@
                     window.location.reload();
                 });
             });
+
+            hideDiv();
+            $(".bi-pencil-fill a").click(function() {
+                console.log("test");
+                 $("#addTime").toggle();
+                 });
+            
         });
+
+        function hideDiv()
+        {
+            debugger;
+            var i=-1;
+                $('.div_float').each(function(){
+                    i++;
+                    var newID='row'+i;
+                    $(this).attr('id',newID);
+                    $(this).val(i);                    
+                    $(this).toggle();
+                });
+                $("#row0").toggle();
+        }
+
+       function appearDateRow()
+       {
+           counter++;
+           if(counter === 10)
+           {               
+               $("#addTime").toggle();
+           }
+           else{
+               $("#row"+counter).toggle();
+           }
+           
+       }
+       function hideButton()
+       {
+          $("#addTime").hide();    
+          $("#removeTime").hide(); 
+          var n=1;
+          $('.div_float').each(function(){
+                    
+                    var newID=`#row${n} input`;
+                   $(newID).each(function(){                    
+                      $(this).val("");                       
+                }); 
+               n++;
+                });
+             
+       }
+       function showButton()
+       {
+          $("#addTime").show(); 
+           $("#removeTime").show();
+       }
+        
+       function DisappearDateRow()
+       {
+           $("#row"+counter).toggle();
+          
+           var rowvalue =`#row${counter} input`;
+                     $(rowvalue).each(function(){                    
+                      $(this).val("");
+                });    
+            counter--;
+       }
+
         function Refresh()
         {
             $(document).ajaxStop(function () {
@@ -477,7 +561,7 @@
                             let Edit = "";
 
                             if (full.EventTypeListid != 3) {
-                                Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                Edit = `<a href="javascript:hideButton();OpenPageModal('${data}')"  class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
                                                     <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
                                                 </a>`
 

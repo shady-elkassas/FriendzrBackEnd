@@ -88,7 +88,7 @@ namespace Social.Services.Services
         EventDataadminMV GetData(string ID);
         IEnumerable<EventDataadminMV> GetData();
         IEnumerable<EventDataadminMV> GetData(Expression<Func<EventData, bool>> predicate);
-        Task<CommonResponse<EventDataadminMV>> Create(EventDataadminMV VM);
+        Task<CommonResponse<List<int>>> Create(EventDataadminMV VM);
         Task<bool> Createrang(EventData Obj);
         Task<bool> Createrang(List<EventData> Obj);
         Task<CommonResponse<EventDataadminMV>> Edit(EventDataadminMV VM);

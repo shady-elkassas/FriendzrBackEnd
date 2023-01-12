@@ -91,8 +91,8 @@ namespace Social.Areas.Admin.Controllers
                 }
 
                 model.userid = _userService.getallUserDetails().FirstOrDefault(b => b.User.Email != "Owner@Owner.com").PrimaryId;
-
-                Result = await _Event.Create(model);
+                ///TODO: need fix
+                var result = await _Event.Create(model);
             }
 
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));

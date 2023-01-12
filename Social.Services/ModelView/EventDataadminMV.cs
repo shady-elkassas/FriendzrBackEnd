@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Social.Services.ModelView
 {
@@ -55,10 +56,14 @@ namespace Social.Services.ModelView
         [Required(ErrorMessage = "total numbert is required")]
         public int totalnumbert { get; set; }
         public bool allday { get; set; } =false;
-        [Required(ErrorMessage = "event date is required")]
+        //[Required(ErrorMessage = "event date is required")]
         public DateTime eventdate { get; set; } = DateTime.Now;
-        [Required(ErrorMessage = "event date is required")]
+        [JsonExtensionData]
+        public List<DateTime> eventdateList { get; set; }
+        //[Required(ErrorMessage = "event date is required")]
         public DateTime eventdateto { get; set; } = DateTime.Now;
+        [JsonExtensionData]
+        public List<DateTime> eventdatetoList { get; set; }
         public TimeSpan? eventfrom { get; set; } = DateTime.Now.TimeOfDay;
         public TimeSpan? eventto { get; set; } = DateTime.Now.TimeOfDay;
         public string color { get; set; }

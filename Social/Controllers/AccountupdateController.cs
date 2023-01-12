@@ -427,15 +427,16 @@ namespace Social.Controllers
         private async Task SubscribeInChatCommunity(User user)
         {
             var whitelableUser = await authDBContext.UserDetails.FirstOrDefaultAsync(u => u.Code == user.UserDetails.Code && u.IsWhiteLabel.Value);
-
+            var chatgroup = authDBContext.ChatGroups.FirstOrDefault(c => c.UserID == whitelableUser.UserId);
             var communityUserId = authDBContext.ChatGroupSubscribers.Include(c=>c.ChatGroup).Where(cg=>cg.ChatGroup.UserID== whitelableUser.UserId)
                 .Select(cg=>cg.UserID).FirstOrDefault(u=>u==user.UserDetails.UserId);
-            if (communityUserId==null)
+            if (chatgroup != null && communityUserId == null)
             {
+                
                 var newSubscriber = new ChatGroupSubscribers
                 {
                     JoinDateTime = DateTime.Now,
-                    ChatGroupID = authDBContext.ChatGroups.FirstOrDefault(c=>c.UserID==whitelableUser.UserId).ID,
+                    ChatGroupID = chatgroup.ID,
                     UserID = user.UserDetails.UserId,
                     LeaveGroup = ChatGroupSubscriberStatus.Joined,
                     IsAdminGroup = ChatGroupSubscriberType.Member,
@@ -733,7 +734,7 @@ namespace Social.Controllers
         }
 
         private async Task SendNotification(List<UserDetails> users)
-        {
+            {
             var body = "You're almost there!@Complete your profile to start connecting on Friendzr today";
              body = body.Replace("@", System.Environment.NewLine);
             foreach (var user in users)

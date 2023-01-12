@@ -15,10 +15,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Linq.Dynamic.Core;
-using Microsoft.Data.SqlClient;
+
 namespace Social.Services.Implementation
 {
     public class EventServ : IEventServ
@@ -30,7 +30,7 @@ namespace Social.Services.Implementation
         private readonly ICityService cityService;
         private readonly IStringLocalizer<SharedResource> localizer;
         private readonly IHttpContextAccessor httpContextAccessor;
-        //private readonly IUserService userService;
+        //private readonly IUserService userService;        
         public EventServ(AuthDBContext authContext, IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IGoogleLocationService googleLocationService,
@@ -44,7 +44,7 @@ namespace Social.Services.Implementation
             this.countryService = countryService;
             this.cityService = cityService;
             this._authContext = authContext;
-            localizer = _localizer;
+            localizer = _localizer;            
         }
 
         //public async Task deleteEvent(string id)
@@ -418,17 +418,18 @@ namespace Social.Services.Implementation
 
         public async Task<EventChatAttend> InsertEventChatAttend(EventChatAttend eventChatAttend)
         {
+            dynamic result = null;
             try
             {
                 eventChatAttend.EntityId = Guid.NewGuid().ToString();
-                var result = await _authContext.EventChatAttend.AddAsync(eventChatAttend);
-                await _authContext.SaveChangesAsync();
+                 result = await _authContext.EventChatAttend.AddAsync(eventChatAttend);
                 eventChatAttend.Id = result.Entity.Id;
+                await _authContext.SaveChangesAsync();
+                
             }
             catch (Exception ex)
             {
 
-                throw;
             }
             return (eventChatAttend);
         }
@@ -1490,40 +1491,100 @@ namespace Social.Services.Implementation
                 return false;
             }
         }
-        public async Task<CommonResponse<EventDataadminMV>> Create(EventDataadminMV VM)
+        public async Task<CommonResponse<List<int>>> Create(EventDataadminMV VM)
         {
+            List<int> eventChatIds = new List<int>();
             try
             {
-
-                var Obj = Converter(VM);
-                await _authContext.EventData.AddAsync(Obj);
-                await UpdateEventAddressFromGoogle(Obj);
+                var ObjectList = Converter(VM);
+                await _authContext.EventData.AddRangeAsync(ObjectList);
                 await _authContext.SaveChangesAsync();
+                var Obj = ObjectList.FirstOrDefault();
+                var createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
+                
+                //await UpdateEventAddressFromGoogle(Obj);
+               // createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
 
-                var a = await InsertEventChatAttend(new EventChatAttend { Jointime = DateTime.Now.TimeOfDay, EventDataid = Obj.Id, UserattendId = httpContextAccessor.HttpContext.GetUser().User.UserDetails.PrimaryId, JoinDate = DateTime.Now.Date, ISAdmin = true });
-                VM.Id = a.Id;
-                return CommonResponse<EventDataadminMV>.GetResult(200, true, localizer["SavedSuccessfully"], VM);
+               // createdEvents = createdEvents.Skip(1).ToList();
+               
+                //foreach (var obj in createdEvents)
+                //{
+                //    try
+                //    {
+                //        obj.CountryID = Obj.CountryID;
+                //        obj.CityID = Obj.CityID;
+                //        _authContext.EventData.Update(obj);                      
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        continue;
+                //    }
+                //}
+                // to make sure from changes were happened
+                //await _authContext.SaveChangesAsync();
+               // createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
+             
+                foreach (var obj in createdEvents)
+                    {
+                        try
+                        {
+                            var a = await InsertEventChatAttend(new EventChatAttend { Jointime = DateTime.Now.TimeOfDay, EventDataid = obj.Id, UserattendId = httpContextAccessor.HttpContext.GetUser().User.UserDetails.PrimaryId, JoinDate = DateTime.Now.Date, ISAdmin = true });
+                            eventChatIds.Add(a.Id);
+                        }
+                        catch (Exception ex)
+                        {
+
+                            //throw;
+                        }
+                    }
+
+                foreach (var obj in createdEvents)
+                {
+                    try
+                    {
+                        await UpdateEventAddressFromGoogle(obj);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        //throw;
+                    }
+                }
+                await _authContext.SaveChangesAsync();
+                createdEvents = _authContext.EventData.Where(e => e.EntityId == Obj.EntityId).ToList();
+                return CommonResponse<List<int>>.GetResult(200, true, localizer["SavedSuccessfully"],eventChatIds);
             }
             catch (Exception EX)
             {
-                return CommonResponse<EventDataadminMV>.GetResult(406, false, EX.Message);
+                return CommonResponse<List<int>>.GetResult(406, false, EX.Message);
             }
         }
 
 
         public async Task<CommonResponse<EventDataadminMV>> Edit(EventDataadminMV VM)
         {
+            //var ObjectList = Converter(VM);
+            //await _authContext.EventData.AddRangeAsync(ObjectList);
+            //foreach (var obj in ObjectList)
+            //{
+            //    await UpdateEventAddressFromGoogle(obj);
+            //    await _authContext.SaveChangesAsync();
+            //    var a = await InsertEventChatAttend(new EventChatAttend { Jointime = DateTime.Now.TimeOfDay, EventDataid = obj.Id, UserattendId = httpContextAccessor.HttpContext.GetUser().User.UserDetails.PrimaryId, JoinDate = DateTime.Now.Date, ISAdmin = true });
+            //    VM.Id = a.Id;
+            //}
 
-            var Obj = Converter(VM);
+         
 
             try
             {
-
-                await UpdateEventAddressFromGoogle(Obj);
-                _authContext.Attach(Obj);
-                _authContext.Entry(Obj).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
-                _authContext.SaveChanges();
+                var ObjectList = Converter(VM);
+                foreach (var obj in ObjectList)
+                {
+                    await UpdateEventAddressFromGoogle(obj);
+                    _authContext.Attach(obj);
+                    _authContext.Entry(obj).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    _authContext.SaveChanges();
+                }
                 return CommonResponse<EventDataadminMV>.GetResult(200, true, localizer["SavedSuccessfully"], VM);
 
             }
@@ -1601,7 +1662,8 @@ namespace Social.Services.Implementation
         {
             var filterdData = _authContext.EventData.Where(x => (Search_EventTypeListID == null || x.EventTypeListid == Search_EventTypeListID)
                         && (Search_EventCategoryID == null || x.categorieId == Search_EventCategoryID)
-                        && (string.IsNullOrEmpty(PaginationFilter.SearchValue) || x.Title.ToLower().Contains(PaginationFilter.SearchValue.ToLower())) && x.CreatedDate.Value.Date > new DateTime(2022, 11, 28)
+                        && (string.IsNullOrEmpty(PaginationFilter.SearchValue) || x.Title.ToLower().Contains(PaginationFilter.SearchValue.ToLower())) 
+                        && (x.eventdateto.Value.Date > DateTime.Now.Date || (x.eventdateto.Value.Date == DateTime.Now.Date && x.eventto > DateTime.Now.TimeOfDay) || (x.allday == true && x.eventdate.Value.Date == DateTime.Now.Date))
                         );
       
             IQueryable<EventDataadminMV> data = null;
@@ -1643,34 +1705,39 @@ namespace Social.Services.Implementation
         }
 
 
-        EventData Converter(EventDataadminMV model)
+        IEnumerable<EventData> Converter(EventDataadminMV model)
         {
-            if (model == null) return null;
-            var Obj = new EventData()
+            if (model == null) yield return null;
+
+            foreach (var (value, i) in model.eventdateList.Select((value,i) =>(value,i)))
             {
-                EntityId = model.EntityId,
-                Id = model.Id,
-                checkout_details = model.checkout_details,
-                UserId = model.userid,
-                allday = model.allday,
-                categorieId = model.categorieId,
-                description = model.description,
-                eventdate = model.eventdate,
-                eventdateto = model.eventdateto,
-                eventfrom = model.eventfrom,
-                eventto = model.eventto,
-                EventTypeListid = model.EventTypeListid,
-                lat = model.lat,
-                lang = model.lang,
-                IsActive = model.IsActive,
-                status = model.status,
-                CreatedDate = DateTime.Now,
-                totalnumbert = model.totalnumbert,
-                image = model.Image,
-                Title = model.Title,
-                IsForWhiteLableOnly= model.EventTypeListid == 6|| model.EventTypeListid == 5 ? true : false,
-            };
-            return Obj;
+                var Obj = new EventData()
+                {
+                    EntityId = model.EntityId,
+                    Id = model.Id,
+                    checkout_details = model.checkout_details,
+                    UserId = model.userid,
+                    allday = model.allday,
+                    categorieId = model.categorieId,
+                    description = model.description,
+                    eventdate = value,
+                    eventdateto = model.eventdatetoList[i],
+                    eventfrom = model.eventfrom,
+                    eventto = model.eventto,
+                    EventTypeListid = model.EventTypeListid,
+                    lat = model.lat,
+                    lang = model.lang,
+                    IsActive = model.IsActive,
+                    status = model.status,
+                    CreatedDate = DateTime.Now,
+                    totalnumbert = model.totalnumbert,
+                    image = model.Image,
+                    Title = model.Title,
+                    IsForWhiteLableOnly = model.EventTypeListid == 6 || model.EventTypeListid == 5 ? true : false,
+                };
+                yield return Obj;
+            }            
+            
         }
         EventDataadminMV Converter(EventData model)
         {
@@ -2025,13 +2092,16 @@ namespace Social.Services.Implementation
                     });
                     eventData.CityID = City.Data.ID;
                     eventData.CountryID = Country.Data.ID;
-                    _authContext.Attach(eventData);
-                    _authContext.Entry(eventData).State = EntityState.Modified;
+                    //_authContext.Attach(eventData);
+                    //_authContext.Entry(eventData).State = EntityState.Modified;
+                    _authContext.EventData.Update(eventData);
+                    _authContext.SaveChanges();
                 }
 
             }
             catch (Exception ex)
             {
+                //_authContext.SaveChanges();
             }
         }
 

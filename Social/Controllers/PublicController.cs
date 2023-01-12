@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Social.Controllers
@@ -737,7 +736,7 @@ namespace Social.Controllers
         
         // for job
         [HttpPost]
-        public async Task<IActionResult> AddExternalEvents(int totalCount, string? minDate, string? maxDate)
+        public async Task<IActionResult> AddExternalEvents(int totalCount, [FromForm] string?  minDate, [FromForm] string? maxDate)
         {
             var externalEvents = await _externalEventUtility.GetExternalEvents(totalCount,minDate,maxDate);
             var result = await this.ExportExternalEvents(externalEvents);
