@@ -1,11 +1,12 @@
-﻿
-function ResetPageForm() {
+﻿function ResetPageForm() {
     $("#PageForm").trigger("reset");
     $("#ID").val(0);
     $("#EntityId").val(0);
     clearValidation("#PageForm");
     $("#PageForm input[type='checkbox']").change();
     $("#PageModal input[type='time']").val("");
+    $('select').prop('selectedIndex', 0);
+    
 }
 
 function GetPageFormObj(ID) {
@@ -22,8 +23,9 @@ function DisplayDetails(ID) {
     GetPageFormObj(ID);
 }
 function OpenPageModal(ID) {
-    ResetPageForm();
+    
     if (ID == 0 || ID == "" || ID == null) {
+        ResetPageForm();
         $("#PageModalAction").text((getToken("Add")));
         $("#PageModal").modal("show");
     }
@@ -32,7 +34,9 @@ function OpenPageModal(ID) {
         GetPageFormObj(ID);
     }
 }
-
+$("#cnclButtn").on("click", function () {
+    $(document).trigger("PageFormSubmit_Finished");
+});
 $("#PageForm").on("submit", (e) => {
 
     e.preventDefault();
@@ -48,7 +52,7 @@ $("#PageForm").on("submit", (e) => {
         if ($(Form).find("input[type='file']").length == 0) {
             let DataToSent = $(Form).serialize();
             $.post(Url, DataToSent, (res) => {
-
+                
                 if (res.Status == true) {
                     ShowNotification("success", res.Message);
                     RefreshPageDatatable();
@@ -60,7 +64,7 @@ $("#PageForm").on("submit", (e) => {
                 }
                 else {
                     AssignModelResponseErrorsToControllers(res.ModelErrors, Form);
-                    ShowNotification("warning", res.Message);
+                    ShowNotification("warning", res.Message);                    
                 }                
             }).fail((xhr, textStatus, errorThrown) => {
                 ShowNotification("error",errorThrown);
@@ -98,8 +102,7 @@ $("#PageForm").on("submit", (e) => {
                     }
                     else {
                         AssignModelResponseErrorsToControllers(res.ModelErrors, Form);
-                        ShowNotification("warning", res.Message);
-
+                        ShowNotification("warning", res.Message + " " + res.ModelErrors["lang"] == undefined ? "" : res.ModelErrors["lang"]);                        
                     }
 
                 },

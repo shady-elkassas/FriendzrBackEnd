@@ -48,7 +48,7 @@
 
         <div class="d-flex flex-shrink-0">
             <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add a EventData">
-                <a href="javascript:showButton();OpenPageModal('0'); Refresh()" class="btn btn-sm btn-primary btn-active-light-primary">
+                <a href="javascript:showButton();OpenPageModal('0');" class="btn btn-sm btn-primary btn-active-light-primary">
                     <span><i class="bi bi-plus fs-3"></i></span>
                     @*@(_localizer["Add"] +"  "+ @_localizer["EventData"])*@
                     Add Event
@@ -196,7 +196,7 @@
         <div class="modal-content rounded">
             <div class="modal-header pb-0 border-0 justify-content-end">
                 <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                    <span><i class="bi bi-x-lg"></i></span>
+                    <span><i class="bi bi-x-lg" onclick="resetForm();"></i></span>
                 </div>
             </div>
 
@@ -364,7 +364,7 @@
                                     <label asp-for="ImageFile" class="d-flex align-items-center fs-6 fw-bold mb-2">                                    
                                     </label>
 
-                                    <input type="file" accept="image/*" class="form-control form-control-solid" asp-for="ImageFile" />
+                                    <input type="file" accept="image/*" class="form-control form-control-solid file"  asp-for="ImageFile" />
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <span asp-validation-for="ImageFile"></span>
                                     </div>
@@ -377,8 +377,8 @@
 
                 </form>
                 <div class="text-end">
-                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@_localizer["Cancel"]</button>
-                    <button form="PageForm" type="submit" class="btn btn-primary" >
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3" id="cnclButtn">@_localizer["Cancel"]</button>
+                    <button form="PageForm" type="submit" class="btn btn-primary" data-dismiss="static">
                         <span class="indicator-label">@_localizer["Save"]</span>
                         <span class="indicator-progress">
                             @(_localizer["PleaseWait"]+" ...")
@@ -399,11 +399,82 @@
 
         let FilePondObj = '';
         function RefreshPageDatatable() {
+            $("#PageTable").removeClass("d-none")
+            let Controller = "/" + CurrentPageUrlInfo.Controller;
+            let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
+            let DatatableConfigration = {
+                TableID: "#PageTable",
+                Url: Area + Controller + "/GetAll?" + $("#SearchForm").serialize(),
+                Columns: [
+                    {
+                        "data": "Title",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            ID = ID ?? full.EntityId;
+
+                            let hidden = `<input type="hidden" value="/Whitelabel/Event/EventDetails?EventID=${ID}"/>`
+                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                        }
+                    },
+                    {
+                        "data": "CreatedDate",
+                    },
+                    {
+                        "data": "categoryName",
+                    },
+                    {
+                        "data": "EventTypeListName",
+                    },
+                    {
+                        "className": "text-center",
+                        "data": "IsActive",
+                        "render": function (data, ypet, full, meta) {
+                            let isChecked = "";
+                            if (data == true) {
+                                isChecked = "checked";
+                            }
+                            let html = `<div ><div class="form-check form-switch form-check-custom form-check-solid p-0 m-0 d-inline">
+                                                                                                                    <input onchange="toogleActive(this,'${full.EntityId}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                                                                                </div></div>`;
+                            return html;
+                        }
+                    },
+                    {
+
+                        //"data": "ID",
+                        "className": "text-center",
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.ID;
+                            data = ID ?? full.EntityId;
+
+
+                            let Edit = "";
+
+                            if (full.EventTypeListid != 3) {
+                                Edit = `<a href="javascript:hideButton();OpenPageModal('${data}')"  class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                                                </a>`
+
+                            }
+                            let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                                                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                                                </a>`
+                            let details = `<a href="javascript:OpenEventChatAttendModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventChatAttend")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
+                                                            </a>`
+                            let Report = `<a href="javascript:OpenEventReportsModal('${data}','${full.Title}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventReports")}"><i class="fas fa-bug"></i></span>
+                                                            </a>`
+                            return Edit + Remove + details + Report;
+                        },
+                    }
+
+                ]
+            }
+            CreateCommonDatatableAjax(DatatableConfigration, "", false, false, "", true);
           
         }
-         function RefreshPage_Datatable() {
-            Refresh();
-        }
+        
         $("#deleteData").hide()
         let PageTableIds = [];
         function DataChange(ID, checked) {
@@ -430,7 +501,10 @@
             hideDiv();           
             
         });
-
+        function resetForm()
+        {
+           $(document).trigger("PageFormSubmit_Finished");
+        }
         function hideDiv()
         {
             debugger;
@@ -443,7 +517,9 @@
                     $(this).toggle();
                 });
                 $("#row0").toggle();               
-                
+                $("#PageModal").on('show.bs.modal', function() {                      
+                      $('#removeTime').hide();
+                    });
         }
 
        function appearDateRow()
