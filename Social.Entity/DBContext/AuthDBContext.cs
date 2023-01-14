@@ -21,6 +21,7 @@ namespace Social.Entity.DBContext
         public DbSet<User> ApplicationUsers { get; set; }
         public DbSet<LoggedinUser> LoggedinUser { get; set; }
         public DbSet<UserDetails> UserDetails { get; set; }
+        public DbSet<UserImage> UserImages { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<UserCodeCheck> UserCodeCheck { get; set; }
@@ -224,7 +225,10 @@ namespace Social.Entity.DBContext
             {
                 b.HasOne(ur => ur.User).WithMany(u => u.EventData).HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Cascade);
             });
-
+            modelBuilder.Entity<UserImage>(b =>
+            {
+                b.HasOne(ur => ur.UserDetails).WithMany(u => u.UserImages).HasForeignKey(b => b.UserDetailsId).OnDelete(DeleteBehavior.Cascade);
+            });
             modelBuilder.Entity<FireBaseDatamodel>(b =>
             {
                 b.HasOne(ur => ur.User).WithMany(u => u.FireBaseDatamodel).HasForeignKey(b => b.userid).OnDelete(DeleteBehavior.Cascade).IsRequired();

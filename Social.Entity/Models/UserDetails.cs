@@ -32,6 +32,7 @@ namespace Social.Entity.Models
             SkippedUsers = new HashSet<SkippedUser>();
             UserSkippedUsers = new HashSet<SkippedUser>();
             SkippedEvents = new HashSet<SkippedEvent>();
+            UserImages = new HashSet<UserImage>();
         }
 
         [Key]
@@ -105,5 +106,6 @@ namespace Social.Entity.Models
         public virtual ICollection<SkippedUser> SkippedUsers { get; set; }
         public virtual ICollection<SkippedUser> UserSkippedUsers { get; set; }
         public virtual ICollection<SkippedEvent> SkippedEvents { get; set; }
+        public virtual ICollection<UserImage> UserImages { get; set; }
     }
 }
