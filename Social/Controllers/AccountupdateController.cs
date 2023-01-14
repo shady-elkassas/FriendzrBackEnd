@@ -434,7 +434,12 @@ namespace Social.Controllers
         public async Task<IActionResult> UploadUserImages([FromForm] IFormFileCollection files)
         { 
             var userDetails = await GetUserDetails();
-
+            if (userDetails == null)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized,
+                    new ResponseModel<object>(StatusCodes.Status401Unauthorized, false,
+                        _localizer["NotLogin"], null));
+            }
             var userImages = new List <UserImage>();
             if (files != null && files.Count <=4)
             {
@@ -476,6 +481,12 @@ namespace Social.Controllers
         public async Task<IActionResult> UpdateUserImages([FromForm] IFormFileCollection files)
         {
             var userDetails = await GetUserDetails();
+            if (userDetails == null)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized,
+                    new ResponseModel<object>(StatusCodes.Status401Unauthorized, false,
+                        _localizer["NotLogin"], null));
+            }
             var userImages = new List<UserImage>();
             if (files != null && files.Count <= 4)
             {
