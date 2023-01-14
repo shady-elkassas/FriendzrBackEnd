@@ -562,6 +562,14 @@ namespace Social.Services.Implementation
             return this._authContext.UserDetails.FirstOrDefault(c => c.UserId == userId);
 
         }
+        public bool AddUserImages(List<UserImage> files)
+        {
+
+            _authContext.UserImages.AddRange(files);
+            
+            return _authContext.SaveChanges() >0;
+
+        }
         public IEnumerable<UserDetails> GetLISTUserDetails(List<string> userId)
         {
 

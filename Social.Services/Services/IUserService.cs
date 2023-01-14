@@ -15,7 +15,7 @@ namespace Social.Services.Services
         void InsertUserDetails(UserDetails user);
         Task DeleteUser_StoredProcedure(UserDetails userDetails);
         void InsertLoggedInUser(LoggedinUser user);
-
+        bool AddUserImages(List<UserImage> files);
         UserCodeCheck GetUserCodeByEmail(string email);
         void InsertUserCode(UserCodeCheck code);
         void UpdateUserCode(UserCodeCheck code);

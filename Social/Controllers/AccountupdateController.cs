@@ -64,7 +64,7 @@ namespace Social.Controllers
             _MessageServes = MessageServes;
         }
 
-
+        
         [HttpPost]
         [Route("Account/update")]
         public async Task<IActionResult> Update([FromForm] IFormFile UserImags, [FromForm] updateUserModel model)
@@ -423,7 +423,61 @@ namespace Social.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Account/UserImages")]
+        public async Task<IActionResult> UploadUserImages([FromForm] IFormFileCollection files)
+        { 
+            var userDetails = await GetUserDetails();
 
+            var userImages = new List <UserImage>();
+            if (files != null)
+            {
+
+                foreach (var file in files)
+                {
+                    var fileName = await globalMethodsService.uploadFileAsync("/Images/Userprofile/", file);
+                    var imageUrl = "/Images/Userprofile/" + fileName;
+                    var userImage = new UserImage
+                    {
+                        ImageUrl = imageUrl,
+                        UserDetailsId = userDetails.PrimaryId,
+                        UserId = userDetails.UserId
+                    };
+                    userImages.Add(userImage);
+                }
+
+                var result =  _userService.AddUserImages(userImages);
+                return result
+                    ? StatusCode(StatusCodes.Status200OK,
+                        new ResponseModel<object>(StatusCodes.Status200OK, true,
+                            _localizer["updateprofiledata"], true))
+                    : StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                            _localizer["updateprofiledata"], false));
+            }
+            return StatusCode(StatusCodes.Status406NotAcceptable,
+                new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                    _localizer["updateprofiledata"], false));
+
+        }
+
+        private async Task<UserDetails> GetUserDetails()
+        {
+            HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationToken);
+            var loggedInUser = await _userService.GetLoggedInUser(authorizationToken);
+            if (loggedInUser != null)
+            {
+                var user = await userManager.FindByIdAsync(loggedInUser.UserId);
+                return _userService.GetUserDetails(user.Id);
+            }
+
+            return null;
+        }
         private async Task SubscribeInChatCommunity(User user)
         {
             var whitelableUser = await authDBContext.UserDetails.FirstOrDefaultAsync(u => u.Code == user.UserDetails.Code && u.IsWhiteLabel.Value);
