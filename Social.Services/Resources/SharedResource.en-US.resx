@@ -303,6 +303,9 @@
   <data name="EventTypeLists" xml:space="preserve">
     <value>Event Types</value>
   </data>
+  <data name="FailUpdateUserImages" xml:space="preserve">
+    <value>Fail Update User Images !</value>
+  </data>
   <data name="FinishedRegistration" xml:space="preserve">
     <value>Finished Registration</value>
   </data>
@@ -494,6 +497,9 @@
   </data>
   <data name="updateprofiledata" xml:space="preserve">
     <value>Your data has been changed successfully !</value>
+  </data>
+  <data name="UpdateUserImages" xml:space="preserve">
+    <value>Your Images has been changed successfully !</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>User</value>

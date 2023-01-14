@@ -456,14 +456,14 @@ namespace Social.Controllers
                 return result
                     ? StatusCode(StatusCodes.Status200OK,
                         new ResponseModel<object>(StatusCodes.Status200OK, true,
-                            _localizer["updateprofiledata"], true))
+                            _localizer["UpdateUserImages"], true))
                     : StatusCode(StatusCodes.Status406NotAcceptable,
                         new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                            _localizer["updateprofiledata"], false));
+                            _localizer["FailUpdateUserImages"], false));
             }
             return StatusCode(StatusCodes.Status406NotAcceptable,
                 new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                    _localizer["updateprofiledata"], false));
+                    _localizer["FailUpdateUserImages"], false));
 
         }
         /// <summary>
@@ -507,14 +507,14 @@ namespace Social.Controllers
                 return result
                     ? StatusCode(StatusCodes.Status200OK,
                         new ResponseModel<object>(StatusCodes.Status200OK, true,
-                            _localizer["updateprofiledata"], true))
+                            _localizer["UpdateUserImages"], true))
                     : StatusCode(StatusCodes.Status406NotAcceptable,
                         new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                            _localizer["updateprofiledata"], false));
+                            _localizer["FailUpdateUserImages"], false));
             }
             return StatusCode(StatusCodes.Status406NotAcceptable,
                 new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                    _localizer["updateprofiledata"], false));
+                    _localizer["FailUpdateUserImages"], false));
 
         }
 
