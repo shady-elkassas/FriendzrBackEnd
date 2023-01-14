@@ -12,6 +12,7 @@ namespace Social.Services.Services
         Task UpdateUserAddressFromGoogle(UserDetails userDetails, double latitude, double longitude);
         Task InitializeSuperAdminAccount();
         List<UserImage> GetUserImages(int userId);
+        bool DeleteUserImages(List<UserImage> files);
         Task InitializeAdminAccount();
         void InsertUserDetails(UserDetails user);
         Task DeleteUser_StoredProcedure(UserDetails userDetails);

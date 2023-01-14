@@ -16,6 +16,7 @@ using Social.Sercices.Helpers;
 using Social.Services;
 using Social.Services.FireBase_Helper;
 using Social.Services.Helpers;
+using Social.Services.Implementation;
 using Social.Services.Services;
 using System;
 using System.Collections.Generic;
@@ -452,6 +453,48 @@ namespace Social.Controllers
                 }
 
                 var result =  _userService.AddUserImages(userImages);
+                return result
+                    ? StatusCode(StatusCodes.Status200OK,
+                        new ResponseModel<object>(StatusCodes.Status200OK, true,
+                            _localizer["updateprofiledata"], true))
+                    : StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                            _localizer["updateprofiledata"], false));
+            }
+            return StatusCode(StatusCodes.Status406NotAcceptable,
+                new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                    _localizer["updateprofiledata"], false));
+
+        }
+
+        [HttpPost]
+        [Route("Account/UpdateUserImages")]
+        public async Task<IActionResult> UpdateUserImages([FromForm] IFormFileCollection files)
+        {
+            var userDetails = await GetUserDetails();
+            var userImages = new List<UserImage>();
+            if (files != null)
+            {
+                var oldUserImages = _userService.GetUserImages(userDetails.PrimaryId);
+                if (oldUserImages.Any())
+                {
+                    _userService.DeleteUserImages(oldUserImages);
+                }
+
+                foreach (var file in files)
+                {
+                    var fileName = await globalMethodsService.uploadFileAsync("/Images/Userprofile/", file);
+                    var imageUrl = "/Images/Userprofile/" + fileName;
+                    var userImage = new UserImage
+                    {
+                        ImageUrl = imageUrl,
+                        UserDetailsId = userDetails.PrimaryId,
+                        UserId = userDetails.UserId
+                    };
+                    userImages.Add(userImage);
+                }
+
+                var result = _userService.AddUserImages(userImages);
                 return result
                     ? StatusCode(StatusCodes.Status200OK,
                         new ResponseModel<object>(StatusCodes.Status200OK, true,

@@ -570,6 +570,15 @@ namespace Social.Services.Implementation
             return _authContext.SaveChanges() >0;
 
         }
+
+        public bool DeleteUserImages(List<UserImage> files)
+        {
+
+            _authContext.UserImages.RemoveRange(files);
+
+            return _authContext.SaveChanges() > 0;
+
+        }
         public IEnumerable<UserDetails> GetLISTUserDetails(List<string> userId)
         {
 
