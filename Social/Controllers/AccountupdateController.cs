@@ -425,7 +425,7 @@ namespace Social.Controllers
             }
         }
         /// <summary>
-        /// 
+        /// Add User Images Used In User Profile. (JWT Token)
         /// </summary>
         /// <param name="files"></param>
         /// <returns></returns>
@@ -466,7 +466,11 @@ namespace Social.Controllers
                     _localizer["updateprofiledata"], false));
 
         }
-
+        /// <summary>
+        /// Update User Images Used In User Profile. (JWT Token)
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Account/UpdateUserImages")]
         public async Task<IActionResult> UpdateUserImages([FromForm] IFormFileCollection files)
