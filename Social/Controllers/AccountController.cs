@@ -627,12 +627,13 @@ namespace Social.Controllers
             {
                 var userDeatils = HttpContext.GetUser().User.UserDetails;
                 var user = HttpContext.GetUser().User;
+                var userImages = userService.GetUserImages(userDeatils.PrimaryId);
                 var GetLinkAccount = this.userService.GetallLinkAccount((userDeatils.PrimaryId));
                 var Getalllistoftags = this.userService.Getalllistoftags((userDeatils.PrimaryId));
 
                 updateUserModelviewprofile updateUserModel = new updateUserModelviewprofile();
                 updateUserModel.age = userDeatils.birthdate == null ? 0 : (GetAge(userDeatils.birthdate.Value));
-
+                updateUserModel.UserImages = userImages.Any() ? userImages.Select(a=>a.ImageUrl).ToList() : new List<string>();
                 updateUserModel.bio = userDeatils.bio;
                 updateUserModel.distanceFilter = userDeatils.distanceFilter;
                 updateUserModel.Email = userDeatils.User.Email;

@@ -601,6 +601,12 @@ namespace Social.Services.Implementation
             return this._authContext.LinkAccount.Where(c => c.UserId == userId).ToList();
 
         }
+
+        public List<UserImage> GetUserImages(int userId)
+        {
+            return this._authContext.UserImages.Where(c => c.UserDetailsId == userId).ToList();
+
+        }
         public List<listoftags> Getalllistoftags(int userId)
         {
             var data = this._authContext.listoftags.Include(m => m.Interests).Where(c => c.UserId == userId).ToList();
