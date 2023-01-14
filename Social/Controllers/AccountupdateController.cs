@@ -436,7 +436,7 @@ namespace Social.Controllers
             var userDetails = await GetUserDetails();
 
             var userImages = new List <UserImage>();
-            if (files != null)
+            if (files != null && files.Count <=4)
             {
 
                 foreach (var file in files)
@@ -477,7 +477,7 @@ namespace Social.Controllers
         {
             var userDetails = await GetUserDetails();
             var userImages = new List<UserImage>();
-            if (files != null)
+            if (files != null && files.Count <= 4)
             {
                 var oldUserImages = _userService.GetUserImages(userDetails.PrimaryId);
                 if (oldUserImages.Any())
