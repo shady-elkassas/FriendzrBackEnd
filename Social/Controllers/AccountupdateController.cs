@@ -483,6 +483,11 @@ namespace Social.Controllers
                 if (oldUserImages.Any())
                 {
                     _userService.DeleteUserImages(oldUserImages);
+                    foreach (var image in oldUserImages)
+                    {
+                        globalMethodsService.DeleteFiles(image.ImageUrl, "");
+
+                    }
                 }
 
                 foreach (var file in files)
