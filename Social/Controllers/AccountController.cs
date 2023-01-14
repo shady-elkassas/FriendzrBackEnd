@@ -633,7 +633,7 @@ namespace Social.Controllers
 
                 updateUserModelviewprofile updateUserModel = new updateUserModelviewprofile();
                 updateUserModel.age = userDeatils.birthdate == null ? 0 : (GetAge(userDeatils.birthdate.Value));
-                updateUserModel.UserImages = userImages.Any() ? userImages.Select(a=>a.ImageUrl).ToList() : new List<string>();
+                updateUserModel.UserImages = userImages.Any() ? userImages.Select(a=> BaseUrlDomain + a.ImageUrl).ToList() : new List<string>();
                 updateUserModel.bio = userDeatils.bio;
                 updateUserModel.distanceFilter = userDeatils.distanceFilter;
                 updateUserModel.Email = userDeatils.User.Email;
