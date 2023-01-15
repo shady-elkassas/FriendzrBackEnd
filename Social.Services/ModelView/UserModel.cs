@@ -100,6 +100,7 @@ namespace Social.Entity.Models
         public int key { get; set; }
         public string Email { get; set; }
         public string UserImage { get; set; }
+        public List<string> UserImages { get; set; }
         public string bio { get; set; }
         public string lang { get; set; }
         public string language { get; set; }

@@ -562,6 +562,23 @@ namespace Social.Services.Implementation
             return this._authContext.UserDetails.FirstOrDefault(c => c.UserId == userId);
 
         }
+        public bool AddUserImages(List<UserImage> files)
+        {
+
+            _authContext.UserImages.AddRange(files);
+            
+            return _authContext.SaveChanges() >0;
+
+        }
+
+        public bool DeleteUserImages(List<UserImage> files)
+        {
+
+            _authContext.UserImages.RemoveRange(files);
+
+            return _authContext.SaveChanges() > 0;
+
+        }
         public IEnumerable<UserDetails> GetLISTUserDetails(List<string> userId)
         {
 
@@ -591,6 +608,12 @@ namespace Social.Services.Implementation
         public List<LinkAccount> GetallLinkAccount(int userId)
         {
             return this._authContext.LinkAccount.Where(c => c.UserId == userId).ToList();
+
+        }
+
+        public List<UserImage> GetUserImages(int userId)
+        {
+            return this._authContext.UserImages.Where(c => c.UserDetailsId == userId).ToList();
 
         }
         public List<listoftags> Getalllistoftags(int userId)

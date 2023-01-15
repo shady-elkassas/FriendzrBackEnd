@@ -303,6 +303,9 @@
   <data name="EventTypeLists" xml:space="preserve">
     <value>انواع الحدث</value>
   </data>
+  <data name="FailUpdateUserImages" xml:space="preserve">
+    <value>خطأ أثناء تغيير صورك !</value>
+  </data>
   <data name="FinishedRegistration" xml:space="preserve">
     <value>حسابات مكتملة</value>
   </data>
@@ -479,6 +482,9 @@
   </data>
   <data name="updateprofiledata" xml:space="preserve">
     <value>تم تغيير بياناتك بنجاح!</value>
+  </data>
+  <data name="UpdateUserImages" xml:space="preserve">
+    <value>تم تغيير صورك بنجاح!</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>المستخدم</value>

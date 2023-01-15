@@ -208,6 +208,9 @@ Le compte a été supprimé</value>
   <data name="EventTitleMinLengthIs" xml:space="preserve">
     <value>Le titre minimum de l'événement est</value>
   </data>
+  <data name="FailUpdateUserImages" xml:space="preserve">
+    <value>Échec de la mise à jour des images utilisateur !</value>
+  </data>
   <data name="ISActive" xml:space="preserve">
     <value />
   </data>
@@ -306,6 +309,9 @@ Le compte a été supprimé</value>
   </data>
   <data name="updateprofiledata" xml:space="preserve">
     <value>Vos données ont été modifiées avec succès !</value>
+  </data>
+  <data name="UpdateUserImages" xml:space="preserve">
+    <value>Vos images ont été modifiées avec succès !</value>
   </data>
   <data name="userdoesnotexist" xml:space="preserve">
     <value>Désolé, cet utilisateur n'existe pas !</value>
