@@ -441,7 +441,7 @@ namespace Social.Controllers
                         _localizer["NotLogin"], null));
             }
             var userImages = new List <UserImage>();
-            if (files != null && files.Count <=4)
+            if (files != null && files.Count > 0 && files.Count <=4 )
             {
 
                 foreach (var file in files)
@@ -501,6 +501,12 @@ namespace Social.Controllers
                     }
                 }
 
+                if (files.Count == 0)
+                {
+                    return StatusCode(StatusCodes.Status200OK,
+                        new ResponseModel<object>(StatusCodes.Status200OK, true,
+                            _localizer["UpdateUserImages"], true));
+                }
                 foreach (var file in files)
                 {
                     var fileName = await globalMethodsService.uploadFileAsync("/Images/Userprofile/", file);
