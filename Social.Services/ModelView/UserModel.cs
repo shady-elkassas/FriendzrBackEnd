@@ -138,6 +138,7 @@ public List<LinkAccountmodel> LinkAccountmodel { get; set; }
         public bool muit { get; set; }
         public bool isevent { get; set; }
         public bool isChatGroup { get; set; }
+        public bool isCommunityGroup { get; set; }
         public bool IsChatGroupAdmin { get; set; }
         public int LeaveGroup { get; set; }
         public bool myevent { get; set; }

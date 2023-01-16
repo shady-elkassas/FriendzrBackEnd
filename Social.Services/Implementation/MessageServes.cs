@@ -521,7 +521,7 @@ namespace Social.Services.Implementation
                 .ToList();
             foreach (var chatgroupObj in chatgrouplist)
             {
-
+                var userDetails = _authContext.UserDetails.Include(a=>a.User).FirstOrDefault(a => a.UserId == chatgroupObj.UserID);
                 var chatgroupusersettings = chatgroupObj.Subscribers.First(x => x.UserID == curen);
                 if (chatgroupusersettings.LeaveGroup != ChatGroupSubscriberStatus.Joined && chatgroupusersettings.ClearChatDateTime != null)
                     continue;
@@ -533,6 +533,7 @@ namespace Social.Services.Implementation
                         isChatGroup = true,
                         Name = chatgroupObj.Name,
                         Image = chatgroupObj.Image,
+                        isCommunityGroup = (/*userDetails?.IsWhiteLabel.Value == true &&*/ userDetails?.User.RegistrationDate == chatgroupObj.RegistrationDateTime),
                         id = chatgroupObj.ID.ToString(),
                         muit = chatgroupusersettings.IsMuted,
                         LeaveGroup = (int)chatgroupusersettings.LeaveGroup,
