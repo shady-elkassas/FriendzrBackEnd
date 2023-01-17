@@ -353,8 +353,11 @@
                                     <input type="hidden" class="form-control form-control-solid" id="Address_Longtude" asp-for="lang" />                                   
                                                                                                                                      
                                     <div id='map_canvas' style=" width: 100%; height: 300px;"></div>
-                                    <input type="text" id="txtPostalCode"  onchange="DrawMap()" placeholder="Enter Postal / Zip / Pin code" style="width: 200px" />                                 
-    
+                                    <a href="javascript:DrawMap();"  class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                         <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover"><i class="bi bi-search"></i></span>
+                                       </a>
+                                    <input type="text" id="txtPostalCode"  placeholder="Enter Postal / Zip / Pin code" style="width: 200px" />     
+                                      
 
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <span asp-validation-for="lang"></span>
@@ -517,8 +520,12 @@
                     $(this).toggle();
                 });
                 $("#row0").toggle();               
-                $("#PageModal").on('show.bs.modal', function() {                      
+                $("#PageModal").on('show.bs.modal', function() {  
+                    debugger;
                       $('#removeTime').hide();
+                         addMarker(haightAshbury);
+                          $("#Address_Latitude").val(haightAshbury.lat);
+                          $("#Address_Longtude").val(haightAshbury.lng);
                     });
         }
 
@@ -945,7 +952,8 @@
         let map;
         let markers = [];
         let marker;
-        function initMap() {           
+        function initMap() {  
+            debugger;
             map = new google.maps.Map(document.getElementById("map_canvas"), {
                 zoom: 12,
                 center: haightAshbury,
