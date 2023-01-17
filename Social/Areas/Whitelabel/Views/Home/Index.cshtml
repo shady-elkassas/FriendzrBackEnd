@@ -193,7 +193,7 @@
                     <tr class="fw-bolder  text-gray-800 px-5">
                         @{
                             var eventsData = (EventDataadminMV)ViewBag.EventDataadminMV;
-                            //<th></th>
+                            <th></th>
                             <th>#</th>
                             <th></th>
                             <th class="mw-200px">@Html.DisplayNameFor(x => eventsData.Title)</th>
@@ -636,20 +636,8 @@ Stop To
             CreateSelect2DropDown("[name='CategoryID']", "#EventInCategoryDivContainer");
             RenderEventsInCityDatatable();
             RenderEventsInCategoryDatatable();
-            RenderPageDatatable();
+            RenderPageDatatable();       
             
-            //$('#PageTable').on('click', 'tbody tr td',(function () {
-               
-            //      var row = table.row($(this)).data();
-            //      console.log(row);   
-            //      console.log(row['EntityId']);
-            //      let id=row['EntityId'];
-            //      let url = `/Whitelabel/Home/EventDetails?EventID=${id}`;
-            //      window.open(url); 
-            
-            //    })
-            //    );
-            //
             
 
             $(document).on("RemoveReportedUser", function (event, ID, callBack) {
@@ -766,17 +754,17 @@ Stop To
                 TableID: "#PageTable",
                 Url: Area + "/Event" + "/GetAll?" + $("#SearchForm").serialize(),
                 Columns: [
-                    //{
-                    //    "render": function (data, ypet, full, meta) {
-                    //        let ID = full.Id;
-                    //        ID = ID ?? full.EntityId;
-                    //        let button = `<div class="d-flex justify-content-end">
-                    //                   <button class="btn btn-success" onclick="OpenEventUserInterestsModal('${ID}')">More Details</button>
-                    //                  </div>`;
-                    //        return button;
+                    {
+                        "render": function (data, ypet, full, meta) {
+                            let ID = full.Id;
+                            ID = ID ?? full.EntityId;
+                            let button = `<div class="d-flex justify-content-end">
+                                       <button class="btn btn-success" onclick="OpenEventUserInterestsModal('${ID}')">More Details</button>
+                                      </div>`;
+                            return button;
 
-                    //    }
-                    //},
+                        }
+                    },
                     {
                         "data": "Title",
                         "render": function (data, ypet, full, meta) {

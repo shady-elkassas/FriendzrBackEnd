@@ -1737,7 +1737,7 @@ namespace Social.Services.Implementation
                 totalnumbert = model.totalnumbert,
                 Image = model.image,
                 Title = model.Title,
-                MessageChatEventCount=_authContext.Messagedata.Where(m=>m.EventDataid== model.Id).Count(),
+                MessageChatEventCount=_authContext.Messagedata.Include(m=>m.EventChatAttend).Where(m=>m.EventChatAttend.EventDataid== model.Id).Count(),
             };
             return Obj;
         }

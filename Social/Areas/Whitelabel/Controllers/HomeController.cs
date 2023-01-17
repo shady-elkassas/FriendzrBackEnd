@@ -58,24 +58,19 @@ namespace Social.Areas.WhiteLable.Controllers
             var DateTimeNow = DateTime.UtcNow.Date;
             var loggedinUser = HttpContext.GetUser();
             var userDeatils = loggedinUser.User.UserDetails;
-            var allEvents = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.IsActive == true && (n.EventTypeListid == 5
-                                     || n.EventTypeListid == 6)).ToList();
-            //var messages = _authDBContext.Messagedata.Where(m => allEvents.Select(a => a.Id).ToList().Contains(m.EventDataid.Value));
-            var allEventAttends = _authDBContext.EventChatAttend.Where(e => allEvents.Select(a => a.Id).Contains(e.EventDataid));
-            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
-            var actualUsers = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value);
-
+            
+            var actualUsers= _authDBContext.Users.Include(u=>u.UserDetails).Where(x => x.Email.ToLower().Contains("@owner") == false && !x.UserDetails.IsWhiteLabel.Value && x.UserDetails.Code== userDeatils.Code);
             var Users = _authDBContext.Users.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.UserDetails.IsWhiteLabel.Value);
 
             UserStatistics UserStatistics = new UserStatistics()
             {
-                //CurrenUsers_Count = Users.Count(),
-                //ConfirmedMailUsers_Count = Users.Where(x => x.EmailConfirmed).Count(),
+                CurrenUsers_Count = Users.Count(),
+                ConfirmedMailUsers_Count = Users.Where(x => x.EmailConfirmed).Count(),
                 Updated = actualUsers.Count(),
                 DeletedUsers_Count = _authDBContext.EventChatAttend.Where(c => c.stutus != 1).Count(),
                 UnConfirmedMailUsers_Count = Users.Where(x => !x.EmailConfirmed).Count(),
-                Male_Count = actualUsers.Where(x => x.Gender == "male").Count(),
-                Female_Count = actualUsers.Where(x => x.Gender == "female").Count(),
+                Male_Count = actualUsers.Where(x => x.UserDetails.Gender == "male").Count(),
+                Female_Count = actualUsers.Where(x => x.UserDetails.Gender == "female").Count(),
             };
             ViewBag.ListOFCities = _authDBContext.Cities.Select(x => new SelectListItem
             {
@@ -414,10 +409,13 @@ namespace Social.Areas.WhiteLable.Controllers
 
         public ActionResult EventDetails(string EventID)
         {
+            var loggedinUser = HttpContext.GetUser();
+            var userDeatils = loggedinUser.User.UserDetails;
             var EventData = _Event.GetEventbyid(EventID);
+            var messageCount = _authDBContext.Messagedata.Include(m => m.EventChatAttend).Where(m => m.EventChatAttend.EventDataid == EventData.Id);
 
             var allEventAttends = _authDBContext.EventChatAttend.Where(e => e.EventDataid == EventData.Id);
-            var attendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var attendedUsers = allEventAttends.Where(c => c.stutus != 2 && c.UserattendId!= userDeatils.PrimaryId).Select(e => e.Userattend);
             var actualUsers = attendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value);
             ViewBag.eventUsers = new UserStatistics()
             {
@@ -425,6 +423,7 @@ namespace Social.Areas.WhiteLable.Controllers
                 Male_Count = actualUsers.Where(x => x.Gender == "male").Count(),
                 Female_Count = actualUsers.Where(x => x.Gender == "female").Count(),
             };
+            EventData.Messagedata = messageCount.ToList();
             return View(EventData);
         }
 

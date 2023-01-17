@@ -121,7 +121,7 @@
                             <div class="text-gray-600">@(Model.eventdateto?.ToString("dd MMM yyyy")??""+Model.eventto?.ToString(",hh:mm tt"))</div>
                             <div class="fw-bolder mt-5">Attendance Count</div>
                             <div class="text-gray-600">
-                                @(Model.EventChatAttend.Where(x=>x.stutus!=1&&x.stutus!=2&&x.stutus!=3).Count() + "  User Attend")
+                                @(Model.EventChatAttend.Where(x=>x.stutus!=1&&x.stutus!=2&&x.stutus!=3 && x.UserattendId!= Model.UserId).Count() + "  User Attend")
                             </div>
                             <div class="fw-bolder mt-5">Reports Count</div>
                             <div class="text-gray-600">
