@@ -89,18 +89,18 @@ namespace Social.Controllers
                 var CHECKEVENTLOCATION = _userService.CHECKEVENTLOCATION(loggedinUser.User.UserDetails.lat, loggedinUser.User.UserDetails.lang, model.lat, model.lang, dataconfig);
                 var olddata = _Event.getallevent();
                 var datavalid = olddata.FirstOrDefault(m => m.lat == model.lat && m.lang == model.lang && m.Title == model.Title && m.eventdate == Convert.ToDateTime(model.eventdate));
-                //if (datavalid != null)
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //       new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                //        _localizer["This event already exists"], null));
-                //}
-                //if (CHECKEVENTLOCATION == false)
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                //         _localizer["Please select a nearby Location "], null));
-                //}
+                if (datavalid != null)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                       new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                        _localizer["This event already exists"], null));
+                }
+                if (CHECKEVENTLOCATION == false)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                         _localizer["Please select a nearby Location "], null));
+                }
                 if (string.IsNullOrEmpty(ListOfUserIDs) != false && typedate.Privtekey == true)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
@@ -122,13 +122,13 @@ namespace Social.Controllers
 
                          _localizer["Creattime is required"], null));
                 }
-                //if (model.lang == "" || model.lang == null || model.lat == "" || model.lat == null)
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                if (model.lang == "" || model.lang == null || model.lat == "" || model.lat == null)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                //         _localizer["locations is required"], null));
-                //}
+                         _localizer["locations is required"], null));
+                }
 
                 if (model.eventdate == null || model.eventdateto == null)
                 {
@@ -145,20 +145,20 @@ namespace Social.Controllers
                          _localizer["start and end time is required"], null));
                 }
 
-                //if (model.eventdate < DateTime.Now.Date || model.eventdate > DateTime.Now.Date.AddYears(1))
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                if (model.eventdate < DateTime.Now.Date || model.eventdate > DateTime.Now.Date.AddYears(1))
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                //         _localizer["EventdatemustNotinthepast"], null));
-                //}
-                //if (model.eventdateto > model.eventdate.Value.AddMonths(1))
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                         _localizer["EventdatemustNotinthepast"], null));
+                }
+                if (model.eventdateto > model.eventdate.Value.AddMonths(1))
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                //         _localizer["Maximumallowedeventperiod"], null));
-                //}
+                         _localizer["Maximumallowedeventperiod"], null));
+                }
                 if ((model.totalnumbert + 1) < 3)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
@@ -166,20 +166,20 @@ namespace Social.Controllers
 
                          _localizer["AttendeesNumbershouldnotbelessthan2"], null));
                 }
-                //if (model.eventdate > model.eventdateto)
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                if (model.eventdate > model.eventdateto)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                //         _localizer["EventstartdatemustNotolderthanEventenddate"], null));
-                //}
-                //if (model.eventfrom >= model.eventto)
-                //{
-                //    return StatusCode(StatusCodes.Status406NotAcceptable,
-                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                         _localizer["EventstartdatemustNotolderthanEventenddate"], null));
+                }
+                if (model.eventfrom >= model.eventto)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                //         _localizer["EventstarttimemustNotolderthanEventendtime"], null));
-                //}
+                         _localizer["EventstarttimemustNotolderthanEventendtime"], null));
+                }
                 if (model.Title == null)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
@@ -213,7 +213,7 @@ namespace Social.Controllers
                         return StatusCode(StatusCodes.Status406NotAcceptable,
                             new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                                _localizer["Event Title Max Length is "] + dataconfig.EventTitle_MinLength, null));
+                                _localizer["Event Title Max Length is "] + dataconfig.EventTitle_MaxLength, null));
 
                     }
                 }
@@ -489,7 +489,7 @@ namespace Social.Controllers
         {
             try
             {
-                // var dataconfig = appConfigrationService.GetData().FirstOrDefault();
+                var dataconfig = appConfigrationService.GetData().FirstOrDefault();
                 if (model.eventtype == null)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
@@ -588,20 +588,62 @@ namespace Social.Controllers
 
                          _localizer["description is Required"], null));
                 }
-                if (model.Title.Length > 32)
+                if (dataconfig.EventTitle_MinLength != null)
                 {
-                    return StatusCode(StatusCodes.Status406NotAcceptable,
-                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                    if (model.Title.Length < dataconfig.EventTitle_MinLength)
+                    {
+                        return StatusCode(StatusCodes.Status406NotAcceptable,
+                            new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                         _localizer["TitlemustNotmorethan32characters."], null));
+                                      _localizer["Event  Title Min Length is "] + dataconfig.EventTitle_MinLength, null));
+
+                    }
                 }
-                if (model.description.Length > 150)
+                if (dataconfig.EventTitle_MaxLength != null)
                 {
-                    return StatusCode(StatusCodes.Status406NotAcceptable,
-                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                    if (model.Title.Length > dataconfig.EventTitle_MaxLength)
+                    {
+                        return StatusCode(StatusCodes.Status406NotAcceptable,
+                            new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                         _localizer["descriptionismustNotmorethan150characters."], null));
+                                _localizer["Event Title Max Length is "] + dataconfig.EventTitle_MaxLength, null));
+
+                    }
                 }
+                if (dataconfig.EventDetailsDescription_MaxLength != null)
+                {
+                    if (model.description.Length > dataconfig.EventDetailsDescription_MaxLength)
+                    {
+                        return StatusCode(StatusCodes.Status406NotAcceptable,
+                            new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+
+                              _localizer["Event Details Description Max Length is "] + dataconfig.EventDetailsDescription_MaxLength, null));
+                    }
+                }
+                if (dataconfig.EventDetailsDescription_MinLength != null)
+                {
+                    if (model.description.Length < dataconfig.EventDetailsDescription_MinLength)
+                    {
+                        return StatusCode(StatusCodes.Status406NotAcceptable,
+                            new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+
+                                _localizer["Event Details Description Min Length is "] + dataconfig.EventDetailsDescription_MinLength, null));
+                    }
+                }
+                //if (model.Title.Length > 32)
+                //{
+                //    return StatusCode(StatusCodes.Status406NotAcceptable,
+                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+
+                //         _localizer["TitlemustNotmorethan32characters."], null));
+                //}
+                //if (model.description.Length > 150)
+                //{
+                //    return StatusCode(StatusCodes.Status406NotAcceptable,
+                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+
+                //         _localizer["descriptionismustNotmorethan150characters."], null));
+                //}
                 if (model.totalnumbert == 0)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
