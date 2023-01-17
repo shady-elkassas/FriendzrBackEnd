@@ -49,9 +49,9 @@ namespace Social.Services.Implementation
                     Email = whiteLableUser.Email,
                     DisplayedUserName = whiteLableUser.DisplayedUserName,
                     UserName = whiteLableUser.UserName,
-                    RegistrationDate = DateTime.Now,
+                    RegistrationDate = DateTime.UtcNow,
                     EmailConfirmed=true,
-                    EmailConfirmedOn= DateTime.Now,
+                    EmailConfirmedOn= DateTime.UtcNow,
                 };
 
                 newWhiteLableUser.UserDetails = new UserDetails

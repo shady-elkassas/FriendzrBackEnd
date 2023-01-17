@@ -77,7 +77,7 @@ namespace Social.Areas.Admin.Controllers
             var modelChat= new ChatGroupVM()
             {
                 Name = user.DisplayedUserName,
-                RegistrationDateTime= System.DateTime.Now,
+                RegistrationDateTime= System.DateTime.UtcNow,
                 Image= user.UserDetails.UserImage,                
             };           
 

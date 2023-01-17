@@ -441,7 +441,7 @@ namespace Social.Controllers
                         _localizer["NotLogin"], null));
             }
             var userImages = new List <UserImage>();
-            if (files != null && files.Count > 0 && files.Count <=4 )
+            if (files != null && files.Count > 0 && files.Count <=5 )
             {
 
                 foreach (var file in files)
@@ -488,7 +488,7 @@ namespace Social.Controllers
                         _localizer["NotLogin"], null));
             }
             var userImages = new List<UserImage>();
-            if (files != null && files.Count <= 4)
+            if (files != null && files.Count <= 5)
             {
                 var oldUserImages = _userService.GetUserImages(userDetails.PrimaryId);
                 if (oldUserImages.Any())
