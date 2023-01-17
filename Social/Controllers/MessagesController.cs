@@ -824,6 +824,7 @@ namespace Social.Controllers
                               m.myevent,
                               m.Name,
                               m.id,
+                              m.isCommunityGroup,
                               m.muit,
                               m.isChatGroup,
                               m.IsChatGroupAdmin,

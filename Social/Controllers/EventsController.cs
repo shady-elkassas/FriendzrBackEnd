@@ -1494,7 +1494,15 @@ namespace Social.Controllers
                     bool eventHasExpired = false;
                     if(cuserount.Count() <= 0)
                     {
-                       return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, false, "No events there", null));
+                        string[] result = { };
+                       return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, false, "No events there", new
+                       {
+                           pageNumber = 1,
+                           pageSize = 0,
+                           totalPages = 0,
+                           totalRecords = 0,
+                           data = result
+                       }));
                     }
                     if ((cuserount.FirstOrDefault().eventdateto.Value.Date <= DateTime.Now.Date))
                     {
