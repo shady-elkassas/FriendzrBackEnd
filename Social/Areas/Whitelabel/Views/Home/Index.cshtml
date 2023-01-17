@@ -6,6 +6,16 @@
     ViewData["UserReports"] = ViewBag.UserReports;
     Layout = "~/Areas/Admin/Views/Shared/_Layoutstatistics.cshtml";
 }
+@section Styless{
+<style>
+    .div_float {            
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+</style>
+}
 
 <div class="flex-column-fluid align-items-start container-xxl">
        
@@ -50,7 +60,7 @@
             </div>
         </div>
         @*Gender part*@
-          <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+        <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
             Users’ Genders
         </h1>
         <div class="col-lg-4">
@@ -85,7 +95,7 @@
                     <div class="d-flex flex-column w-100 mt-12">
                         <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
                         <div class="progress h-5px w-100">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(Model.Male_Rate + "%")" aria-valuenow="@(Model.Male_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-primary" role="progressbar"  style="width: @(Model.Male_Rate + "%")" aria-valuenow="@(Model.Male_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
 
@@ -183,8 +193,9 @@
                     <tr class="fw-bolder  text-gray-800 px-5">
                         @{
                             var eventsData = (EventDataadminMV)ViewBag.EventDataadminMV;
-                            <th></th>
+                            //<th></th>
                             <th>#</th>
+                            <th></th>
                             <th class="mw-200px">@Html.DisplayNameFor(x => eventsData.Title)</th>
                             <th>@Html.DisplayNameFor(x => eventsData.CreatedDate)</th>
                             <th>@Html.DisplayNameFor(x => eventsData.categoryName)</th>
@@ -202,6 +213,180 @@
             </table>
         </div>
          @*End list events part*@
+         @*Start the Modal view*@
+    <div class="modal fade" id="EventUserInterests" tabindex="-1" aria-hidden="true">
+    <input type="hidden" id="EventID" />
+    <div class="modal-dialog modal-dialog-centered modal-xl mw-850px">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span><i class="bi bi-x-lg"></i></span>
+                </div>
+            </div>
+
+            <div class="modal-body scroll-y pt-0">
+                <div class="mb-13 text-center">
+                    <h1 class="mb-3"> <span id="EventName"></span> @_localizer["Statistics"]</h1>
+                </div>
+                <div class="card-body py-3">
+                 @*User Statistics*@
+                  <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+            Users’ Genders
+        </h1>
+        <div class="div_float">
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-danger-light">
+                                    <img src="~/assets/media/svg/avatars/029-boy-11.svg" class="h-50 align-self-center" alt="" />
+                                </span>
+                            </div>
+
+
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">
+                                    Male
+                                </span>
+                                <span class="text-muted fw-bold" id="maleCount">count:</span>
+                                <span class="text-muted fw-bold" id ="maleRate">percentage: %</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-primary" role="progressbar" id="maleProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-primary-light">
+                                    <img src="~/assets/media/svg/avatars/014-girl-7.svg" class="h-50 align-self-center" alt="" />
+                                </span>
+                            </div>
+
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">Female </span>
+                                <span class="text-muted fw-bold" id="femaleCount">count: Users</span>
+                                <span class="text-muted fw-bold" id="femaleRate">percentage:  %</span>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-danger" role="progressbar" id="femaleProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="symbol symbol-60px me-5">
+                                <span class="symbol-label bg-success-light">
+                                    <img src="~/assets/media/svg/avatars/User_Circle.png" class="h-50 align-self-center" alt="" />
+
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark fw-bolder text-hover-primary fs-5">other gender </span>
+                                <span class="text-muted fw-bold" id="otherCount">count: users</span>
+                                <span class="text-muted fw-bold" id="otherRate">percentage: %</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column w-100 mt-12">
+                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                        <div class="progress h-5px w-100">
+                            <div class="progress-bar bg-dark" role="progressbar" id= "otherProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+                 @*Interests Statistics*@
+                 <div class="col-xl-12">
+                <div class="card card-flush h-lg-100">
+
+                    <div class="card-header mt-6">
+
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1">Users In Each Interest</h3>
+
+                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="card-body pt-10 pb-0 px-5">
+
+                        <div id="UsersInEachInterestGrapgh" class="card-rounded-bottom" style="height: 300px"></div>
+
+                    </div>
+
+                </div>
+            </div>                 
+                </div>
+                <div class="text-end">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@_localizer["close"]</button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+         @*End Modal view*@
       </div>
  </div>
 
@@ -222,7 +407,7 @@
   
     @*<script src="~/Components/UserInfoStatictes.js"></script>*@
     <script src="~/Components/appConfigrationSingleEdit.js"></script>
-    <script src="~/Components/UsersGraph.js"></script>
+    <script src="~/Components/UserInterestsGraph.js"></script>
     <script src="~/Components/AppStatictesGraph.js"></script>
     <script src="~/Components/whitelabelEventsStatictes.js"></script>
     <script>
@@ -396,7 +581,7 @@ Stop To
                         "render": function (data, ypet, full, meta) {
                             let ID = full.ID;
                             ID = ID ?? full.EntityId;
-                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`                          
                             return `<span class="font-bolder" >${data}</span>` + hidden;
                         }
                     },
@@ -453,17 +638,19 @@ Stop To
             RenderEventsInCategoryDatatable();
             RenderPageDatatable();
             
-            $('#PageTable').on('click', 'tbody tr', function () {
+            //$('#PageTable').on('click', 'tbody tr td',(function () {
                
-                  var row = table.row($(this)).data();
-                  console.log(row);   
-                  console.log(row['EntityId']);
-                  let id=row['EntityId'];
-                  let url = `/Whitelabel/Home/EventDetails?EventID=${id}`;
-                  window.open(url);                 
-                });
+            //      var row = table.row($(this)).data();
+            //      console.log(row);   
+            //      console.log(row['EntityId']);
+            //      let id=row['EntityId'];
+            //      let url = `/Whitelabel/Home/EventDetails?EventID=${id}`;
+            //      window.open(url); 
+            
+            //    })
+            //    );
             //
-
+            
 
             $(document).on("RemoveReportedUser", function (event, ID, callBack) {
                 $.post(`/Admin/Users/RemoveObj?ID=${ID}`, (res) => {
@@ -540,8 +727,37 @@ Stop To
             xhr.send();
           });     
             
+        function OpenEventUserInterestsModal(ID)
+        {
+            GetDataForObject(ID);
+        }
+        function GetDataForObject(ID) {
 
-        
+                $.get(`/${CurrentPageUrlInfo.Area}/${CurrentPageUrlInfo.Controller}/GetUsersStatistics?ID=${ID}`, (res) => {
+                    PopulateModal($("#EventUserInterests").first(), res,ID);
+                    $("#EventUserInterests").modal("show");
+
+                }).fail((xhr, textStatus, errorThrown) => {
+                    ShowNotification("error", errorThrown);
+                });
+            }
+
+       function PopulateModal(modal,data,ID)
+       {
+             $("#maleCount").html("count: "+data.Male_Count+" Users"); 
+             $("#maleRate").html("percentage: %"+data.Male_Rate); 
+             $("#femaleCount").html("count: "+data.Female_Count+" Users"); 
+             $("#femaleRate").html("percentage: %"+data.Female_Rate); 
+             $("#otherCount").html("count: "+data.Othergender_Count+" Users"); 
+             $("#otherRate").html("percentage: %"+data.Othergender_Rate); 
+             var maleProgress= document.getElementById("maleProgress");
+             maleProgress.style.width= data.Male_Rate + "%";           
+             var femaleProgress= document.getElementById("femaleProgress");
+             femaleProgress.style.width= data.Female_Rate + "%";
+             var otherProgress= document.getElementById("otherProgress");
+             otherProgress.style.width= data.Othergender_Rate + "%";             
+             UpdateUsersInEachInterestGrapgh(ID);
+       }
         function RenderPageDatatable() {
             $("#PageTable").removeClass("d-none")
            // let Controller = "/" + CurrentPageUrlInfo.Controller;
@@ -550,14 +766,28 @@ Stop To
                 TableID: "#PageTable",
                 Url: Area + "/Event" + "/GetAll?" + $("#SearchForm").serialize(),
                 Columns: [
+                    //{
+                    //    "render": function (data, ypet, full, meta) {
+                    //        let ID = full.Id;
+                    //        ID = ID ?? full.EntityId;
+                    //        let button = `<div class="d-flex justify-content-end">
+                    //                   <button class="btn btn-success" onclick="OpenEventUserInterestsModal('${ID}')">More Details</button>
+                    //                  </div>`;
+                    //        return button;
+
+                    //    }
+                    //},
                     {
                         "data": "Title",
                         "render": function (data, ypet, full, meta) {
                             let ID = full.ID;
-                            ID = ID ?? full.EntityId;
+                            ID = ID ?? full.EntityId;                        
 
                             let hidden = `<input type="hidden" value=/Whitelabel/Home/EventDetails?EventID=${ID}"/>`
-                            return `<span class="font-bolder" >${data}</span>` + hidden;
+                         
+
+                          return `<a href="/Whitelabel/Home/EventDetails?EventID=${ID}" target="_blank"><span class="font-bolder">${data}</span></a>`
+                           
                         }
                     },
                     {

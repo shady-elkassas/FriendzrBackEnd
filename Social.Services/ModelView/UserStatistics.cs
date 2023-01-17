@@ -81,14 +81,18 @@ namespace Social.Services.ModelView
         public int UsersWith25_34Age_Count { get; set; }
         public int UsersWith35_54Age_Count { get; set; }
         public int UsersWithMoreThan55Age_Count { get; set; }
-        public double Male_Rate { get { return Math.Round((((double)Male_Count / (double)Updated) * 100), 2); } }
+        public double Male_Rate { get { var num= Math.Round((((double)Male_Count / (double)Updated) * 100), 2);
+                return double.IsNaN(num) ? 0 : num;
+            } }
         public double UserWithLessThan18Age_Rate { get { return Math.Round((((double)UserWithLessThan18Age_Count / (double)Updated) * 100), 2); } }
         public double UsersWith18_24Age_Rate { get { return Math.Round((((double)UsersWith18_24Age_Count / (double)Updated) * 100), 2); } }
         public double UsersWith25_34Age_Rate { get { return Math.Round((((double)UsersWith25_34Age_Count / (double)Updated) * 100), 2); } }
         public double UsersWith35_54Age_Rate { get { return Math.Round((((double)UsersWith35_54Age_Count / (double)Updated) * 100), 2); } }
         public double UsersWithMoreThan55Age_Rate { get { return Math.Round((((double)UsersWithMoreThan55Age_Count / (double)Updated) * 100), 2); } }
         public int Othergender_Count { get { return (Updated) - (Female_Count + Male_Count); } }
-        public double Othergender_Rate { get { return Math.Round(100 - Male_Rate - Female_Rate, 2); } }
+        public double Othergender_Rate { get { var num=(Male_Rate == 0 && Female_Rate == 0)?0: Math.Round(100 - Male_Rate - Female_Rate, 2);
+                return double.IsNaN(num) ? 0 : num;
+            } }
         public int Female_Count { get; set; }
         public int NeedUpdate { get; set; }
         public int Updated { get; set; }
@@ -99,6 +103,8 @@ namespace Social.Services.ModelView
         public int DeletedProfiles_Count { get; set; }
         public double DeletedProfiles_Rate { get { return (CurrenUsers_Count == 0 && DeletedProfiles_Count > 0) ? 100 : Math.Round((((double)DeletedProfiles_Count / (double)CurrenUsers_Count) * 100),2); } }
 
-        public double Female_Rate { get { return Math.Round((((double)Female_Count / (double)Updated) * 100), 2); }  }
+        public double Female_Rate { get {var num = Math.Round((((double)Female_Count / (double)Updated) * 100), 2);
+                return double.IsNaN(num) ? 0 : num;
+            }  }
     }
 }

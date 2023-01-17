@@ -219,6 +219,57 @@ namespace Social.Areas.WhiteLable.Controllers
             return Ok(JObject.FromObject(new { EventsInfo = eventsinfo }, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
 
         }
+
+        [HttpGet]
+        public IActionResult GetUsersStatistics(int ID)
+        {
+            var loggedinUser = HttpContext.GetUser();
+            var userDeatils = loggedinUser.User.UserDetails;
+            var choosedEvent = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.Id == ID && n.IsActive == true && (n.EventTypeListid == 5
+                                       || n.EventTypeListid == 6)).ToList();
+            var allEventAttends = _authDBContext.EventChatAttend.Where(e => choosedEvent.Select(a => a.Id).Contains(e.EventDataid));
+            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var actualUsers = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value);
+
+            var Users = _authDBContext.Users.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.UserDetails.IsWhiteLabel.Value);
+
+            UserStatistics UserStatistics = new UserStatistics()
+            {
+                Updated = actualUsers.Count(),
+                DeletedUsers_Count = _authDBContext.EventChatAttend.Where(c => c.stutus != 1).Count(),
+                UnConfirmedMailUsers_Count = Users.Where(x => !x.EmailConfirmed).Count(),
+                Male_Count = actualUsers.Where(x => x.Gender == "male").Count(),
+                Female_Count = actualUsers.Where(x => x.Gender == "female").Count(),
+            };
+            
+            var data = JObject.FromObject(UserStatistics, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() });
+
+            return Ok(data);
+
+        }
+        public  IActionResult UsersInEachInterest(int Id)
+        {
+            var loggedinUser = HttpContext.GetUser();
+            var userDeatils = loggedinUser.User.UserDetails;
+            var choosedEvent = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.Id == Id && n.IsActive == true && (n.EventTypeListid == 5
+                                       || n.EventTypeListid == 6)).ToList();
+            var allEventAttends = _authDBContext.EventChatAttend.Where(e => choosedEvent.Select(a => a.Id).Contains(e.EventDataid));
+            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var actualUsers = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value).ToList();
+            var userIds = actualUsers.Select(u => u.PrimaryId).ToList();
+            var listofTages =  _authDBContext.listoftags.Where(l => userIds.Contains(l.UserId.Value)).ToList();
+            var interestsCommon =  _authDBContext.Interests.Where(i => listofTages.Select(l=>l.InterestsId).Distinct().Contains(i.Id)).ToList();
+            var interests = interestsCommon.Select(q => new { InterestName = q.name, NumOfUsers = listofTages.Where(l=>l.InterestsId== q.Id).ToList().Count });
+            //var interests = await _authDBContext.Interests.Include(q => q.listoftags).Where(i=>i.listoftags.
+            //Where(li=>userIds.Contains(li.UserId.Value)).Any()).Select(q => new { InterestName = q.name, NumOfUsers = q.listoftags.Count() }).ToListAsync();
+
+            var series = new List<object>()
+            {
+                new {name="NumberOfUsers",data=interests.Select(q=>q.NumOfUsers)},
+            };
+
+            return Ok(new { Interests = interests.Select(x => x.InterestName), series = series });
+        }
         public IActionResult UserStatictesPerMonth(int? Year)
         {
             //var AdminUsers=_authDBContext.Users.Where(z=>z.is)

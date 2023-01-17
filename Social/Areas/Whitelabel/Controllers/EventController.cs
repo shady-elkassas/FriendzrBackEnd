@@ -178,7 +178,7 @@ namespace Social.Areas.WhiteLable.Controllers
                         to?.Subtract(from.Value).TotalHours > 1));
                     if (isCorrect || isInSameDay)
                     {
-                        //return false;
+                        
                         continue;
                     }
                     else
