@@ -360,6 +360,11 @@ namespace Social.Services.Implementation
             var data = this._authContext.EventData.FirstOrDefault(m => m.EntityId == id);
             return (data);
         }
+        public EventData GeteventbyPrimaryId(string id)
+        {
+            var data = this._authContext.EventData.FirstOrDefault(m => m.Id == int.Parse(id));
+            return (data);
+        }
 
         public EventChatAttend GetEventChatAttendbyid(string id)
         {
@@ -1581,6 +1586,28 @@ namespace Social.Services.Implementation
 
             }
         }
+        public async Task<CommonResponse<EventDataadminMV>> RemoveEventById(string id)
+        {
+            var Obj = _authContext.EventData.FirstOrDefault(x => x.Id == int.Parse(id));
+            try
+
+            {
+
+                _authContext.EventData.Remove(Obj);
+                await _authContext.SaveChangesAsync();
+                return CommonResponse<EventDataadminMV>.GetResult(200, true, localizer["RemovedSuccessfully"]);
+            }
+            catch
+            {
+                var related = DependencyValidator<EventData>.GetDependenciesNames(Obj).ToList();
+                var Message = string.Format(localizer["PlzDeleteDataRelatedWithObjForCompleteObjectRemove"],
+                    Obj?.Title,
+                    //localizer[Obj.GetType().BaseType.Name),
+                    related.Select(x => localizer[x].Value).Aggregate((x, y) => x + "," + y));
+                return CommonResponse<EventDataadminMV>.GetResult(406, false, Message);
+
+            }
+        }
 
         public async Task<CommonResponse<EventDataadminMV>> ToggleActiveConfigration(string ID, bool IsActive)
         {
@@ -1604,6 +1631,19 @@ namespace Social.Services.Implementation
             try
             {
                 var Obj = _authContext.EventData.FirstOrDefault(x => x.EntityId == ID);
+                var vM = Converter(Obj);
+                return vM;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public EventDataadminMV GetEventDataDetails(int Id)
+        {
+            try
+            {
+                var Obj = _authContext.EventData.FirstOrDefault(x => x.Id == Id);
                 var vM = Converter(Obj);
                 return vM;
             }

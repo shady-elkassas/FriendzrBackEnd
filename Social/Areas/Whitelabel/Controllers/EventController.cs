@@ -282,8 +282,8 @@ namespace Social.Areas.WhiteLable.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveObj(string ID)
         {
-            await _Event.deleteEvent(ID);
-            //var Result = await _Event.Remove(ID);
+           // await _Event.deleteEvent(ID);
+            await _Event.RemoveEventById(ID);
 
             return Ok(JObject.FromObject(CommonResponse<EventDataadminMV>.GetResult(200, true, _localizer["RemovedSuccessfully"]), new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
 
@@ -292,7 +292,7 @@ namespace Social.Areas.WhiteLable.Controllers
         [HttpGet]
         public IActionResult GetObj(string ID)
         {
-            var Result = _Event.GetData(ID);
+            var Result = _Event.GetEventDataDetails(int.Parse(ID));
             if(Result!= null)
             {
                 Result= FixEventName(Result);
@@ -420,7 +420,8 @@ namespace Social.Areas.WhiteLable.Controllers
         public IActionResult eventChatAttends(string ID)
         {
 
-            var EventData = _Event.GetEventbyid(ID);
+          //  var EventData = _Event.GetEventbyid(ID);
+            var EventData = _Event.GeteventbyPrimaryId(ID);
             var data = EventData.EventChatAttend.Where(x => x.Userattend != null).ToList().Select(x => new
             {
                 UserName = x.Userattend.User.DisplayedUserName,
@@ -435,7 +436,8 @@ namespace Social.Areas.WhiteLable.Controllers
 
         public IActionResult GetEventReports(string ID)
         {
-            var Result = new { data = _eventReportService.GetData(ID).OrderByDescending(x => x.RegistrationDate) };
+         //   var Result = new { data = _eventReportService.GetData(ID).OrderByDescending(x => x.RegistrationDate) };
+            var Result = new { data = _eventReportService.GetDataByPrimaryId(ID).OrderByDescending(x => x.RegistrationDate) };
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
         }
 

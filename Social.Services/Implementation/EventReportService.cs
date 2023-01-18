@@ -120,6 +120,11 @@ namespace Social.Services.Implementation
             var data = authDBContext.EventReports.Where(x=>x.EventData.EntityId==EventID).Include(x=>x.User).Include(x=>x.User.UserDetails).Select(Converter).ToList();
             return data;
         }
+        public IEnumerable<EventReportVM> GetDataByPrimaryId(string EventID)
+        {
+            var data = authDBContext.EventReports.Where(x => x.EventData.Id ==int.Parse(EventID) ).Include(x => x.User).Include(x => x.User.UserDetails).Select(Converter).ToList();
+            return data;
+        }
 
 
         EventReport Converter(EventReportVM model)

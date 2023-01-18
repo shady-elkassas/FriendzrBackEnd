@@ -14,6 +14,7 @@ namespace Social.Services.Services
         Task<EventReportVM> GetData(Guid ID);
         IEnumerable<EventReportVM> GetData();
         IEnumerable<EventReportVM> GetData(string EventOD);
+        IEnumerable<EventReportVM> GetDataByPrimaryId(string EventID);
         Task<CommonResponse<EventReportVM>> Create(EventReportVM VM);
         Task<CommonResponse<EventReportVM>> Edit(EventReportVM VM);
         Task<CommonResponse<EventReportVM>> Remove(Guid ID);

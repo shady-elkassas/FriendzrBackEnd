@@ -17,6 +17,7 @@ namespace Social.Services.Services
         Task InsertEventColor(EventColor code);
         Task<EventData> InsertEvent(EventData code);
         Task updateEvent(EventData code);
+        EventDataadminMV GetEventDataDetails(int Id);
 
         EventChatAttend GetEventChatAttendbyid(string id);
         // Task InsertEventChatAttend(EventChatAttend code);
@@ -32,6 +33,7 @@ namespace Social.Services.Services
         List<interlistdata> GetEventattendstat(string id);
         List<listdata> GetEventattendgender(string id);
         EventData GetEventbyid(string id);
+        EventData GeteventbyPrimaryId(string id);
         category Getcategorybyid(string id);
         int GetEventattend(string id);
         int GetEventattend(string id, List<EventChatAttend> eventattend);
@@ -93,6 +95,7 @@ namespace Social.Services.Services
         Task<bool> Createrang(List<EventData> Obj);
         Task<CommonResponse<EventDataadminMV>> Edit(EventDataadminMV VM);
         Task<CommonResponse<EventDataadminMV>> Remove(string ID);
+        Task<CommonResponse<EventDataadminMV>> RemoveEventById(string id);
 
         Task<(RecommendedEventViewModel,string)> RecommendedEvent(UserDetails userDeatil, string eventId);
         
