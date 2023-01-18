@@ -298,7 +298,7 @@ namespace Social.Services.Implementation
                 
                 await authDBContext.SaveChangesAsync();
 
-                VM.Attach = VM.MessageType == Messagetype.Text ? null : "https://localtest.friendzsocialmedia.com" + messagedata.MessagesAttached;
+                VM.Attach = VM.MessageType == Messagetype.Text ? null : _configuration["BaseUrl"] + messagedata.MessagesAttached;
                 //var currentusertype = messagedata.ChatGroup.Subscribers.FirstOrDefault(x => x.UserID == CurrentUser.Id)?.IsAdminGroup;
                 var eventdata = _Event.getevent(VM.EventLINKid).FirstOrDefault();
                 var allateend = _Event.allattendevent().ToList();
