@@ -230,7 +230,7 @@
                 </div>
                 <div class="card-body py-3">
                  @*User Statistics*@
-                  <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
+                  <h1 class="text-dark fw-bolder my-1 fs-3 w-100  text-active-info">
             Users’ Genders
         </h1>
         <div class="div_float">
@@ -356,18 +356,7 @@
                  @*Interests Statistics*@
                  <div class="col-xl-12">
                 <div class="card card-flush h-lg-100">
-
-                    <div class="card-header mt-6">
-
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Users In Each Interest</h3>
-
-                            <div class="fs-6 d-flex text-gray-400 fs-6 fw-bold">
-                            </div>
-                        </div>
-
-
-                    </div>
+                    <h3 class="fw-bolder mb-1">Users In Each Interest</h3>                   
 
                     <div class="card-body pt-10 pb-0 px-5">
 
@@ -376,8 +365,61 @@
                     </div>
 
                 </div>
-            </div>                 
+                </div>                 
                 </div>
+                
+                @*Age Statistics*@
+                <div class="card-title flex-column">
+                <h3 class="fw-bolder mb-1">Age Statistics</h3>
+                 </div>
+                <div class="h-250px">
+                    <div id="FinishedRegistrationByAge" class="card card-flush h-lg-100">
+                        <div class="card-body p-9 pt-5">
+                            <div class="d-flex flex-wrap">
+                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                        <span id="TotalByAge_FRU" class="fs-2qx fw-bolder"></span>
+                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                    </div>
+                                    <canvas id="UserStatictisByAge_chart"></canvas>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#47BE7D;"></div>
+                                        <div class="text-gray-400">18 - 24</div>
+                                        <div id="From18To25_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                        <div class="text-gray-400">25 - 34</div>
+                                        <div id="From25To34_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#ffc107;"></div>
+                                        <div class="text-gray-400">35 - 44 </div>
+                                        <div id="From35To44_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#F1416C;"></div>
+                                        <div class="text-gray-400">45 - 54 </div>
+                                        <div id="From45To54_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                        <div class="text-gray-400">55 - 64 </div>
+                                        <div id="From55To64_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                        <div class="bullet" style="background-color:#6610f2;"></div>
+                                        <div class="text-gray-400">65 + </div>
+                                        <div id="From65AndMore_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*End Age Statistics*@
                 <div class="text-end">
                     <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@_localizer["close"]</button>
                 </div>
@@ -405,7 +447,7 @@
    
     @await Component.InvokeAsync("WhitelabelEventsGoogleMap")
   
-    @*<script src="~/Components/UserInfoStatictes.js"></script>*@
+    <script src="~/Components/AgeStatistics.js"></script>
     <script src="~/Components/appConfigrationSingleEdit.js"></script>
     <script src="~/Components/UserInterestsGraph.js"></script>
     <script src="~/Components/AppStatictesGraph.js"></script>
@@ -745,6 +787,7 @@ Stop To
              var otherProgress= document.getElementById("otherProgress");
              otherProgress.style.width= data.Othergender_Rate + "%";             
              UpdateUsersInEachInterestGrapgh(ID);
+             AgeUserStatictis(ID);
        }
         function RenderPageDatatable() {
             $("#PageTable").removeClass("d-none")

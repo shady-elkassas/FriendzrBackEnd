@@ -102,7 +102,8 @@ $("#PageForm").on("submit", (e) => {
                     }
                     else {
                         AssignModelResponseErrorsToControllers(res.ModelErrors, Form);
-                        ShowNotification("warning", res.Message + " " + res.ModelErrors["lang"] == undefined ? "" : res.ModelErrors["lang"]);                        
+                        var messag = res.Message + " " + (res.ModelErrors["lang"] == undefined ? "" : res.ModelErrors["lang"]);
+                        ShowNotification("warning", messag);
                     }
 
                 },

@@ -406,7 +406,33 @@ namespace Social.Areas.WhiteLable.Controllers
             };
             return Ok(new { Monthes = Monthes, series = series });
         }
+        public IActionResult AgeUserStatictis(int Id)
+        {
+            var loggedinUser = HttpContext.GetUser();
+            var userDeatils = loggedinUser.User.UserDetails;
+            var choosedEvent = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.Id == Id && n.IsActive == true && (n.EventTypeListid == 5
+                                       || n.EventTypeListid == 6)).ToList();
+            var allEventAttends = _authDBContext.EventChatAttend.Where(e => choosedEvent.Select(a => a.Id).Contains(e.EventDataid));
+            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var users = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value).ToList();
+            // List<UserDetails> users = await _authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
 
+
+            StatisticsByGenderAndAgeViewModel finishedRegistrationUserStatictes = new StatisticsByGenderAndAgeViewModel()
+            {
+                All = users.Count(),
+                Male = users.Where(q => q.Gender == "male").Count(),
+                Female = users.Where(q => q.Gender == "female").Count(),
+                Other = users.Where(q => q.Gender == "other").Count(),
+                From18To25 = users.Where(q => GetAge(q.birthdate.Value) >= 18 && GetAge(q.birthdate.Value) <= 25).Count(),
+                From25To34 = users.Where(q => GetAge(q.birthdate.Value) >= 26 && GetAge(q.birthdate.Value) <= 34).Count(),
+                From35To44 = users.Where(q => GetAge(q.birthdate.Value) >= 35 && GetAge(q.birthdate.Value) <= 44).Count(),
+                From45To54 = users.Where(q => GetAge(q.birthdate.Value) >= 45 && GetAge(q.birthdate.Value) <= 54).Count(),
+                From55To64 = users.Where(q => GetAge(q.birthdate.Value) >= 55 && GetAge(q.birthdate.Value) <= 64).Count(),
+                From65AndMore = users.Where(q => GetAge(q.birthdate.Value) >= 65).Count(),
+            };
+            return Ok(finishedRegistrationUserStatictes);
+        }
         public ActionResult EventDetails(string EventID)
         {
             var loggedinUser = HttpContext.GetUser();
