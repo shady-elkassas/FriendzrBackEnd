@@ -298,6 +298,7 @@ namespace Social.Areas.WhiteLable.Controllers
                 Result= FixEventName(Result);
                 Result.eventdateList = new List<DateTime> { Result.eventdate };
                 Result.eventdatetoList = new List<DateTime> { Result.eventdateto };
+                Result.checkout_detailsList = new List<string> { Result.checkout_details };
             }
             var data = JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() });
             // Fix serialization issue
