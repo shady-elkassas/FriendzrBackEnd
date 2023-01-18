@@ -1626,6 +1626,24 @@ namespace Social.Services.Implementation
             }
 
         }
+
+        public async Task<CommonResponse<EventDataadminMV>> ToggleActiveConfigrationByPrimaryKey(string ID, bool IsActive)
+        {
+            try
+            {
+
+                var EventData = _authContext.EventData.FirstOrDefault(x => x.Id == int.Parse(ID));
+                EventData.IsActive = IsActive;
+                await _authContext.SaveChangesAsync();
+                return CommonResponse<EventDataadminMV>.GetResult(200, true, localizer["UpdatedSuccessfully"]);
+            }
+            catch
+            {
+                return CommonResponse<EventDataadminMV>.GetResult(406, false, "SomthingGoesWrong");
+
+            }
+
+        }
         public EventDataadminMV GetData(string ID)
         {
             try

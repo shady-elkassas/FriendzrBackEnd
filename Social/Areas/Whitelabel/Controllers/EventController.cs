@@ -329,7 +329,8 @@ namespace Social.Areas.WhiteLable.Controllers
         [HttpPost]
         public async Task<IActionResult> changeStatus(string ID, bool IsActive)
         {
-            var Result = await _Event.ToggleActiveConfigration(ID, IsActive);
+           // var Result = await _Event.ToggleActiveConfigration(ID, IsActive);
+            var Result = await _Event.ToggleActiveConfigrationByPrimaryKey(ID, IsActive);
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
 
         }

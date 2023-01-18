@@ -85,6 +85,7 @@ namespace Social.Services.Services
         List<EventlocationDataMV> getAlleventlocation();
         IEnumerable<ValidationResult> _ValidationResult(EventDataadminMV VM);
         Task<CommonResponse<EventDataadminMV>> ToggleActiveConfigration(string ID, bool IsActive);
+        Task<CommonResponse<EventDataadminMV>> ToggleActiveConfigrationByPrimaryKey(string ID, bool IsActive);
 
 
         EventDataadminMV GetData(string ID);
