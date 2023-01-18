@@ -531,7 +531,7 @@ namespace Social.Services.Implementation
                     chatgroup.Add(new UserDetailsvm
                     {
                         isChatGroup = true,
-                        IsWhiteLabel = userDetails?.IsWhiteLabel.HasValue == true,
+                        IsWhiteLabel = userDetails?.IsWhiteLabel.Value == true,
                         Name = chatgroupObj.Name,
                         Image = chatgroupObj.Image,
                         isCommunityGroup = (userDetails?.IsWhiteLabel.Value == true && userDetails?.User.RegistrationDate.ConvertDateTimeToString() == chatgroupObj.RegistrationDateTime.ConvertDateTimeToString() && userDetails?.User.RegistrationDate.ToString("HH:mm") == chatgroupObj.RegistrationDateTime.ToString("HH:mm")),
