@@ -36,6 +36,8 @@ namespace Social.Services.ModelView
         [Required(ErrorMessage = "description is required")]
         public string description { get; set; }
         public string checkout_details { get; set; }
+        [JsonExtensionData]
+        public List<string> checkout_detailsList { get; set; }
         public string status { get; set; }
         [Required(ErrorMessage = "Image is required")]
         public IFormFile ImageFile { get; set; }

@@ -1681,7 +1681,7 @@ namespace Social.Services.Implementation
                 {
                     EntityId = model.EntityId,
                     Id = model.Id,
-                    checkout_details = model.checkout_details,
+                    checkout_details = model.checkout_detailsList[i],
                     UserId = model.userid,
                     allday = model.allday,
                     categorieId = model.categorieId,

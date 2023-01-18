@@ -230,15 +230,18 @@
                                             <span asp-validation-for="description"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 fv-row">
-                                        <label asp-for="checkout_details" class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                            Checkout URL
-                                        </label>
-                                        <input type="text" class="form-control form-control-solid" asp-for="checkout_details" />
-                                        <div class="fv-plugins-message-container invalid-feedback">
-                                            <span asp-validation-for="checkout_details"></span>
+                                    @for (int i = 0; i < 10; i++)
+                                    {
+                                        <div class="col-md-12 fv-row div_rowCheckDetails" id="rowCheckDetails@i">
+                                            <label asp-for="checkout_detailsList" class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                                Checkout URL 
+                                            </label>
+                                            <input type="text" class="form-control form-control-solid" asp-for="checkout_detailsList"/>
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <span asp-validation-for="checkout_detailsList"></span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     <div class="col-md-12 fv-row">
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                             Category
@@ -519,7 +522,16 @@
                     $(this).val(i);                    
                     $(this).toggle();
                 });
-                $("#row0").toggle();               
+                i = -1;
+                $('.div_rowCheckDetails').each(function(){
+                    i++;
+                var newID = 'rowCheckDetails' + i;
+                    $(this).attr('id',newID);
+                    $(this).val(i);                    
+                    $(this).toggle();
+                });
+                $("#row0").toggle();     
+                $("#rowCheckDetails0").toggle();       
                 $("#PageModal").on('show.bs.modal', function() {  
                     debugger;
                       $('#removeTime').hide();
@@ -538,6 +550,7 @@
            }
            else{
                $("#row"+counter).toggle();
+               $("#rowCheckDetails" + counter).toggle();
            }
            
        }
@@ -554,6 +567,16 @@
                 }); 
                n++;
                 });
+            n = 1;
+          $('.div_rowCheckDetails').each(function () {
+
+                var rowCheckDetailsID = `#rowCheckDetails${n} input`;
+                $(rowCheckDetailsID).each(function () {
+                    $(this).val("");                       
+              }); 
+              n++;
+          });
+
              
        }
        function showButton()
@@ -571,11 +594,16 @@
            }
            else{
                 $("#row"+counter).toggle();
+                $("#rowCheckDetails" + counter).toggle();
           
             var rowvalue =`#row${counter} input`;
                      $(rowvalue).each(function(){                    
                       $(this).val("");
-                });    
+                });
+                var rowCheckDetailsvalue = `#rowCheckDetails${counter} input`;
+                $(rowCheckDetailsvalue).each(function(){                    
+                    $(this).val("");
+                }); 
             counter--;
            }
           
