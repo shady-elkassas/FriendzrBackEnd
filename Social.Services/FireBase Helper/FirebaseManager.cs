@@ -89,7 +89,7 @@ namespace Social.Services.FireBase_Helper
                 {
                     Tokens = registrationTokens,
                     Data = additionalData,
-                    Apns = new ApnsConfig() { Aps = new Aps() { Sound = "default", Alert = new ApsAlert { Title = fireBaseData.Title, Body = fireBaseData.Body }, MutableContent = true } },
+                    Apns = new ApnsConfig() { Aps = new Aps() { Sound = "default", Alert = new ApsAlert { Title = fireBaseData.Title, Body = fireBaseData.Body }, MutableContent = true , ContentAvailable = true} },
                     //  Notification = new Notification() { Body = fireBaseData.Body, Title = fireBaseData.Title, ImageUrl = ImageUrl }
                 };
 
