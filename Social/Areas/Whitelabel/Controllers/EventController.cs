@@ -110,6 +110,7 @@ namespace Social.Areas.WhiteLable.Controllers
             }
             else
             {
+                
                bool isCorrect= this.CheckListOfDate(new { eventdateList= model.eventdateList, eventdatetoList=model.eventdatetoList },model.eventfrom,model.eventto,model.allday);
 
                 if(!isCorrect)
@@ -204,12 +205,14 @@ namespace Social.Areas.WhiteLable.Controllers
             
           else
             {
+                bool isEqual = (model.eventdateList.Count == 0 && model.eventdatetoList.Count == 0) || (model.eventdateList).Count != model.eventdatetoList.Count || model.eventdateList.Count!=10;
                 model.eventdatetoList = new List<DateTime>() { model.eventdatetoList.FirstOrDefault() };
                 model.eventdateList = new List<DateTime>() { model.eventdateList.FirstOrDefault() };
                 model.checkout_details = model.checkout_detailsList.FirstOrDefault() ;
+
                 bool isCorrect = this.CheckListOfDate(new { eventdateList = model.eventdateList, eventdatetoList = model.eventdatetoList }, model.eventfrom, model.eventto, model.allday);
 
-                if (!isCorrect)
+                if (!isCorrect || isEqual )
                 {
                     Result = CommonResponse<EventDataadminMV>.GetResult("Some Date in the past", ModelState.GetModelStateErrors());
                 }

@@ -5,7 +5,9 @@
     clearValidation("#PageForm");
     $("#PageForm input[type='checkbox']").change();
     $("#PageModal input[type='time']").val("");
-    $('select').prop('selectedIndex', 0);
+   // $('#PageModal select option:eq(3)').prop('selected', 'selected');    
+
+    $("[asp-for='categorieId']").innerHTML = "";
     
 }
 

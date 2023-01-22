@@ -250,7 +250,7 @@
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                             Category
                                         </label>
-                                        <select asp-for="categorieId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.allCategories)" class="form-select form-select-solid" data-control="select2" data-placeholder="@_localizer["SelectOption"]" data-allow-clear="true">
+                                        <select asp-for="categorieId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.allCategories)" class="form-select form-select-solid" data-control="select2" onchange="resetData();" data-placeholder="@_localizer["SelectOption"]" data-allow-clear="true">
                                             <option></option>
                                         </select>
                                         <div class="fv-plugins-message-container invalid-feedback">
@@ -517,6 +517,12 @@
            $(document).trigger("PageFormSubmit_Finished");                 
 
         }
+        function resetData()
+        {
+            //alert("test");
+            //$("#select2-categorieId-container").innerHtml="";
+            //$("#select2-EventTypeListid-container").innerHTML;
+        }
         function hideDiv()
         {
             debugger;
@@ -543,7 +549,7 @@
                       $('#removeTime').hide();
                          addMarker(haightAshbury);
                           $("#Address_Latitude").val(haightAshbury.lat);
-                          $("#Address_Longtude").val(haightAshbury.lng);
+                          $("#Address_Longtude").val(haightAshbury.lng);                          
                     });
         }
 
@@ -979,7 +985,7 @@
             $(document).on("PageFormSubmit_Finished", function (event, callBack, arg2) {
                 addMarker(haightAshbury)
                 RemoveAllFilesFromFilePond(FilePondObj);
-              $("#PageModal input[type='hidden']").val("0");
+              $("#PageModal input[type='hidden']").val("0");             
                while(counter!==0)
                {
                  DisappearDateRow();            
