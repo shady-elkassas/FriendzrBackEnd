@@ -25,7 +25,7 @@ var NotificationType = {
 }
 
 function ShowNotification(NotificationType, Message, Title) {
-    Title = Title == undefined ? getToken("Notification") : Title;
+    Title = Title == undefined ? getToken("Attention") : Title;
     NotificationType = NotificationType.toLowerCase();
     switch (NotificationType) {
         case "success":

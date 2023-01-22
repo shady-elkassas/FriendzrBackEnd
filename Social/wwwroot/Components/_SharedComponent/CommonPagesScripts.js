@@ -1,7 +1,7 @@
 ﻿function ResetPageForm() {
     $("#PageForm").trigger("reset");
     $("#ID").val(0);
-    $("#EntityId").val(0);
+    $("#EntityId").val(0);  
     clearValidation("#PageForm");
     $("#PageForm input[type='checkbox']").change();
     $("#PageModal input[type='time']").val("");
@@ -31,6 +31,7 @@ function OpenPageModal(ID) {
     }
     else {
         $("#PageModalAction").text((getToken("Edit")));
+        ResetPageForm();
         GetPageFormObj(ID);
     }
 }

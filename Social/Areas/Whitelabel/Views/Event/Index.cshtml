@@ -230,17 +230,21 @@
                                             <span asp-validation-for="description"></span>
                                         </div>
                                     </div>
+                                    @{int checkCount = 1;
                                     @for (int i = 0; i < 10; i++)
                                     {
+                                        
                                         <div class="col-md-12 fv-row div_rowCheckDetails" id="rowCheckDetails@i">
-                                            <label asp-for="checkout_detailsList" class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                                Checkout URL 
+                                            <label asp-for="checkout_detailsList" class="d-flex align-items-center fs-6 fw-bold mb-2" id="Checklabl">
+                                                Checkout URL _ @checkCount
                                             </label>
                                             <input type="text" class="form-control form-control-solid" asp-for="checkout_detailsList"/>
                                             <div class="fv-plugins-message-container invalid-feedback">
                                                 <span asp-validation-for="checkout_detailsList"></span>
                                             </div>
-                                        </div>
+                                            </div>
+                                            checkCount++;
+                                        }
                                     }
                                     <div class="col-md-12 fv-row">
                                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
@@ -402,6 +406,7 @@
     <script>const haightAshbury = { lat: 51.51146787570306, lng: -0.12768389274135644 };
 
         let counter=0;
+        //let checkCount=1
 
         let FilePondObj = '';
         function RefreshPageDatatable() {
@@ -509,7 +514,8 @@
         });
         function resetForm()
         {
-           $(document).trigger("PageFormSubmit_Finished");
+           $(document).trigger("PageFormSubmit_Finished");                 
+
         }
         function hideDiv()
         {
@@ -558,6 +564,7 @@
        {
           $("#addTime").hide();    
           $("#removeTime").hide(); 
+          //$("#Checklabl").val("Checkout URL");
           var n=1;
           $('.div_float').each(function(){
                     
@@ -972,6 +979,11 @@
             $(document).on("PageFormSubmit_Finished", function (event, callBack, arg2) {
                 addMarker(haightAshbury)
                 RemoveAllFilesFromFilePond(FilePondObj);
+              $("#PageModal input[type='hidden']").val("0");
+               while(counter!==0)
+               {
+                 DisappearDateRow();            
+               } 
             });
             RefreshPageDatatable();
             FilePondObj = CreateFilePondObj("#ImageFile", false);
