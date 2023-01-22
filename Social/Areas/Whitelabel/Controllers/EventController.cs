@@ -206,6 +206,7 @@ namespace Social.Areas.WhiteLable.Controllers
             {
                 model.eventdatetoList = new List<DateTime>() { model.eventdatetoList.FirstOrDefault() };
                 model.eventdateList = new List<DateTime>() { model.eventdateList.FirstOrDefault() };
+                model.checkout_details = model.checkout_detailsList.FirstOrDefault() ;
                 bool isCorrect = this.CheckListOfDate(new { eventdateList = model.eventdateList, eventdatetoList = model.eventdatetoList }, model.eventfrom, model.eventto, model.allday);
 
                 if (!isCorrect)
@@ -308,9 +309,12 @@ namespace Social.Areas.WhiteLable.Controllers
             var listDate = data.SelectToken("eventdateList");
             var date = data.SelectToken("eventdate");
             listDate.Replace(date);
+            var listCheckUrl = data.SelectToken("checkout_detailsList");
+            var url = data.SelectToken("checkout_details");
+            listCheckUrl.Replace(url);
 
-           // return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
-           return Ok(data);
+            // return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
+            return Ok(data);
 
         }
 
