@@ -531,7 +531,6 @@ namespace Social.Services.Implementation
                     chatgroup.Add(new UserDetailsvm
                     {
                         isChatGroup = true,
-                        IsWhiteLabel = userDetails?.IsWhiteLabel.Value == true,
                         Name = chatgroupObj.Name,
                         Image = chatgroupObj.Image,
                         isCommunityGroup = (userDetails?.IsWhiteLabel.Value == true && userDetails?.User.RegistrationDate.ConvertDateTimeToString() == chatgroupObj.RegistrationDateTime.ConvertDateTimeToString() && userDetails?.User.RegistrationDate.ToString("HH:mm") == chatgroupObj.RegistrationDateTime.ToString("HH:mm")),
@@ -602,7 +601,7 @@ namespace Social.Services.Implementation
                             data.messages = item.FirstOrDefault().Messages;
                             data.messagestype = item.FirstOrDefault().Messagetype;
                             data.messagesimage = item.FirstOrDefault().MessagesAttached;
-                            data.IsWhiteLabel= user.IsWhiteLabel.HasValue?user.IsWhiteLabel.Value:false;
+                            data.IsWhiteLabel= item.FirstOrDefault().UserMessagess.User.IsWhiteLabel.Value;
                             returndate.Add(data);
                         }
                         else if (relation == null)
@@ -614,7 +613,7 @@ namespace Social.Services.Implementation
                             muit = getmuitMessages(item.FirstOrDefault().UserMessagessId, userid, UserMessages);
                             data.isfrind = (item.FirstOrDefault().User.IsWhiteLabel.HasValue && item.FirstOrDefault().User.IsWhiteLabel.Value)==true?true:friendtype == null  ? false : friendtype.status == 1 ? true : false;
                             data.muit = muit;
-                            data.IsWhiteLabel = user.IsWhiteLabel.HasValue ? user.IsWhiteLabel.Value : false;
+                            data.IsWhiteLabel = item.FirstOrDefault().UserMessagess.User.IsWhiteLabel.Value;
                             data.message_not_Read = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.ToUserNotreadcount : item.FirstOrDefault().UserMessagess.UserNotreadcount);
 
                             data.latestdate = item.FirstOrDefault().Messagesdate.ConvertDateTimeToString();
