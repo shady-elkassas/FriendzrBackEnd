@@ -1242,14 +1242,16 @@ namespace Social.Services.Implementation
             if (userDeatil.ghostmode)
             {
                 userDetails = userDetails.Where(m => m.allowmylocation == true).ToList();
-                userDetails = userDetails.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, userDeatil.Gender) : true)).ToList();
                 userDetails = userDetails.Where(m => (userDeatil.ghostmode == true ? type(userDeatil.AppearanceTypes, m.Gender) : true)).ToList();
+            //    alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
+
             }
             if (userDeatil.Filteringaccordingtoage)
             {
                 userDetails = userDetails.Where(p => (userDeatil.Filteringaccordingtoage == true ? birtdate(userDeatil.agefrom, userDeatil.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
             }
             //List<UserDetails> userList = userDetails.ToList();
+            userDetails = userDetails.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, userDeatil.Gender) : true)).ToList();
 
             List<int> currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
