@@ -1785,7 +1785,7 @@ namespace Social.Services.Implementation
                 categoryName = model.categorie == null ? "" : model.categorie.name,
                 EventTypeListName = model.EventTypeList?.Name,
                 CreatedDate = model.CreatedDate.Value.ToString("HH:mm yyyy-MM-dd"),
-                Attendees = model.Attendees == null ? 0 : model.Attendees.Value,
+                Attendees = /*model.Attendees == null ? 0 : model.Attendees.Value*/model.EventChatAttend.Where(x => x.stutus != 1 && x.stutus != 2 && x.stutus != 3 && x.UserattendId != model.UserId).Count(),
                 Shars = model.Shars == null ? 0 : model.Shars.Value,
                 Views = model.Views == null ? 0 : model.Views.Value,
                 lat = model.lat,
