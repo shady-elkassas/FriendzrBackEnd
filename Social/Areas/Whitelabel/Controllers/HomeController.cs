@@ -167,7 +167,7 @@ namespace Social.Areas.WhiteLable.Controllers
 
             var allEventAttends = _authDBContext.EventChatAttend.Where(e => allEvents.Select(a => a.Id).Contains(e.EventDataid));
 
-            allEventAttends = allEventAttends.Where(c => c.stutus != 2 && c.Userattend.Email.ToLower().Contains("@owner") == false
+            allEventAttends = allEventAttends.Where(c => c.stutus != 2 && c.stutus != 1 && c.stutus != 3 && c.Userattend.Email.ToLower().Contains("@owner") == false
                               && !c.Userattend.IsWhiteLabel.Value);
 
             //var sharedevent = _authDBContext.EventTrackers.Where(m => m.ActionType == EventActionType.Share.ToString()).Select(m => m.EventId).Distinct();
@@ -223,7 +223,7 @@ namespace Social.Areas.WhiteLable.Controllers
             var choosedEvent = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.Id == ID && n.IsActive == true && (n.EventTypeListid == 5
                                        || n.EventTypeListid == 6)).ToList();
             var allEventAttends = _authDBContext.EventChatAttend.Where(e => choosedEvent.Select(a => a.Id).Contains(e.EventDataid));
-            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2 && c.stutus != 3 && c.stutus != 1).Select(e => e.Userattend);
             var actualUsers = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value);
 
             var Users = _authDBContext.Users.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.UserDetails.IsWhiteLabel.Value);
@@ -249,7 +249,7 @@ namespace Social.Areas.WhiteLable.Controllers
             var choosedEvent = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.Id == Id && n.IsActive == true && (n.EventTypeListid == 5
                                        || n.EventTypeListid == 6)).ToList();
             var allEventAttends = _authDBContext.EventChatAttend.Where(e => choosedEvent.Select(a => a.Id).Contains(e.EventDataid));
-            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2 && c.stutus != 3 && c.stutus != 1).Select(e => e.Userattend);
             var actualUsers = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value).ToList();
             var userIds = actualUsers.Select(u => u.PrimaryId).ToList();
             var listofTages =  _authDBContext.listoftags.Where(l => userIds.Contains(l.UserId.Value)).ToList();
@@ -413,7 +413,7 @@ namespace Social.Areas.WhiteLable.Controllers
             var choosedEvent = _authDBContext.EventData.Where(n => n.UserId == userDeatils.PrimaryId && n.Id == Id && n.IsActive == true && (n.EventTypeListid == 5
                                        || n.EventTypeListid == 6)).ToList();
             var allEventAttends = _authDBContext.EventChatAttend.Where(e => choosedEvent.Select(a => a.Id).Contains(e.EventDataid));
-            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2).Select(e => e.Userattend);
+            var AttendedUsers = allEventAttends.Where(c => c.stutus != 2 && c.stutus != 3 && c.stutus != 1).Select(e => e.Userattend);
             var users = AttendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value).ToList();
             // List<UserDetails> users = await _authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
 
@@ -441,7 +441,7 @@ namespace Social.Areas.WhiteLable.Controllers
             var messageCount = _authDBContext.Messagedata.Include(m => m.EventChatAttend).Where(m => m.EventChatAttend.EventDataid == EventData.Id);
 
             var allEventAttends = _authDBContext.EventChatAttend.Where(e => e.EventDataid == EventData.Id);
-            var attendedUsers = allEventAttends.Where(c => c.stutus != 2 && c.UserattendId!= userDeatils.PrimaryId).Select(e => e.Userattend);
+            var attendedUsers = allEventAttends.Where(c => c.stutus != 2 && c.stutus != 3 && c.stutus != 1 && c.UserattendId!= userDeatils.PrimaryId).Select(e => e.Userattend);
             var actualUsers = attendedUsers.Where(x => x.Email.ToLower().Contains("@owner") == false && !x.IsWhiteLabel.Value);
             ViewBag.eventUsers = new UserStatistics()
             {
@@ -449,6 +449,7 @@ namespace Social.Areas.WhiteLable.Controllers
                 Male_Count = actualUsers.Where(x => x.Gender == "male").Count(),
                 Female_Count = actualUsers.Where(x => x.Gender == "female").Count(),
             };
+            EventData.Messagedata = null;
             EventData.Messagedata = messageCount.ToList();
             return View(EventData);
         }
@@ -502,7 +503,7 @@ namespace Social.Areas.WhiteLable.Controllers
                             || n.EventTypeListid == 6)).ToList();
             var eventsIds = allEvents.Select(e => e.Id).ToList();
             var allEventAttends = _authDBContext.EventChatAttend.Where(a => eventsIds.Contains(a.EventDataid)).ToList();
-            allEventAttends = allEventAttends.Where(c => c.stutus != 2 && c.Userattend.Email.ToLower().Contains("@owner") == false
+            allEventAttends = allEventAttends.Where(c => c.stutus != 2 && c.stutus != 1 && c.stutus != 3 && c.Userattend.Email.ToLower().Contains("@owner") == false
              && !c.Userattend.IsWhiteLabel.Value).ToList();
             var averageOfParticibated = Math.Round(Convert.ToDouble(allEventAttends.GroupBy(x => x.EventDataid).Select(x => x.Count()).Sum()) / allEvents.Count(), 2);
             var averageOfParticibatedInExisteEvent = Math.Round(Convert.ToDouble(allEventAttends.Where(q => q.EventData.eventdateto < DateTime.Now)
