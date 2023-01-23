@@ -67,9 +67,9 @@ namespace Social.Areas.WhiteLable.Controllers.ViewComponents
             
             GeoCoordinate eventsCenterPoint = GetCentralGeoCoordinate(Events_GeoCoordinate);
 
-         
-            ViewBag.EventsCenterLatitude = eventsCenterPoint.Latitude;
-            ViewBag.EventsCenterLongitude = eventsCenterPoint.Longitude;
+         // need to make map center to london
+            ViewBag.EventsCenterLatitude = "51.51146787570306"/*eventsCenterPoint.Latitude*/;
+            ViewBag.EventsCenterLongitude = "-0.12768389274135644"/*eventsCenterPoint.Longitude*/;
 
             ViewBag.EventsGoogleMapMarker = allEventsswithvalidlocation.Select(x =>
             {
