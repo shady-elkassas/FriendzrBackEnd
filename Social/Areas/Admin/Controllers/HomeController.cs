@@ -841,7 +841,7 @@ namespace Social.Areas.Admin.Controllers
         public async Task<IActionResult> FinishedRegistrationUserStatictes()
         {
             List<UserDetails> users = await authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
-
+            users = users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
 
             StatisticsByGenderAndAgeViewModel finishedRegistrationUserStatictes = new StatisticsByGenderAndAgeViewModel()
             {
@@ -854,15 +854,17 @@ namespace Social.Areas.Admin.Controllers
                 From35To44 = users.Where(q => GetAge(q.birthdate.Value) >= 35 && GetAge(q.birthdate.Value) <= 44).Count(),
                 From45To54 = users.Where(q => GetAge(q.birthdate.Value) >= 45 && GetAge(q.birthdate.Value) <= 54).Count(),
                 From55To64 = users.Where(q => GetAge(q.birthdate.Value) >= 55 && GetAge(q.birthdate.Value) <= 64).Count(),
-                From65AndMore = users.Where(q => GetAge(q.birthdate.Value) >= 65).Count(),
+                From65AndMore = users.Where(q => GetAge(q.birthdate.Value) >= 65).Count(),               
             };
             return Ok(finishedRegistrationUserStatictes);
         }
 
         public async Task<IActionResult> GenderOfUsersStatictes()
         {
-            List<UserDetails> users = await authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
-
+            List<UserDetails> users = await authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() 
+            && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true
+            && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
+            users =  users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
             StatisticsByGenderAndAgeViewModel genderOfUserStatictes = new StatisticsByGenderAndAgeViewModel()
             {
                 All = users.Count(),
@@ -876,7 +878,7 @@ namespace Social.Areas.Admin.Controllers
         public async Task<IActionResult> UsersWhoEnabledPersonalSpaceStatictes()
         {
             List<UserDetails> users = await authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
-
+            users = users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
 
             StatisticsByGenderAndAgeViewModel usersWhoEnabledPersonalSpaceStatictes = new StatisticsByGenderAndAgeViewModel()
             {
@@ -897,7 +899,7 @@ namespace Social.Areas.Admin.Controllers
         public async Task<IActionResult> NumberOfConnectionRequestsSentStatictes()
         {
             List<Requestes> users = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.birthdate != null && q.User.birthdate != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToListAsync();
-
+            users = users.Where(q => GetAge(q.User.birthdate.Value) >= 18).ToList();
             StatisticsByGenderAndAgeViewModel numberOfConnectionRequestsSentStatictes = new StatisticsByGenderAndAgeViewModel()
             {
                 All = users.Count(),
@@ -917,7 +919,7 @@ namespace Social.Areas.Admin.Controllers
         public async Task<IActionResult> NumberOfConnectionRequestsAcceptedStatictes()
         {
             List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User.birthdate != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.status == 1).ToListAsync();
-
+            requestes = requestes.Where(q => GetAge(q.User.birthdate.Value) >= 18).ToList();
             StatisticsByGenderAndAgeViewModel numberOfConnectionRequestsAcceptedStatictes = new StatisticsByGenderAndAgeViewModel()
             {
                 All = requestes.Count(),
@@ -936,7 +938,10 @@ namespace Social.Areas.Admin.Controllers
 
         public async Task<IActionResult> BlockedUsersStatictes()
         {
-            List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User.birthdate != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.status == 2).ToListAsync();
+            List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => !q.User.Email.ToLower()
+            .Contains("@owner") && q.User.birthdate != null && q.User.User.EmailConfirmed == true 
+            && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.status == 2).ToListAsync();
+            requestes = requestes.Where(q => GetAge(q.User.birthdate.Value) >= 18).ToList();
 
             StatisticsByGenderAndAgeViewModel blockedUsersStatictes = new StatisticsByGenderAndAgeViewModel()
             {
@@ -956,8 +961,12 @@ namespace Social.Areas.Admin.Controllers
 
         public async Task<IActionResult> ActiveUsersStatictes()
         {
-            List<LoggedinUser> activeUsers = await authDBContext.LoggedinUser.Include(q => q.User).ThenInclude(q => q.UserDetails).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.UserDetails.birthdate != null && q.User.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.User.UserDetails.ProfileCompleted != null && q.User.UserDetails.ProfileCompleted == true) && q.User.UserDetails.birthdate != null && q.User.UserDetails.listoftags.Any() && q.ExpiredOn > DateTime.Now).ToListAsync();
-
+            List<LoggedinUser> activeUsers = await authDBContext.LoggedinUser.Include(q => q.User).ThenInclude(q => q.UserDetails)
+                .Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.UserDetails.birthdate != null 
+                && q.User.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.User.UserDetails.ProfileCompleted != null
+                && q.User.UserDetails.ProfileCompleted == true) && q.User.UserDetails.birthdate != null && q.User.UserDetails.listoftags.Any() 
+                && q.ExpiredOn > DateTime.Now).ToListAsync();
+            activeUsers = activeUsers.Where(q => GetAge(q.User.UserDetails.birthdate.Value) >= 18).ToList();
             StatisticsByGenderAndAgeViewModel ActiveUsersStatictes = new StatisticsByGenderAndAgeViewModel()
             {
                 All = activeUsers.Count(),
@@ -976,8 +985,9 @@ namespace Social.Areas.Admin.Controllers
 
         public async Task<IActionResult> PercentageOfUsersWhoCreatedEventsStatictes()
         {
-            List<EventData> events = await authDBContext.EventData.Include(q => q.User).Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User.birthdate != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToListAsync();
-
+            List<EventData> events = await authDBContext.EventData.Include(q => q.User).Where(q => !q.User.Email.ToLower().Contains("@owner") 
+            && q.User.birthdate != null  && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToListAsync();
+            events = events.Where(e => GetAge(e.User.birthdate.Value) >= 18).ToList();
             var usersWhoCreatedEvents = events.GroupBy(x => x.UserId).ToList();
 
             StatisticsByGenderAndAgeViewModel percentageOfUsersWhoCreatedEventsStatictes = new StatisticsByGenderAndAgeViewModel()
