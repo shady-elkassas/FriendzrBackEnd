@@ -18,6 +18,7 @@ using Social.Services.Helpers;
 using Social.Services.ModelView;
 using Social.Services.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -92,7 +93,11 @@ namespace Social.Areas.Admin.Controllers
 
                 model.userid = _userService.getallUserDetails().FirstOrDefault(b => b.User.Email != "Owner@Owner.com").PrimaryId;
                 ///TODO: need fix
+                model.eventdatetoList =  new List<DateTime>() { model.eventdateto };
+                model.checkout_detailsList = new List<string>() { model.checkout_details };
+                model.eventdateList = new List<DateTime>() { model.eventdate };
                 var result = await _Event.Create(model);
+                Result = CommonResponse<EventDataadminMV>.GetResult(200, true, localizer["SavedSuccessfully"]);
             }
 
             return Ok(JObject.FromObject(Result, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
