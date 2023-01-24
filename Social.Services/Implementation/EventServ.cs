@@ -1753,7 +1753,7 @@ namespace Social.Services.Implementation
                     lang = model.lang,
                     IsActive = model.IsActive,
                     status = model.status,
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = DateTime.UtcNow,
                     totalnumbert = model.totalnumbert,
                     image = model.Image,
                     Title = model.Title,
