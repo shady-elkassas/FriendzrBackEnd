@@ -2231,11 +2231,11 @@ namespace Social.Controllers
                 var loggedInUser = HttpContext.GetUser();
 
                 var userDetails = loggedInUser.User.UserDetails;
-                if (!string.IsNullOrWhiteSpace(lang) && !string.IsNullOrWhiteSpace(lat) /*lang != "" && lang != null && lat != "" && lat != null*/)
+                if (!string.IsNullOrWhiteSpace(lang) && !string.IsNullOrWhiteSpace(lat))
                 {
                     userDetails.lang = lang;
                     userDetails.lat = lat;
-                    this._userService.UpdateUserDetails(userDetails);
+                    _userService.UpdateUserDetails(userDetails);
                 }
                 var eventsAroundUser =
                     _Event.GetAllEventsUserLocationsWithDateFilter(pageNumber, pageSize, loggedInUser.User.UserDetails, appConfiguration, categories ,dateCriteria,startDate,endDate);
