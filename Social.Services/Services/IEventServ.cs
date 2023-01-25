@@ -116,5 +116,9 @@ namespace Social.Services.Services
         
         IQueryable<EventDataadminMV> GetData(PaginationFilter PaginationFilter, int? Search_EventTypeListID, int? Search_EventCategoryID, out int filteredCount);
         locationDataMV getAlleventUserlocations(int pageNumber, int pageSize, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories);
+
+        locationDataMV GetAllEventsUserLocationsWithDateFilter(int pageNumber, int pageSize, UserDetails user,
+            AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate,
+            DateTime? endDate);
     }
 }

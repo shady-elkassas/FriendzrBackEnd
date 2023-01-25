@@ -2220,6 +2220,39 @@ namespace Social.Controllers
 
             }
         }
+        [HttpPost]
+        [Route("EventsAroundUser")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> FilterEventsAroundMe([FromForm] string lang, [FromForm] string lat, [FromForm] int pageNumber, [FromForm] int pageSize, [FromForm] string categories  , [FromForm] string dateCriteria, [FromForm] DateTime? startDate, [FromForm]  DateTime? endDate)
+        {
+            try
+            {
+                var appConfiguration = appConfigrationService.GetData().FirstOrDefault();
+                var loggedInUser = HttpContext.GetUser();
+
+                var userDetails = loggedInUser.User.UserDetails;
+                if (!string.IsNullOrWhiteSpace(lang) && !string.IsNullOrWhiteSpace(lat) /*lang != "" && lang != null && lat != "" && lat != null*/)
+                {
+                    userDetails.lang = lang;
+                    userDetails.lat = lat;
+                    this._userService.UpdateUserDetails(userDetails);
+                }
+                var eventsAroundUser =
+                    _Event.GetAllEventsUserLocationsWithDateFilter(pageNumber, pageSize, loggedInUser.User.UserDetails, appConfiguration, categories ,dateCriteria,startDate,endDate);
+
+
+                return StatusCode(StatusCodes.Status200OK,
+                      new ResponseModel<object>(StatusCodes.Status200OK, true,
+                      "data ", eventsAroundUser));
+
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "Events/AllLocationEvente", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+
+            }
+        }
 
         [HttpPost]
         [Route("OnlyEventsAround")]
