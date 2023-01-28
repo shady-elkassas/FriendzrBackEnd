@@ -978,21 +978,20 @@ namespace Social.Services.Implementation
                 switch (dateCriteria)
                 {
                     case "ThisDay":
-                        startDate = DateTime.Now.Date;
-                        endDate = DateTime.Now.Date;
+                        startDate = DateTime.UtcNow.Date;
+                        endDate = DateTime.UtcNow.Date;
                         break;
                     case "ThisWeek":
-                        startDate = DateTime.Now.Date;
-                        endDate = DateTime.Now.Date.AddDays(7);
+                        startDate = DateTime.UtcNow.Date;
+                        endDate = DateTime.UtcNow.Date.AddDays(7);
                         break;
                     case "ThisMonth":
-                        startDate = DateTime.Now.Date;
-                        endDate = DateTime.Now.Date.AddDays(30);
+                        startDate = DateTime.UtcNow.Date;
+                        endDate = DateTime.UtcNow.Date.AddDays(30);
                         break;
                 }
             }
 
-            
             var userId = user.PrimaryId;
             var userLat = user.lat == null ? (double)0 : Convert.ToDouble(user.lat);
             var userLong = user.lang == null ? (double)0 : Convert.ToDouble(user.lang);
@@ -1010,7 +1009,7 @@ namespace Social.Services.Implementation
                             .Include(q => q.EventData)
                             .Where(n => (n.UserattendId == userId || !allRequests.Contains(n.EventData.UserId))
                             && n.EventData.IsActive == true
-                            && (n.EventData.StopFrom == null || (n.EventData.StopFrom.Value >= DateTime.Now.Date || n.EventData.StopTo.Value <= DateTime.Now.Date))
+                            && (n.EventData.StopFrom == null || (n.EventData.StopFrom.Value >= DateTime.UtcNow.Date || n.EventData.StopTo.Value <= DateTime.UtcNow.Date))
                             && (n.EventData.EventTypeList.key != true || (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2)))
                             .OrderByDescending(m => m.Id).ToList();
 
@@ -1026,10 +1025,9 @@ namespace Social.Services.Implementation
             }
 
             
-
             var blockedEventIds = eventChatAttendList.Where(m => (m.UserattendId == userId) && m.stutus == 2).Select(m => m.EventDataid).ToList();
 
-            var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.Now.Date).Select(m => m.EventData).Distinct().ToList();
+            var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct().ToList();
 
             if (startDate != null)
             {
@@ -1043,6 +1041,7 @@ namespace Social.Services.Implementation
                 eventDataList = eventDataList.Where(q => q.eventdateto?.Date <= endDate).ToList();
 
             }
+
             var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
@@ -1059,7 +1058,7 @@ namespace Social.Services.Implementation
 
             if (startDate == null && endDate == null)
             {
-                eventsLocations = eventDataList.Where(m => m.eventdateto.Value.Date >= DateTime.Now.Date).Select(n => new { lang = Math.Round(double.Parse(n.lang), 5), lat = Math.Round(double.Parse(n.lat), 5) }).Distinct().ToList();
+                eventsLocations = eventDataList.Where(m => m.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(n => new { lang = Math.Round(double.Parse(n.lang), 5), lat = Math.Round(double.Parse(n.lat), 5) }).Distinct().ToList();
 
             }
             else
