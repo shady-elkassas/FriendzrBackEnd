@@ -79,6 +79,9 @@ namespace Social.Services.Services
         locationDataMV getAlleventlocation(int pageNumber, int pageSize, int id, double myLat, double myLon, double dis, string Gender, UserDetails user, AppConfigrationVM AppConfigrationVM , string categories);
         Task<(List<EventVM>, int totalRowCount)> getAlleventlocation_2(int id, double myLat, double myLon, double dis, string Gender, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories, int pageNumber, int pageSize);
 
+        Task<(List<EventVM>, int totalRowCount)> getAlleventlocationWithDateFilter(int id, double myLat, double myLon,
+            double dis, string Gender, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories,
+            int pageNumber, int pageSize, string dateCriteria, DateTime? startDate, DateTime? endDate);
         peoplocationDataMV getUserDetailsbylocation(string lang, string lat);
 
 

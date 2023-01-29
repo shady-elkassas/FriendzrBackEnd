@@ -2305,6 +2305,59 @@ namespace Social.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("OnlyEventsAroundUser")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> OnlyEventsAroundUser([FromForm] string lang, [FromForm] string lat, [FromForm] int pageNumber
+           , [FromForm] int pageSize, [FromForm] string categories, [FromForm] string dateCriteria, [FromForm] DateTime? startDate, [FromForm] DateTime? endDate)
+        {
+            try
+            {
+                var appcon = appConfigrationService.GetData().FirstOrDefault();
+                var loggedinUser = HttpContext.GetUser();
+
+                var userDeatils = loggedinUser.User.UserDetails;
+                if (lang != "" && lang != null && lat != "" && lat != null)
+                {
+                    userDeatils.lang = lang;
+                    userDeatils.lat = lat;
+                    this._userService.UpdateUserDetails(userDeatils);
+                }
+
+                (List<EventVM> eventData, int totalRowCount) = await _Event.getAlleventlocationWithDateFilter(loggedinUser.User.UserDetails.PrimaryId, loggedinUser.User.UserDetails.lat == null ? (double)0 : Convert.ToDouble(loggedinUser.User.UserDetails.lat), loggedinUser.User.UserDetails.lang == null ? 0 : Convert.ToDouble(loggedinUser.User.UserDetails.lang), Convert.ToInt32(loggedinUser.User.UserDetails.Manualdistancecontrol == 0 ? 1 : loggedinUser.User.UserDetails.Manualdistancecontrol * 1000), loggedinUser.User.UserDetails.Gender, loggedinUser.User.UserDetails, appcon, categories, pageNumber, pageSize,dateCriteria,startDate,endDate);
+
+                var validFilter = new PaginationFilter(pageNumber, pageSize);
+                var pagedevent = eventData;
+                var pagedModel = new PagedResponse<List<EventVM>>(pagedevent, validFilter.PageNumber,
+                pagedevent.Count(), eventData.Count());
+
+
+                var totalPages = ((double)totalRowCount / (double)validFilter.PageSize);
+                int roundedTotalPages = Convert.ToInt32(Math.Ceiling(totalPages));
+
+                return StatusCode(StatusCodes.Status200OK,
+                      new ResponseModel<object>(StatusCodes.Status200OK, true,
+                      "data ", new
+                      {
+                          pageNumber = pagedModel.PageNumber,
+                          pageSize = pagedModel.PageSize,
+                          totalPages = roundedTotalPages,//pagedModel.TotalPages,
+                          totalRecords = totalRowCount, //pagedModel.TotalRecords,
+                          data = pagedModel.Data
+                      }));
+
+
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "Events/AllLocationEvente", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+
+            }
+        }
+
+
         [HttpPost]
         [Route("AddEventColor")]
         [Consumes("application/x-www-form-urlencoded")]
