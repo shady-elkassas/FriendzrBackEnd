@@ -1099,6 +1099,10 @@ namespace Social.Services.Implementation
         }
         public locationDataMV GetAllEventsUserLocationsWithDateFilter(int pageNumber, int pageSize, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories , string dateCriteria , DateTime? startDate , DateTime? endDate)
         {
+            if (string.IsNullOrEmpty(dateCriteria))
+            {
+                dateCriteria = "Custom";
+            }
             if (!string.IsNullOrEmpty(dateCriteria))
             {
                 switch (dateCriteria)
@@ -1155,12 +1159,13 @@ namespace Social.Services.Implementation
 
             var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct().ToList();
 
-            if (startDate != null && endDate !=null)
+            if (endDate !=null)
             {
 
-                eventDataList = eventDataList.Where(q => q.eventdate?.Date >= startDate  || q.eventdateto?.Date <= endDate).ToList();
+                eventDataList = eventDataList.Where(q =>  q.eventdateto?.Date <= endDate).ToList();
 
             }
+
 
             var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
