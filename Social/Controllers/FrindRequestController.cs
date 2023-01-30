@@ -14,6 +14,7 @@ using Social.Services;
 using Social.Services.Attributes;
 using Social.Services.FireBase_Helper;
 using Social.Services.Helpers;
+using Social.Services.Implementation;
 using Social.Services.ModelView;
 using Social.Services.Services;
 using System;
@@ -370,6 +371,7 @@ namespace Social.Controllers
                 var meDeatils = _userService.GetUserDetails(userid);
                 var GetLinkAccount = _userService.GetallLinkAccount((meDeatils.PrimaryId));
                 var Getalllistoftags = _userService.Getalllistoftags((meDeatils.PrimaryId));
+                var userImages = _userService.GetUserImages(userDeatils.PrimaryId);
 
                 var allReq = _authContext.Requestes.ToList();
                 updateUserModelview updateUserModel = new updateUserModelview();
@@ -382,6 +384,7 @@ namespace Social.Controllers
                 updateUserModel.age = meDeatils.birthdate == null ? 0 : (GetAge(meDeatils.birthdate.Value));
 
                 updateUserModel.UserImage = (meDeatils.UserImage == null || meDeatils.UserImage == "") ? "" : (_configuration["BaseUrl"] + meDeatils.UserImage);
+                updateUserModel.UserImages = userImages.Any() ? userImages.Select(a => _configuration["BaseUrl"] + a.ImageUrl).ToList() : new List<string>();
 
                 updateUserModel.UserName = meDeatils.User.DisplayedUserName;
                 updateUserModel.DisplayedUserName = meDeatils.User.UserName;
