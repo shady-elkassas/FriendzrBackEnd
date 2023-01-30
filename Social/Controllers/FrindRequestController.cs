@@ -371,7 +371,7 @@ namespace Social.Controllers
                 var meDeatils = _userService.GetUserDetails(userid);
                 var GetLinkAccount = _userService.GetallLinkAccount((meDeatils.PrimaryId));
                 var Getalllistoftags = _userService.Getalllistoftags((meDeatils.PrimaryId));
-                var userImages = _userService.GetUserImages(userDeatils.PrimaryId);
+                var userImages = _userService.GetUserImages(meDeatils.PrimaryId);
 
                 var allReq = _authContext.Requestes.ToList();
                 updateUserModelview updateUserModel = new updateUserModelview();
