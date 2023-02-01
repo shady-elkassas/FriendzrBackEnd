@@ -780,10 +780,16 @@ namespace Social.Services.Implementation
 
             List<EventData> data = EventChatAttends.Where(m => !blockod.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.Now.Date && m.EventData.IsActive == true && (m.EventData.StopFrom != null ? (m.EventData.StopFrom.Value >= DateTime.Now.Date || m.EventData.StopTo.Value <= DateTime.Now.Date) : true) && (m.EventData.EventTypeList.key == true ? (m.UserattendId == id && m.stutus != 1 && m.stutus != 2) : true)).Select(m => m.EventData).Distinct().ToList();
 
-            if (endDate != null)
+            if (endDate != null&& dateCriteria != "Custom")
             {
 
                 data = data.Where(q => q.eventdateto?.Date <= endDate).ToList();
+
+            }
+            if (endDate != null && dateCriteria == "Custom")
+            {
+
+                data = data.Where(q => q.eventdate?.Date >= startDate && q.eventdateto?.Date <= endDate).ToList();
 
             }
 
@@ -1155,10 +1161,16 @@ namespace Social.Services.Implementation
 
             var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct().ToList();
 
-            if (endDate !=null)
+            if (endDate !=null && dateCriteria != "Custom")
             {
 
                 eventDataList = eventDataList.Where(q =>  q.eventdateto?.Date <= endDate).ToList();
+
+            }
+            if (endDate != null && dateCriteria == "Custom")
+            {
+
+                eventDataList = eventDataList.Where(q => q.eventdate?.Date >= startDate && q.eventdateto?.Date <= endDate).ToList();
 
             }
 
