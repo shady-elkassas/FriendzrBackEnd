@@ -83,6 +83,7 @@ namespace Social.Entity.Models
         public bool IsActive { get; set; } = true;
         public bool? ProfileCompleted { get; set; }
         public bool? IsWhiteLabel { get; set; }
+        public bool? ImageIsVerified { get; set; }
         public virtual User User { get; set; }
         public virtual City City { get; set; }
         public virtual Country Country { get; set; }

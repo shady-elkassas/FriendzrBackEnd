@@ -221,6 +221,10 @@ namespace Social.Entity.DBContext
             {
                 b.Property(ur => ur.IsWhiteLabel).HasDefaultValue(false);
             });
+            modelBuilder.Entity<UserDetails>(b =>
+            {
+                b.Property(ur => ur.ImageIsVerified).HasDefaultValue(false);
+            });
             modelBuilder.Entity<EventData>(b =>
             {
                 b.HasOne(ur => ur.User).WithMany(u => u.EventData).HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Cascade);
