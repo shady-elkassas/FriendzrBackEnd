@@ -232,7 +232,7 @@ namespace Social.Controllers
                 }
                 userDeatils.Gender = model.Gender;
                 userDeatils.bio = model.bio;
-                userDeatils.ImageIsVerified = model.ImageIsVerified;
+                userDeatils.ImageIsVerified = model.ImageIsVerified ?? false;
                 //userDeatils.Email = model.Email;
                 userDeatils.userName = model.Username;
                 userDeatils.birthdate = Convert.ToDateTime(model.birthdate);
