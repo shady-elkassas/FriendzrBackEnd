@@ -230,9 +230,14 @@ namespace Social.Controllers
 
                     userDeatils.UserImage = imageName;
                 }
+
+                if (model.ImageIsVerified != null)
+                {
+                    userDeatils.ImageIsVerified = model.ImageIsVerified;
+                }
                 userDeatils.Gender = model.Gender;
                 userDeatils.bio = model.bio;
-                userDeatils.ImageIsVerified = model.ImageIsVerified ?? false;
+               
                 //userDeatils.Email = model.Email;
                 userDeatils.userName = model.Username;
                 userDeatils.birthdate = Convert.ToDateTime(model.birthdate);
