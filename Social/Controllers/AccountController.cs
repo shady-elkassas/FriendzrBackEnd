@@ -674,6 +674,7 @@ namespace Social.Controllers
 
                 updateUserModel.Gender = userDeatils.Gender;
                 updateUserModel.OtherGenderName = userDeatils.OtherGenderName;
+                updateUserModel.ImageIsVerified = userDeatils.ImageIsVerified;
                 updateUserModel.listoftagsmodel = list2;
                 updateUserModel.IamList = WhatBestDescripsMeListdata;
                 updateUserModel.allowmylocation = userDeatils.allowmylocation;

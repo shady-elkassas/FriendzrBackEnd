@@ -31,6 +31,7 @@ namespace Social.Entity.Models
         public DateTime birthdate { get; set; }
         public List<LinkAccount> LinkAccount { get; set; }
         public bool personalSpace { get; set; }
+        public bool? ImageIsVerified { get; set; }
         public string Facebook { get; set; }
         public string instagram { get; set; }
         public string snapchat { get; set; }
@@ -107,6 +108,7 @@ namespace Social.Entity.Models
         public string language { get; set; }
         public bool pushnotification { get; set; }
         public bool ghostmode { get; set; }
+        public bool? ImageIsVerified { get; set; }
         public bool allowmylocation { get; set; }
         public decimal Manualdistancecontrol { get; set; }
         public int ageto { get; set; }
