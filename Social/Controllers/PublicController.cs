@@ -733,7 +733,13 @@ namespace Social.Controllers
             }
         }
 
-        
+        /// <summary>
+        /// Date Format yyyy-mm-dd
+        /// </summary>
+        /// <param name="totalCount"></param>
+        /// <param name="minDate"></param>
+        /// <param name="maxDate"></param>
+        /// <returns></returns>
         // for job
         [HttpPost]
         public async Task<IActionResult> AddExternalEvents(int totalCount, [FromForm] string?  minDate, [FromForm] string? maxDate)
