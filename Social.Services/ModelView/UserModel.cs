@@ -63,6 +63,7 @@ namespace Social.Entity.Models
         public string lang { get; set; }
         public string language { get; set; }
         public bool pushnotification { get; set; }
+        public bool? ImageIsVerified { get; set; }
         public bool ghostmode { get; set; }
         public bool allowmylocation { get; set; }
         public decimal Manualdistancecontrol { get; set; }

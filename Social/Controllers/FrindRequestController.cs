@@ -379,6 +379,7 @@ namespace Social.Controllers
                 updateUserModel.Gender = meDeatils.Gender;
                 updateUserModel.OtherGenderName = meDeatils.OtherGenderName;
                 updateUserModel.bio = meDeatils.bio;
+                updateUserModel.ImageIsVerified = meDeatils.ImageIsVerified ?? false;
                 updateUserModel.Email = meDeatils.User.Email;
                 updateUserModel.birthdate = meDeatils.birthdate == null ? DateTime.Now.Date.ConvertDateTimeToString() : meDeatils.birthdate.Value.ConvertDateTimeToString();
                 updateUserModel.age = meDeatils.birthdate == null ? 0 : (GetAge(meDeatils.birthdate.Value));
