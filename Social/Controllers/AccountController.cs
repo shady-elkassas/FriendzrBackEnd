@@ -195,6 +195,7 @@ namespace Social.Controllers
                 modl.Filteringaccordingtoage = userDeatils.Filteringaccordingtoage;
                 modl.personalSpace = userDeatils.personalSpace;
                 modl.allowmylocation = userDeatils.allowmylocation;
+                modl.ImageIsVerified = userDeatils.ImageIsVerified ?? false;
                 modl.whatAmILookingFor = userDeatils.whatAmILookingFor;
                 modl.MyAppearanceTypes = userDeatils.AppearanceTypes.Select(x => x.AppearanceTypeID).ToList();
                 modl.ghostmode = userDeatils.ghostmode;
