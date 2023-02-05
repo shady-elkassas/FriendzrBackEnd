@@ -268,6 +268,7 @@ namespace Social.Controllers
                                 platform = model.platform,
                                 allowmylocation = true,
                                 distanceFilter = true,
+                                ImageIsVerified = false,
                                 Filteringaccordingtoage = true,
                                 agefrom = (int)appcon.AgeFiltering_Min,
                                 whatAmILookingFor = model.whatAmILookingFor,
@@ -328,7 +329,7 @@ namespace Social.Controllers
                            phoneNumber = user.PhoneNumber,
                            allowmylocation = userDeatils.allowmylocation,
                            MyAppearanceTypes = userDeatils.AppearanceTypes.Select(x => x.AppearanceTypeID).ToList(),
-
+                           ImageIsVerified = userDeatils.ImageIsVerified,
                            ghostmode = userDeatils.ghostmode,
                            pushnotification = userDeatils.pushnotification,
                            language = userDeatils.language,
@@ -558,6 +559,7 @@ namespace Social.Controllers
                            Filteringaccordingtoage = userDeatils.Filteringaccordingtoage,
 
                            allowmylocation = userDeatils.allowmylocation,
+                           ImageIsVerified = userDeatils.ImageIsVerified,
 
                            MyAppearanceTypes = userDeatils.AppearanceTypes.Select(x => x.AppearanceTypeID).ToList(),
 
