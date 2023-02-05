@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Social.Entity.Migrations;
 
 namespace Social.Controllers
 {
@@ -206,6 +207,7 @@ namespace Social.Controllers
                               IsSentRequest = userDeatils.PrimaryId == m.UserId,
                               regestdata = m.regestdata.ToString(@"dd-MM-yyyy HH\:mm"),
                               userId = userDeatils.PrimaryId == m.UserId ? m.UserRequest.UserId : m.User.UserId,
+                              ImageIsVerified = m.User?.ImageIsVerified ?? false,
                               lang = userDeatils.PrimaryId == m.UserId ? m.UserRequest.lang : m.User.lang,
                               lat = userDeatils.PrimaryId == m.UserId ? m.UserRequest.lat : m.User.lat,
                               UserName = userDeatils.PrimaryId == m.UserId ? m.UserRequest.User.DisplayedUserName : m.User.User.DisplayedUserName,
@@ -266,6 +268,7 @@ namespace Social.Controllers
                                   userName = m.userName,
                                   DisplayedUserName = m.User.DisplayedUserName,
                                   Email = m.User.Email,
+                                  ImageIsVerified = m.ImageIsVerified ?? false,
                                   image = _configuration["BaseUrl"] + (m.UserImage),
                                   key = 3,// by default friends because they are in the same community                                  
                               }).ToList()
@@ -341,6 +344,7 @@ namespace Social.Controllers
                           {
                               blockDate = m.blockDate == null ? "" : m.blockDate.Value.Date.ConvertDateTimeToString(),
                               userId = m.UserId != userDeatils.PrimaryId ? m.User.UserId : m.UserRequest.UserId,
+                              ImageIsVerified = m.User?.ImageIsVerified ?? false,
                               lang = m.UserId != userDeatils.PrimaryId ? m.User.lang : m.UserRequest.lang,
                               lat = m.UserId != userDeatils.PrimaryId ? m.User.lat : m.UserRequest.lat,
                               userName = m.UserId != userDeatils.PrimaryId ? m.User.User.DisplayedUserName : m.UserRequest.User.DisplayedUserName,

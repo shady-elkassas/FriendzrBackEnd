@@ -1268,6 +1268,7 @@ namespace Social.Services.Implementation
             RecommendedPeopleViewModel recommendedPeople = userDetails.Select(q => new RecommendedPeopleViewModel()
             {
                 UserId = q.UserId,
+                ImageIsVerified = q.ImageIsVerified ?? false,
                 Name = q.User.DisplayedUserName,
                 Image = $"{_configuration["BaseUrl"]}{q.UserImage}",
                 DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
@@ -1292,6 +1293,7 @@ namespace Social.Services.Implementation
             List<RecentlyConnectedViewModel> RecentlyConnected = requestes.Select(q => new RecentlyConnectedViewModel()
             {
                 UserId = q.UserId == userDeatil.PrimaryId ? q.UserRequest.UserId : q.User.UserId,
+                ImageIsVerified = q.UserRequest?.ImageIsVerified ?? false,
                 Name = q.UserId == userDeatil.PrimaryId ? q.UserRequest.User.DisplayedUserName : q.User.User.DisplayedUserName,
                 Image = $"{_configuration["BaseUrl"]}{(q.UserId == userDeatil.PrimaryId ? q.UserRequest.UserImage : q.User.UserImage)}",
                 Date = q.AcceptingDate == null?q.regestdata.ToString("dd/MM/yyyy"):q.AcceptingDate.Value.ToString("dd/MM/yyyy")
