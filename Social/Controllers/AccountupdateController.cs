@@ -123,13 +123,13 @@ namespace Social.Controllers
                 var Getalllistoftags = this._userService.Getalllistoftags((userDeatils.PrimaryId));
                 this._userService.deleteLinkAccount(GetLinkAccount);
                 //this._userService.Deletelistoftags(Getalllistoftags);
-                if (UserImags == null && (userDeatils.UserImage == null || userDeatils.UserImage == ""))
-                {
-                    return StatusCode(StatusCodes.Status406NotAcceptable,
-                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                //if (UserImags == null && (userDeatils.UserImage == null || userDeatils.UserImage == ""))
+                //{
+                //    return StatusCode(StatusCodes.Status406NotAcceptable,
+                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
 
-                         _localizer["profile picture is required"], null));
-                }
+                //         _localizer["profile picture is required"], null));
+                //}
                 if (model.listoftags == null)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
