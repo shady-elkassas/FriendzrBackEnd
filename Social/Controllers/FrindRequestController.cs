@@ -296,6 +296,7 @@ namespace Social.Controllers
                                   lang = m.UserId != userDeatils.PrimaryId ? m.User.lang : m.UserRequest.lang,
                                   lat = m.UserId != userDeatils.PrimaryId ? m.User.lat : m.UserRequest.lat,
                                   regestdata = m.regestdata.Date.ConvertDateTimeToString(),
+                                  ImageIsVerified = m.UserId != userDeatils.PrimaryId ? m.User.ImageIsVerified ?? false : m.UserRequest.ImageIsVerified ?? false,
                                   userName = m.UserId != userDeatils.PrimaryId ? m.User.User.DisplayedUserName : m.UserRequest.User.DisplayedUserName,
                                   DisplayedUserName = m.UserId != userDeatils.PrimaryId ? m.User.User.UserName : m.UserRequest.User.UserName,
                                   Email = m.UserId != userDeatils.PrimaryId ? m.User.User.Email : m.UserRequest.User.Email,
