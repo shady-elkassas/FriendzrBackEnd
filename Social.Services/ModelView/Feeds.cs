@@ -14,6 +14,7 @@ namespace Social.Entity.ModelView
         public string UserName { get; set; }
         public string email { get; set; }
         public string image { get; set; }
+        public bool? ImageIsVerified { get; set; }
         public int key { get; set; }
         public decimal InterestMatchPercent { get; set; }
 

@@ -111,6 +111,7 @@ namespace Social.Controllers
                     userId = m.UserId,
                     lang = m.lang,
                     lat = m.lat,
+                    ImageIsVerified = m.ImageIsVerified ?? false,
                     DisplayedUserName = m.User.UserName,
                     UserName = m.User.DisplayedUserName,
                     email = m.User.Email,

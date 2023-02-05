@@ -589,7 +589,8 @@ namespace Social.Services.Implementation
                             data.Image = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.User.UserImage : item.FirstOrDefault().UserMessagess.ToUser.UserImage);
                             data.id = id;
                             muit = getmuitMessages(item.FirstOrDefault().UserMessagessId, userid, UserMessages);
-                            data.isfrind = friendtype == null ? false : friendtype.status == 1 ? true : false;                            
+                            data.isfrind = friendtype == null ? false : friendtype.status == 1 ? true : false; 
+                            data.ImageIsVerified = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.User.ImageIsVerified : item.FirstOrDefault().UserMessagess.ToUser.ImageIsVerified);
                             data.muit = muit;
                             data.message_not_Read = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.ToUserNotreadcount : item.FirstOrDefault().UserMessagess.UserNotreadcount);
 

@@ -168,6 +168,7 @@ public List<LinkAccountmodel> LinkAccountmodel { get; set; }
         public TimeSpan latesttimevm { get; set; }
         public int Key { get; set; }
         public bool IsWhiteLabel { get; set; }
+        public bool? ImageIsVerified { get; set; }
 
     }
     public class listoftagsmodel
