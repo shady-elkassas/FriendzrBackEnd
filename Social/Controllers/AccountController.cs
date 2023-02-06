@@ -143,18 +143,20 @@ namespace Social.Controllers
 
                 var loggedinUser = HttpContext.GetUser();
 
-                // get user
-                var user = await userManager.FindByIdAsync(loggedinUser.UserId);
                 if (loggedinUser == null)
                 {
                     return StatusCode(StatusCodes.Status404NotFound,
-                    new ResponseModel<object>(StatusCodes.Status404NotFound, false,
-                     _localizer["401eror"], null));
+                        new ResponseModel<object>(StatusCodes.Status404NotFound, false,
+                            _localizer["401eror"], null));
                 }
 
+
+                // get user
+                var user = await userManager.FindByIdAsync(loggedinUser.UserId);
+               
                 var userDeatils = this.userService.GetUserDetails(user.Id);
-                var GetLinkAccount = this.userService.GetallLinkAccount((userDeatils.PrimaryId));
-                var Getalllistoftags = this.userService.Getalllistoftags((userDeatils.PrimaryId));
+                //var GetLinkAccount = this.userService.GetallLinkAccount((userDeatils.PrimaryId));
+                //var Getalllistoftags = this.userService.Getalllistoftags((userDeatils.PrimaryId));
                 userDeatils.lang = lang;
                 userDeatils.lat = lat;
                 this.userService.UpdateUserDetails(userDeatils);
