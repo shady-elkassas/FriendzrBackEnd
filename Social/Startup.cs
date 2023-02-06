@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,8 +64,19 @@ namespace Social
             FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromFile(path),
-            });                        
+            });
+            // configure form options limit
+            services.AddMvc(options =>
+            {
+                options.MaxModelBindingCollectionSize = 100000;
+            });
 
+            services.Configure<FormOptions>(options =>
+            {
+                options.ValueCountLimit = int.MaxValue;
+                options.ValueLengthLimit = int.MaxValue;
+                options.MultipartHeadersLengthLimit = int.MaxValue;
+            });
             services.AddControllers(options =>
             {
                 var jsonInputFormatter = options.InputFormatters
