@@ -224,7 +224,7 @@ namespace Social.Services.Implementation
             //public int Action_Id2 { get; set; }
             mod.Action = model.Action;
             mod.IsCreatedByAdmin = IsCreatedByAdmin;
-            DateTime dateTime = DateTime.Now;
+            DateTime dateTime = DateTime.UtcNow;
             dateTime = new DateTime(
                 dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
                 dateTime.Kind
