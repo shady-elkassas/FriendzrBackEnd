@@ -30,7 +30,7 @@ namespace Social.Entity.ModelView
         //public int Action_Id2 { get; set; }
         public string Action { get; set; }
         public string CreatedAt { get; set; }
-        public DateTime NotificationDate { get; set; }
+        public string NotificationDate { get; set; }
 
         public bool isAdmin { get; set; }
         public Guid? eventtypeid { get; set; }
