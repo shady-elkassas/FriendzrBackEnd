@@ -1322,7 +1322,7 @@ namespace Social.Controllers
                     dat.Action_code = item.Action_code;
                     dat.Body = item.Body;
                     dat.CreatedAt = item.CreatedAt.ToString(@"dd-MM-yyyy hh\:mm");
-                    dat.NotificationDate = item.CreatedAt.ToString("dd-MM-yyyy") + "T" + item.CreatedAt.ToString("HH:mm:ss")  + item.CreatedAt.ToString("zzz");
+                    dat.NotificationDate = item.CreatedAt.ToString("dd-MM-yyyy") + "T" + item.CreatedAt.ToString("HH:mm:ss");
                     dat.imageUrl = item.imageUrl;
                     dat.Messagetype = item.Messagetype;
                     dat.id = item.id;
