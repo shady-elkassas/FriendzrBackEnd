@@ -225,10 +225,10 @@ namespace Social.Services.Implementation
             mod.Action = model.Action;
             mod.IsCreatedByAdmin = IsCreatedByAdmin;
             DateTime dateTime = DateTime.UtcNow;
-            dateTime = new DateTime(
-                dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
-                dateTime.Kind
-                );
+            //dateTime = new DateTime(
+            //    dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
+            //    dateTime.Kind
+            //    );
 
             mod.CreatedAt = dateTime;
             //if (date != null)
