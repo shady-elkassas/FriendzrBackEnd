@@ -2253,6 +2253,32 @@ namespace Social.Controllers
 
             }
         }
+        [HttpPost]
+        [Route("EventsByLocation")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> FilterEventsByLocation([FromForm] string lang, [FromForm] string lat, [FromForm] string categories, [FromForm] string dateCriteria, [FromForm] DateTime? startDate, [FromForm] DateTime? endDate)
+        {
+            try
+            {
+                var appConfiguration = appConfigrationService.GetData().FirstOrDefault();
+                var loggedInUser = HttpContext.GetUser();
+
+                var eventsAroundUser =
+                    _Event.GetAllEventsByLocationsWithDateFilter(lang, lat, loggedInUser.User.UserDetails, appConfiguration, categories, dateCriteria, startDate, endDate);
+
+
+                return StatusCode(StatusCodes.Status200OK,
+                    new ResponseModel<object>(StatusCodes.Status200OK, true,
+                        "data ", eventsAroundUser));
+
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "Events/AllLocationEvente", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+
+            }
+        }
 
         [HttpPost]
         [Route("OnlyEventsAround")]

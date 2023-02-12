@@ -123,5 +123,9 @@ namespace Social.Services.Services
         locationDataMV GetAllEventsUserLocationsWithDateFilter(int pageNumber, int pageSize, UserDetails user,
             AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate,
             DateTime? endDate);
+
+        List<EventDataByLocationMV> GetAllEventsByLocationsWithDateFilter(string eventLang, string eventLat, UserDetails user,
+            AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate,
+            DateTime? endDate);
     }
 }
