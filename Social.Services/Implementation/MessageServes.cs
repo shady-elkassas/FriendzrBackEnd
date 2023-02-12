@@ -586,7 +586,11 @@ namespace Social.Services.Implementation
                         {
                             UserDetailsvm data = new UserDetailsvm();
                             data.Name = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.User.User.DisplayedUserName : item.FirstOrDefault().UserMessagess.ToUser.User.DisplayedUserName);
-                            data.Image = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.User.UserImage : item.FirstOrDefault().UserMessagess.ToUser.UserImage);
+                            data.Image = item.FirstOrDefault().UserMessagess.ToUserId == currentuserid
+                                ? string.IsNullOrEmpty(item.FirstOrDefault().UserMessagess.User.UserImage)
+                                    ? "/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : item.FirstOrDefault().UserMessagess.User.UserImage
+                                :string.IsNullOrEmpty(item.FirstOrDefault().UserMessagess.ToUser.UserImage)
+                                    ? "/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : item.FirstOrDefault().UserMessagess.ToUser.UserImage;
                             data.id = id;
                             muit = getmuitMessages(item.FirstOrDefault().UserMessagessId, userid, UserMessages);
                             data.isfrind = friendtype == null ? false : friendtype.status == 1 ? true : false; 
@@ -609,7 +613,11 @@ namespace Social.Services.Implementation
                         {
                             UserDetailsvm data = new UserDetailsvm();
                             data.Name = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.User.User.DisplayedUserName : item.FirstOrDefault().UserMessagess.ToUser.User.DisplayedUserName);
-                            data.Image = (item.FirstOrDefault().UserMessagess.ToUserId == currentuserid ? item.FirstOrDefault().UserMessagess.User.UserImage : item.FirstOrDefault().UserMessagess.ToUser.UserImage);
+                            data.Image = item.FirstOrDefault().UserMessagess.ToUserId == currentuserid
+                                ? string.IsNullOrEmpty(item.FirstOrDefault().UserMessagess.User.UserImage)
+                                    ? "/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : item.FirstOrDefault().UserMessagess.User.UserImage
+                                : string.IsNullOrEmpty(item.FirstOrDefault().UserMessagess.ToUser.UserImage)
+                                    ? "/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : item.FirstOrDefault().UserMessagess.ToUser.UserImage;
                             data.id = id;
                             muit = getmuitMessages(item.FirstOrDefault().UserMessagessId, userid, UserMessages);
                             data.isfrind = (item.FirstOrDefault().User.IsWhiteLabel.HasValue && item.FirstOrDefault().User.IsWhiteLabel.Value)==true?true:friendtype == null  ? false : friendtype.status == 1 ? true : false;
