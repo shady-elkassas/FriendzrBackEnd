@@ -230,6 +230,12 @@ namespace Social.Controllers
 
                     userDeatils.UserImage = imageName;
                 }
+                if (UserImags == null)
+                {
+                    globalMethodsService.DeleteFiles(userDeatils.UserImage, "");
+
+                    userDeatils.UserImage = null;
+                }
 
                 if (model.ImageIsVerified != null)
                 {
