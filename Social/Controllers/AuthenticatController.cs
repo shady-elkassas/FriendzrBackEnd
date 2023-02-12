@@ -334,7 +334,7 @@ namespace Social.Controllers
                            pushnotification = userDeatils.pushnotification,
                            language = userDeatils.language,
                            whatAmILookingFor = model.whatAmILookingFor,
-                           userImage = _configuration["BaseUrl"] + image,
+                           userImage =string.IsNullOrEmpty(image) ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + image,
                            Manualdistancecontrol = userDeatils.Manualdistancecontrol,
                            agefrom = userDeatils.agefrom,
                            ageto = userDeatils.ageto,
@@ -552,7 +552,7 @@ namespace Social.Controllers
 
                            notificationcount = data,
                            Message_Count = MessageServes.messagelogincount(userDeatils.UserId),
-                           userImage = _configuration["BaseUrl"] + image,
+                           userImage = string.IsNullOrEmpty(image) ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + image,
                            Manualdistancecontrol = userDeatils.Manualdistancecontrol,
                            agefrom = userDeatils.agefrom,
                            ageto = userDeatils.ageto,
