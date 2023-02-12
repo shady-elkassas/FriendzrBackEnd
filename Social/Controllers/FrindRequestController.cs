@@ -390,7 +390,7 @@ namespace Social.Controllers
                 updateUserModel.birthdate = meDeatils.birthdate == null ? DateTime.Now.Date.ConvertDateTimeToString() : meDeatils.birthdate.Value.ConvertDateTimeToString();
                 updateUserModel.age = meDeatils.birthdate == null ? 0 : (GetAge(meDeatils.birthdate.Value));
 
-                updateUserModel.UserImage = (meDeatils.UserImage == null || meDeatils.UserImage == "") ? "" : (_configuration["BaseUrl"] + meDeatils.UserImage);
+                updateUserModel.UserImage = (meDeatils.UserImage == null || meDeatils.UserImage == "") ? "https://www.friendzsocialmedia.com/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : (_configuration["BaseUrl"] + meDeatils.UserImage);
                 updateUserModel.UserImages = userImages.Any() ? userImages.Select(a => _configuration["BaseUrl"] + a.ImageUrl).ToList() : new List<string>();
 
                 updateUserModel.UserName = meDeatils.User.DisplayedUserName;

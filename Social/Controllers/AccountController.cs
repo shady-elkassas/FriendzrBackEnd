@@ -641,7 +641,7 @@ namespace Social.Controllers
                 updateUserModel.distanceFilter = userDeatils.distanceFilter;
                 updateUserModel.Email = userDeatils.User.Email;
                 updateUserModel.birthdate = userDeatils.birthdate == null ? "" : userDeatils.birthdate.Value.ConvertDateTimeToString();
-                updateUserModel.UserImage = (userDeatils.UserImage == null || userDeatils.UserImage == "") ? "" : (BaseUrlDomain + userDeatils.UserImage);
+                updateUserModel.UserImage = (userDeatils.UserImage == null || userDeatils.UserImage == "") ? "https://www.friendzsocialmedia.com/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : (BaseUrlDomain + userDeatils.UserImage);
                 updateUserModel.lat = userDeatils.lat;
                 updateUserModel.lang = userDeatils.lang;
                 updateUserModel.UserName = user.DisplayedUserName;
