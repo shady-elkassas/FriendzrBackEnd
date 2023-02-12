@@ -99,18 +99,18 @@ namespace Social.Entity.ModelView
         public string category { get; set; }
        // public string eventtype { get; set; }
        // public Guid eventtypeid { get; set; }
-        public string eventtypecolor { get; set; }
+       // public string eventtypecolor { get; set; }
         public string lang { get; set; }
         public string lat { get; set; }
         public int totalnumbert { get; set; }
         public bool allday { get; set; }
         public string eventdate { get; set; }
-        public string eventdateto { get; set; }
-        public string timefrom { get; set; }
-        public string timeto { get; set; }
-        public string color { get; set; }
-        public bool MyEvent { get; set; }
-        public string UserImage { get; set; }
+        //public string eventdateto { get; set; }
+        //public string timefrom { get; set; }
+        //public string timeto { get; set; }
+        //public string color { get; set; }
+        //public bool MyEvent { get; set; }
+        //public string UserImage { get; set; }
         public string EventTypeName { get; set; }
 
     }

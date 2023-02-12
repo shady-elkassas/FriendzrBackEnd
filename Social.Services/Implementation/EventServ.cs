@@ -1436,16 +1436,16 @@ namespace Social.Services.Implementation
             var result = eventDataList.Select(m => new EventDataByLocationMV
             {
                 eventdate = m.eventdate.Value.ConvertDateTimeToString(),
-                eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
+                //eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
                 allday = Convert.ToBoolean(m.allday),
              //   description = m.description,
-                timefrom = m.eventfrom == null ? "" : m.eventfrom.Value.ToString(),
-                timeto = m.eventto == null ? "" : m.eventto.Value.ToString(),
+                //timefrom = m.eventfrom == null ? "" : m.eventfrom.Value.ToString(),
+                //timeto = m.eventto == null ? "" : m.eventto.Value.ToString(),
                 category = m.categorie == null ? "" : m.categorie.name,
                // categorieimage = _configuration["BaseUrl"] + (m.categorie == null ? "" : m.categorie.image),
                 Title = m.Title,
                 Image = (m.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + m.image,
-                UserImage = m.EventTypeListid == 5 || m.EventTypeListid == 6 ? _configuration["BaseUrl"] + m.User.UserImage : "",
+                //UserImage = m.EventTypeListid == 5 || m.EventTypeListid == 6 ? _configuration["BaseUrl"] + m.User.UserImage : "",
                 EventTypeName = m.EventTypeList.Name.Contains("White") ? "Whitelabel" : m.EventTypeList.Name,
                 Id = m.EntityId,
                 categorieId = (m.categorie == null ? "" : m.categorie.EntityId),
@@ -1454,7 +1454,7 @@ namespace Social.Services.Implementation
                 lat = m.lat,
                 UseraddedId = m.User?.UserId,
            //     eventtypeid = m.EventTypeList.entityID,
-                eventtypecolor = m.EventTypeList.color,
+               // eventtypecolor = m.EventTypeList.color,
              //   eventtype = m.EventTypeList.Name,
 
             }).ToList();
