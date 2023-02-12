@@ -356,7 +356,7 @@ namespace Social.Controllers
                 modl.agefrom = userDeatils.agefrom;
                 modl.ageto = userDeatils.ageto;
                 modl.distanceFilter = userDeatils.distanceFilter;
-                modl.UserImage = BaseUrlDomain + user.UserDetails.UserImage;
+                modl.UserImage = string.IsNullOrEmpty(user.UserDetails.UserImage) ? "https://www.friendzsocialmedia.com/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : BaseUrlDomain + user.UserDetails.UserImage;
                 modl.UniversityCode = userDeatils.Code;
                 var GetLinkAccount2 = this._userService.GetallLinkAccount((userDeatils.PrimaryId));
                 var Getalllistoftags2 = this._userService.Getalllistoftags((userDeatils.PrimaryId));
