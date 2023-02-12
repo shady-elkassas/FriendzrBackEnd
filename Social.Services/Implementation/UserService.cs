@@ -1270,7 +1270,7 @@ namespace Social.Services.Implementation
                 UserId = q.UserId,
                 ImageIsVerified = q.ImageIsVerified ?? false,
                 Name = q.User.DisplayedUserName,
-                Image = $"{_configuration["BaseUrl"]}{q.UserImage}",
+                Image = string.IsNullOrEmpty(q.UserImage) ? _configuration["DefaultImage"] : $"{_configuration["BaseUrl"]}{q.UserImage}",
                 DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
                 InterestMatchPercent = (q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
                 MatchedInterests = q.listoftags.Where(q => currentUserInterests.Contains(q.InterestsId)).Select(i => i.Interests.name).ToList(),
@@ -1295,7 +1295,11 @@ namespace Social.Services.Implementation
                 UserId = q.UserId == userDeatil.PrimaryId ? q.UserRequest.UserId : q.User.UserId,
                 ImageIsVerified = q.UserRequest?.ImageIsVerified ?? false,
                 Name = q.UserId == userDeatil.PrimaryId ? q.UserRequest.User.DisplayedUserName : q.User.User.DisplayedUserName,
-                Image = $"{_configuration["BaseUrl"]}{(q.UserId == userDeatil.PrimaryId ? q.UserRequest.UserImage : q.User.UserImage)}",
+                Image = q.UserId == userDeatil.PrimaryId 
+                    ? string.IsNullOrEmpty(q.UserRequest.UserImage)
+                        ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.UserRequest.UserImage
+                    : string.IsNullOrEmpty(q.User.UserImage) 
+                        ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.User.UserImage,
                 Date = q.AcceptingDate == null?q.regestdata.ToString("dd/MM/yyyy"):q.AcceptingDate.Value.ToString("dd/MM/yyyy")
             }).OrderByDescending(q => DateTime.ParseExact(q.Date, "dd/MM/yyyy", null)).ToList();
 

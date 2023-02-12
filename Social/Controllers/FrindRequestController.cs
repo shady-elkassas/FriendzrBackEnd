@@ -133,7 +133,7 @@ namespace Social.Controllers
                     DisplayedUserName = q.User.UserName,
                     UserName = q.User.DisplayedUserName,
                     email = q.User.Email,
-                    image = _configuration["BaseUrl"] + q.UserImage,
+                    image = string.IsNullOrEmpty(q.UserImage) ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.UserImage,
                     key = _FrindRequest.Getallkey(userDeatils.PrimaryId, q.PrimaryId, allReq),
                     InterestMatchPercent = Math.Round(((q.listoftags.Select(q => q.InterestsId).Intersect(userDetailsList.currentUserInterests).Count() / Convert.ToDecimal(userDetailsList.currentUserInterests.Count())) * 100), 0)
                 }).Where(k => k.key != 4 && k.key != 5).ToList();
@@ -214,7 +214,11 @@ namespace Social.Controllers
                               UserName = userDeatils.PrimaryId == m.UserId ? m.UserRequest.User.DisplayedUserName : m.User.User.DisplayedUserName,
                               DisplayedUserName = userDeatils.PrimaryId == m.UserId ? m.UserRequest.User.UserName : m.User.User.UserName,
                               Email = userDeatils.PrimaryId == m.UserId ? m.UserRequest.User.Email : m.User.User.Email,
-                              image = _configuration["BaseUrl"] + (userDeatils.PrimaryId == m.UserId ? m.UserRequest.UserImage : m.User.UserImage),
+                              image = userDeatils.PrimaryId == m.UserId 
+                                  ? string.IsNullOrEmpty(m.UserRequest.UserImage) 
+                                      ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + m.UserRequest.UserImage 
+                                  : string.IsNullOrEmpty(m.User.UserImage)
+                                      ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + m.User.UserImage,
                               key = _FrindRequest.Getallkey(userDeatils.PrimaryId, (userDeatils.PrimaryId == m.UserId ? m.UserRequestId : m.UserId) ?? 0, allReq),
                               InterestMatchPercent = m.User.PrimaryId == userDeatils.PrimaryId ?
                               Math.Round(((m.UserRequest.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100), 0) : Math.Round(((m.User.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100), 0)
@@ -270,7 +274,7 @@ namespace Social.Controllers
                                   DisplayedUserName = m.User.DisplayedUserName,
                                   Email = m.User.Email,
                                   ImageIsVerified = m.ImageIsVerified ?? false,
-                                  image = _configuration["BaseUrl"] + (m.UserImage),
+                                  image =string.IsNullOrEmpty(m.UserImage) ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + m.UserImage,
                                   key = 3,// by default friends because they are in the same community                                  
                               }).ToList()
                           }));
@@ -352,7 +356,11 @@ namespace Social.Controllers
                               userName = m.UserId != userDeatils.PrimaryId ? m.User.User.DisplayedUserName : m.UserRequest.User.DisplayedUserName,
                               DisplayedUserName = m.UserId != userDeatils.PrimaryId ? m.User.User.UserName : m.UserRequest.User.UserName,
                               Email = m.UserId != userDeatils.PrimaryId ? m.User.User.Email : m.UserRequest.User.Email,
-                              image = _configuration["BaseUrl"] + (m.UserId != userDeatils.PrimaryId ? m.User.UserImage : m.UserRequest.UserImage),
+                              image = m.UserId != userDeatils.PrimaryId
+                                  ? string.IsNullOrEmpty(m.User.UserImage)
+                                      ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + m.User.UserImage 
+                                  : string.IsNullOrEmpty(m.UserRequest.UserImage)
+                                      ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + m.UserRequest.UserImage,
                               key = _FrindRequest.Getallkey(userDeatils.PrimaryId, m.UserId == userDeatils.PrimaryId ? m.UserRequest.PrimaryId : m.User.PrimaryId, allReq)
                           }).ToList().OrderByDescending(d=>d.blockDate)
                       }));
