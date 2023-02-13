@@ -16,6 +16,7 @@ namespace Social.Entity.ModelView
         public decimal lang { get; set; }
         public decimal lat { get; set; }
         public string Event_Type { get; set; }
+        public string EventId { get; set; }
         //public Guid Event_TypeId { get; set; }
         //public string Event_TypeColor { get; set; }
         public int count { get; set; }

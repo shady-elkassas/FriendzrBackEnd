@@ -1464,7 +1464,8 @@ namespace Social.Services.Implementation
 
                     eventLocation.lat = Convert.ToDecimal(location.lat);
 
-                   // eventLocation.Event_Type = events[0].EventTypeList.Name;
+                    // eventLocation.Event_Type = events[0].EventTypeList.Name;
+                    eventLocation.EventId = events[0]?.EntityId;
 
                     eventLocation.EventTypeName = events[0].EventTypeList.Name.Contains("White") ? "Whitelabel" : events[0].EventTypeList.Name;
 
