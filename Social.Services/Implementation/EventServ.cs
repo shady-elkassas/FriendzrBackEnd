@@ -1464,7 +1464,7 @@ namespace Social.Services.Implementation
 
                     eventLocation.lat = Convert.ToDecimal(location.lat);
 
-                    eventLocation.Event_Type = events[0].EventTypeList.Name;
+                   // eventLocation.Event_Type = events[0].EventTypeList.Name;
 
                     eventLocation.EventTypeName = events[0].EventTypeList.Name.Contains("White") ? "Whitelabel" : events[0].EventTypeList.Name;
 
@@ -1494,8 +1494,8 @@ namespace Social.Services.Implementation
 
                     //}).ToList();
 
-                    eventLocation.color = color == null ? events.Count() < 5 ? "#0BBEA1" : (events.Count() < 10 ? "#e7b416" : "#cc3232")
-                         : events.Count() < color.emptynumber ? color.emptycolor : (events.Count() < color.middlenumber ? color.middlecolor : color.crowdedcolor);
+                    //eventLocation.color = color == null ? events.Count() < 5 ? "#0BBEA1" : (events.Count() < 10 ? "#e7b416" : "#cc3232")
+                    //     : events.Count() < color.emptynumber ? color.emptycolor : (events.Count() < color.middlenumber ? color.middlecolor : color.crowdedcolor);
 
                     eventLocation.EventMarkerImage = events[0].EventTypeListid == 5 || events[0].EventTypeListid == 6 ? _configuration["BaseUrl"] + events[0].User.UserImage : _configuration["BaseUrl"] + "/images/594a2c50-6590-42bb-aa32-b1ca7bc1f1ce.jpeg";
                     eventLocation.count = events.Count;
