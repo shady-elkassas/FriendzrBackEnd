@@ -1180,13 +1180,7 @@ namespace Social.Services.Implementation
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
-            eventDataList = FilterByDistance(eventDataList, userLat, userLong, distance, distanceMax).ToList();
-
-            foreach (var eventData in eventDataList)
-            {
-                eventData.lat = Math.Round(double.Parse(eventData.lat), 5).ToString(CultureInfo.CurrentCulture);
-                eventData.lang = Math.Round(double.Parse(eventData.lang), 5).ToString(CultureInfo.CurrentCulture);
-            }
+            eventDataList = SetLatAndLang(eventDataList, userLat, userLong, distance, distanceMax);
 
             dynamic eventsLocations;
 
@@ -1338,6 +1332,68 @@ namespace Social.Services.Implementation
 
             return (locationDataDto);
         }
+
+        private IEnumerable<EventData> CalculateLatAndLag(List<EventData> data, double userLat, double userLong, int distance, int distancemax)
+        {
+            foreach (var item in data)
+            {
+                var distanceValue = CalculateDistance(userLat, userLong, Convert.ToDouble(item.lat), Convert.ToDouble(item.lang));
+                if (distance <= distanceValue && distanceValue <= distancemax)
+                {
+
+                    item.lat = Math.Round(double.Parse(item.lat), 5).ToString(CultureInfo.CurrentCulture);
+                    item.lang = Math.Round(double.Parse(item.lang), 5).ToString(CultureInfo.CurrentCulture);
+                    yield return item;
+                }
+            }
+
+        }
+
+        private IEnumerable<UserDetails> CalculateDistanceClosedUsers(List<UserDetails> data, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax , string userGender)
+        {
+              data = data.Where(p=> CalculateDistance(userLat,
+                                   userLong,
+                                   Convert.ToDouble(p.lat),
+                                   Convert.ToDouble(p.lang)) <= (userManualDistanceControl == 0
+                                   ? Convert.ToDouble(userDistanceMax)
+                                   : Convert.ToDouble(userManualDistanceControl * 1000))
+                               && (!p.ghostmode || type(p.AppearanceTypes, userGender))
+                               && (!p.ghostmode || type(p.AppearanceTypes, p.Gender))).ToList();
+
+            
+            return data;
+        }
+
+        private List<EventData> SetLatAndLang(List<EventData> eventDataList, double userLat, double userLong, int distance, int maxDistance)
+        {
+            var tasks = new List<Task<List<EventData>>>();
+            for (int i = 0; i < eventDataList.Count; i+=500)
+            {
+                var gg = eventDataList.Skip(i).Take(500).ToList();
+                tasks.Add(Task.Run(() => CalculateLatAndLag(gg, userLat, userLong, distance, maxDistance).ToList()));
+
+            }
+
+            var m = ( Task.WhenAll(tasks).Result).ToList();
+            var oneList = m.SelectMany(a => a).ToList();
+            return oneList;
+        }
+
+        private List<UserDetails> GetClosedUsersByDistance(List<UserDetails> closedUsers, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
+        {
+            var tasks = new List<Task<List<UserDetails>>>();
+            for (int i = 0; i < closedUsers.Count; i += 200)
+            {
+                var gg = closedUsers.Skip(i).Take(200).ToList();
+                tasks.Add(Task.Run(() => CalculateDistanceClosedUsers(gg, userLat, userLong, userManualDistanceControl, userDistanceMax,userGender).ToList()));
+
+            }
+
+            var m = (Task.WhenAll(tasks).Result).ToList();
+            var oneList = m.SelectMany(a => a).ToList();
+            return oneList;
+        }
+
         public locationDataMV GetUserLocationsWithDateFilter(int pageNumber, int pageSize, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate, DateTime? endDate)
         {
             if (!string.IsNullOrEmpty(dateCriteria))
@@ -1415,15 +1471,8 @@ namespace Social.Services.Implementation
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
-
-           var  eventDataListEntity = FilterByDistance(eventDataList.ToList(), userLat, userLong, distance, distanceMax).ToList();
-
-            foreach (var eventData in eventDataListEntity)
-            {
-                eventData.lat = Math.Round(double.Parse(eventData.lat), 5).ToString(CultureInfo.CurrentCulture);
-                eventData.lang = Math.Round(double.Parse(eventData.lang), 5).ToString(CultureInfo.CurrentCulture);
-            }
-
+            var x = eventDataList.ToList();
+           var eventDataListEntity = SetLatAndLang(x, userLat, userLong, distance, distanceMax);
             dynamic eventsLocations;
 
             if (startDate == null && endDate == null)
@@ -1478,10 +1527,12 @@ namespace Social.Services.Implementation
             }
 
             var userDistanceMax = user.distanceFilter == false ? (AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max ?? 0) * 1000 : (int)(user.Manualdistancecontrol * 1000);
-            var d1 = userLat * (Math.PI / 180.0);
-            var num1 = userLong * (Math.PI / 180.0);
+            
 
             var allClosedUsers = _authContext.LoggedinUser
+                .Include(p=>p.User)
+                .ThenInclude(u=>u.UserDetails)
+                .ThenInclude(t=>t.AppearanceTypes)
                 .Where(p =>
                 p.User.UserDetails.lat != null &&
                 p.User.UserDetails.lang != null &&
@@ -1494,16 +1545,8 @@ namespace Social.Services.Implementation
                 .ToList();
 
 
-            allClosedUsers = allClosedUsers.Where(p =>
-                CalculateDistance(userLat,
-                    userLong,
-                    Convert.ToDouble(p.lat),
-                    Convert.ToDouble(p.lang)) <= (user.Manualdistancecontrol == 0
-                    ? Convert.ToDouble(userDistanceMax)
-                    : Convert.ToDouble(user.Manualdistancecontrol * 1000))
-                && (!p.ghostmode || type(p.AppearanceTypes, user.Gender))
-                && (!p.ghostmode || type(p.AppearanceTypes, p.Gender))
-            ).ToList();
+            allClosedUsers = GetClosedUsersByDistance(allClosedUsers, userLat, userLong, user.Manualdistancecontrol,
+                userDistanceMax, user.Gender);
 
 
             var peopleLocations = allClosedUsers.Select(n => new { n.lang, n.lat }).Distinct().ToList();
@@ -1586,8 +1629,9 @@ namespace Social.Services.Implementation
                             .Where(n => (n.UserattendId == userId || !allRequests.Contains(n.EventData.UserId))
                             && n.EventData.IsActive == true
                             && (n.EventData.StopFrom == null || (n.EventData.StopFrom.Value >= DateTime.UtcNow.Date || n.EventData.StopTo.Value <= DateTime.UtcNow.Date))
-                            && (n.EventData.EventTypeList.key != true || (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2)))
-                            .OrderByDescending(m => m.Id).ToList();
+                            && (n.EventData.EventTypeList.key != true || (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2)));
+
+
 
             if (categories != null && categories != "[]")
             {
@@ -1596,46 +1640,39 @@ namespace Social.Services.Implementation
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
 
-                    eventChatAttendList = eventChatAttendList.Where(q => deserializedCategories.Contains(q.EventData.categorie?.EntityId)).ToList();
+                    eventChatAttendList = eventChatAttendList.Where(q => deserializedCategories.Contains(q.EventData.categorie.EntityId));
                 }
             }
 
 
-            var blockedEventIds = eventChatAttendList.Where(m => (m.UserattendId == userId) && m.stutus == 2).Select(m => m.EventDataid).ToList();
+            var blockedEventIds = eventChatAttendList.Where(m => (m.UserattendId == userId) && m.stutus == 2).Select(m => m.EventDataid);
 
-            var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct().ToList();
-            eventDataList = eventDataList.Where(a => a.lat == eventLat && a.lang == eventLang).ToList();
+            var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct();
+
 
             if (endDate != null && dateCriteria != "Custom")
             {
 
-                eventDataList = eventDataList.Where(q => q.eventdateto?.Date <= endDate).ToList();
+                eventDataList = eventDataList.Where(q => q.eventdateto.Value.Date <= endDate);
 
             }
             if (endDate != null && dateCriteria == "Custom")
             {
 
-                eventDataList = eventDataList.Where(q => q.eventdate?.Date >= startDate && q.eventdateto?.Date <= endDate).ToList();
+                eventDataList = eventDataList.Where(q => q.eventdate.Value.Date >= startDate && q.eventdateto.Value.Date <= endDate);
 
             }
-
 
             var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
-            eventDataList = FilterByDistance(eventDataList, userLat, userLong, distance, distanceMax).ToList();
-
-            foreach (var eventData in eventDataList)
-            {
-                eventData.lat = Math.Round(double.Parse(eventData.lat), 5).ToString(CultureInfo.CurrentCulture);
-                eventData.lang = Math.Round(double.Parse(eventData.lang), 5).ToString(CultureInfo.CurrentCulture);
-            }
-
+            var x = eventDataList.ToList();
+            var eventDataListEntity = SetLatAndLang(x, userLat, userLong, distance, distanceMax);
             // filter private events
             if (!string.IsNullOrEmpty(user.Code))
             {
-                eventDataList = eventDataList.Where(e =>
+                eventDataListEntity = eventDataListEntity.Where(e =>
                     (e.IsForWhiteLableOnly.HasValue && !e.IsForWhiteLableOnly.Value) || e.EventTypeListid != 6 ||
                     (_authContext.UserDetails.FirstOrDefault(u => u.PrimaryId == e.UserId).IsWhiteLabel.Value
                      && _authContext.UserDetails.FirstOrDefault(u => u.PrimaryId == e.UserId).Code == user.Code)).ToList();
@@ -1643,11 +1680,11 @@ namespace Social.Services.Implementation
             }
             else
             {
-                eventDataList = eventDataList.Where(e => (e.IsForWhiteLableOnly.HasValue && !e.IsForWhiteLableOnly.Value) || e.EventTypeListid != 6).ToList();
+                eventDataListEntity = eventDataListEntity.Where(e => (e.IsForWhiteLableOnly.HasValue && !e.IsForWhiteLableOnly.Value) || e.EventTypeListid != 6).ToList();
             }
 
 
-            var result = eventDataList.Select(m => new EventDataByLocationMV
+            var result = eventDataListEntity.Select(m => new EventDataByLocationMV
             {
                 eventdate = m.eventdate.Value.ConvertDateTimeToString(),
                 //eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
