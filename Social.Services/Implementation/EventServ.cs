@@ -1527,19 +1527,17 @@ namespace Social.Services.Implementation
             }
 
             locationDataDto.EventlocationDataMV = eventLocationDataDto;
-
-            locationDataDto.locationMV = peopleLocationDataDto;
+            
+            locationDataDto.locationMV = GetClosedUsersLocations(user, AppConfigrationVM);
 
             return (locationDataDto);
         }
 
-        public locationDataMV GetClosedUsersLocations(UserDetails user, AppConfigrationVM appConfigration)
+        private List<peoplocationDataMV> GetClosedUsersLocations(UserDetails user, AppConfigrationVM appConfigration)
         {
             var userLat = user.lat == null ? (double)0 : Convert.ToDouble(user.lat);
             var userLong = user.lang == null ? (double)0 : Convert.ToDouble(user.lang);
 
-            var locationDataDto = new locationDataMV();
-            var eventLocationDataDto = new List<EventlocationDataMV>();
             var peopleLocationDataDto = new List<peoplocationDataMV>();
             var color = _authContext.EventColor.FirstOrDefault();
 
@@ -1604,14 +1602,10 @@ namespace Social.Services.Implementation
                 peopleLocationDataDto.Add(peopleLocation);
             }
 
-            locationDataDto.EventlocationDataMV = eventLocationDataDto;
-
-            locationDataDto.locationMV = peopleLocationDataDto;
-
-            return (locationDataDto);
+            return (peopleLocationDataDto);
         }
 
-        public List<EventDataByLocationMV> GetAllEventsByLocationsWithDateFilter(string eventLang , string eventLat,UserDetails user, AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate, DateTime? endDate)
+        public List<EventDataByLocationMV> GetAllEventsByLocationsWithDateFilter(string eventLang, string eventLat, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate, DateTime? endDate)
         {
             if (!string.IsNullOrEmpty(dateCriteria))
             {
@@ -1645,9 +1639,8 @@ namespace Social.Services.Implementation
                             .Where(n => (n.UserattendId == userId || !allRequests.Contains(n.EventData.UserId))
                             && n.EventData.IsActive == true
                             && (n.EventData.StopFrom == null || (n.EventData.StopFrom.Value >= DateTime.UtcNow.Date || n.EventData.StopTo.Value <= DateTime.UtcNow.Date))
-                            && (n.EventData.EventTypeList.key != true || (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2)));
-
-
+                            && (n.EventData.EventTypeList.key != true || (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2)))
+                            .OrderByDescending(m => m.Id).ToList();
 
             if (categories != null && categories != "[]")
             {
@@ -1656,39 +1649,46 @@ namespace Social.Services.Implementation
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
 
-                    eventChatAttendList = eventChatAttendList.Where(q => deserializedCategories.Contains(q.EventData.categorie.EntityId));
+                    eventChatAttendList = eventChatAttendList.Where(q => deserializedCategories.Contains(q.EventData.categorie?.EntityId)).ToList();
                 }
             }
 
 
-            var blockedEventIds = eventChatAttendList.Where(m => (m.UserattendId == userId) && m.stutus == 2).Select(m => m.EventDataid);
+            var blockedEventIds = eventChatAttendList.Where(m => (m.UserattendId == userId) && m.stutus == 2).Select(m => m.EventDataid).ToList();
 
-            var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct();
-
+            var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid)).Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData).Distinct().ToList();
+            eventDataList = eventDataList.Where(a => a.lat == eventLat && a.lang == eventLang).ToList();
 
             if (endDate != null && dateCriteria != "Custom")
             {
 
-                eventDataList = eventDataList.Where(q => q.eventdateto.Value.Date <= endDate);
+                eventDataList = eventDataList.Where(q => q.eventdateto?.Date <= endDate).ToList();
 
             }
             if (endDate != null && dateCriteria == "Custom")
             {
 
-                eventDataList = eventDataList.Where(q => q.eventdate.Value.Date >= startDate && q.eventdateto.Value.Date <= endDate);
+                eventDataList = eventDataList.Where(q => q.eventdate?.Date >= startDate && q.eventdateto?.Date <= endDate).ToList();
 
             }
+
 
             var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
-            var x = eventDataList.ToList();
-            var eventDataListEntity = FilterByDistanceAndSetLatAndLang(x, userLat, userLong, distance, distanceMax);
+            eventDataList = FilterByDistance(eventDataList, userLat, userLong, distance, distanceMax).ToList();
+
+            foreach (var eventData in eventDataList)
+            {
+                eventData.lat = Math.Round(double.Parse(eventData.lat), 5).ToString(CultureInfo.CurrentCulture);
+                eventData.lang = Math.Round(double.Parse(eventData.lang), 5).ToString(CultureInfo.CurrentCulture);
+            }
+
             // filter private events
             if (!string.IsNullOrEmpty(user.Code))
             {
-                eventDataListEntity = eventDataListEntity.Where(e =>
+                eventDataList = eventDataList.Where(e =>
                     (e.IsForWhiteLableOnly.HasValue && !e.IsForWhiteLableOnly.Value) || e.EventTypeListid != 6 ||
                     (_authContext.UserDetails.FirstOrDefault(u => u.PrimaryId == e.UserId).IsWhiteLabel.Value
                      && _authContext.UserDetails.FirstOrDefault(u => u.PrimaryId == e.UserId).Code == user.Code)).ToList();
@@ -1696,17 +1696,23 @@ namespace Social.Services.Implementation
             }
             else
             {
-                eventDataListEntity = eventDataListEntity.Where(e => (e.IsForWhiteLableOnly.HasValue && !e.IsForWhiteLableOnly.Value) || e.EventTypeListid != 6).ToList();
+                eventDataList = eventDataList.Where(e => (e.IsForWhiteLableOnly.HasValue && !e.IsForWhiteLableOnly.Value) || e.EventTypeListid != 6).ToList();
             }
 
 
-            var result = eventDataListEntity.Select(m => new EventDataByLocationMV
+            var result = eventDataList.Select(m => new EventDataByLocationMV
             {
                 eventdate = m.eventdate.Value.ConvertDateTimeToString(),
+                //eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
                 allday = Convert.ToBoolean(m.allday),
+                //   description = m.description,
+                //timefrom = m.eventfrom == null ? "" : m.eventfrom.Value.ToString(),
+                //timeto = m.eventto == null ? "" : m.eventto.Value.ToString(),
                 category = m.categorie == null ? "" : m.categorie.name,
+                // categorieimage = _configuration["BaseUrl"] + (m.categorie == null ? "" : m.categorie.image),
                 Title = m.Title,
                 Image = (m.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + m.image,
+                //UserImage = m.EventTypeListid == 5 || m.EventTypeListid == 6 ? _configuration["BaseUrl"] + m.User.UserImage : "",
                 EventTypeName = m.EventTypeList.Name.Contains("White") ? "Whitelabel" : m.EventTypeList.Name,
                 Id = m.EntityId,
                 categorieId = (m.categorie == null ? "" : m.categorie.EntityId),
@@ -1714,11 +1720,14 @@ namespace Social.Services.Implementation
                 lang = m.lang,
                 lat = m.lat,
                 UseraddedId = m.User?.UserId,
+                //     eventtypeid = m.EventTypeList.entityID,
+                // eventtypecolor = m.EventTypeList.color,
+                //   eventtype = m.EventTypeList.Name,
+
             }).ToList();
 
             return (result);
         }
-
         private IEnumerable<EventData> FilterByDistance(List<EventData> data, double userLat, double userLong, int distance, int distancemax)
         {
             foreach (var item in data)
