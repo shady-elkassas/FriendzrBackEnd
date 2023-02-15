@@ -1422,7 +1422,6 @@ namespace Social.Services.Implementation
 
             var locationDataDto = new locationDataMV();
             var eventLocationDataDto = new List<EventlocationDataMV>();
-            var peopleLocationDataDto = new List<peoplocationDataMV>();
 
 
             var allRequests = _authContext.Requestes.Where(m => m.status == 2 && (m.UserRequestId == userId || m.UserId == userId))
