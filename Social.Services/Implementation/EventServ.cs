@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -1180,7 +1181,7 @@ namespace Social.Services.Implementation
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
-            eventDataList = SetLatAndLang(eventDataList, userLat, userLong, distance, distanceMax);
+            eventDataList = FilterByDistanceAndSetLatAndLang(eventDataList, userLat, userLong, distance, distanceMax);
 
             dynamic eventsLocations;
 
@@ -1364,13 +1365,13 @@ namespace Social.Services.Implementation
             return data;
         }
 
-        private List<EventData> SetLatAndLang(List<EventData> eventDataList, double userLat, double userLong, int distance, int maxDistance)
+        private List<EventData> FilterByDistanceAndSetLatAndLang(List<EventData> eventDataList, double userLat, double userLong, int distance, int maxDistance)
         {
             var tasks = new List<Task<List<EventData>>>();
             for (int i = 0; i < eventDataList.Count; i+=500)
             {
-                var gg = eventDataList.Skip(i).Take(500).ToList();
-                tasks.Add(Task.Run(() => CalculateLatAndLag(gg, userLat, userLong, distance, maxDistance).ToList()));
+                var res = eventDataList.Skip(i).Take(500).ToList();
+                tasks.Add(Task.Run(() => CalculateLatAndLag(res, userLat, userLong, distance, maxDistance).ToList()));
 
             }
 
@@ -1394,7 +1395,7 @@ namespace Social.Services.Implementation
             return oneList;
         }
 
-        public locationDataMV GetUserLocationsWithDateFilter(int pageNumber, int pageSize, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate, DateTime? endDate)
+        public locationDataMV GetEventsLocationsWithDateFilter(int pageNumber, int pageSize, UserDetails user, AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate, DateTime? endDate)
         {
             if (!string.IsNullOrEmpty(dateCriteria))
             {
@@ -1423,7 +1424,6 @@ namespace Social.Services.Implementation
             var eventLocationDataDto = new List<EventlocationDataMV>();
             var peopleLocationDataDto = new List<peoplocationDataMV>();
 
-            var color = _authContext.EventColor.FirstOrDefault();
 
             var allRequests = _authContext.Requestes.Where(m => m.status == 2 && (m.UserRequestId == userId || m.UserId == userId))
                            .Select(m => (userId == m.UserId ? m.UserRequestId : m.UserId));
@@ -1472,7 +1472,7 @@ namespace Social.Services.Implementation
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
             var x = eventDataList.ToList();
-           var eventDataListEntity = SetLatAndLang(x, userLat, userLong, distance, distanceMax);
+           var eventDataListEntity = FilterByDistanceAndSetLatAndLang(x, userLat, userLong, distance, distanceMax);
             dynamic eventsLocations;
 
             if (startDate == null && endDate == null)
@@ -1526,19 +1526,37 @@ namespace Social.Services.Implementation
                 }
             }
 
-            var userDistanceMax = user.distanceFilter == false ? (AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max ?? 0) * 1000 : (int)(user.Manualdistancecontrol * 1000);
-            
+            locationDataDto.EventlocationDataMV = eventLocationDataDto;
+
+            locationDataDto.locationMV = peopleLocationDataDto;
+
+            return (locationDataDto);
+        }
+
+        public locationDataMV GetClosedUsersLocations(UserDetails user, AppConfigrationVM appConfigration)
+        {
+            var userLat = user.lat == null ? (double)0 : Convert.ToDouble(user.lat);
+            var userLong = user.lang == null ? (double)0 : Convert.ToDouble(user.lang);
+
+            var locationDataDto = new locationDataMV();
+            var eventLocationDataDto = new List<EventlocationDataMV>();
+            var peopleLocationDataDto = new List<peoplocationDataMV>();
+            var color = _authContext.EventColor.FirstOrDefault();
+
+
+            var userDistanceMax = user.distanceFilter == false ? (appConfigration.DistanceShowNearbyAccountsInFeed_Max ?? 0) * 1000 : (int)(user.Manualdistancecontrol * 1000);
+
 
             var allClosedUsers = _authContext.LoggedinUser
-                .Include(p=>p.User)
-                .ThenInclude(u=>u.UserDetails)
-                .ThenInclude(t=>t.AppearanceTypes)
+                .Include(p => p.User)
+                .ThenInclude(u => u.UserDetails)
+                .ThenInclude(t => t.AppearanceTypes)
                 .Where(p =>
                 p.User.UserDetails.lat != null &&
                 p.User.UserDetails.lang != null &&
                 p.User.UserDetails.allowmylocation &&
                 p.User.UserDetails.Gender != null
-                && (!p.User.UserDetails.Filteringaccordingtoage || (DateTime.Now.Date.Year - p.User.UserDetails.birthdate.Value.Date.Year >= p.User.UserDetails.agefrom && DateTime.Now.Date.Year - p.User.UserDetails.birthdate.Value.Date.Year <= p.User.UserDetails.ageto) )
+                && (!p.User.UserDetails.Filteringaccordingtoage || (DateTime.Now.Date.Year - p.User.UserDetails.birthdate.Value.Date.Year >= p.User.UserDetails.agefrom && DateTime.Now.Date.Year - p.User.UserDetails.birthdate.Value.Date.Year <= p.User.UserDetails.ageto))
 
                 )
                 .Select(m => m.User.UserDetails)
@@ -1582,12 +1600,10 @@ namespace Social.Services.Implementation
                 peopleLocation.otherpercentage = !maleFemale.Any() ? 0 : ((maleFemale.Count * 100 / events.Count()));
                 peopleLocation.totalUsers = events.Count();
                 peopleLocation.color = color == null ? events.Count() < 5 ? "#0BBEA1" : (events.Count() < 10 ? "#e7b416" : "#cc3232")
-                    : events.Count() < color.emptynumber ? color.emptycolor : (events.Count() < color.middlenumber ? color.middlecolor : color.crowdedcolor);
-
+                : events.Count() < color.emptynumber ? color.emptycolor : (events.Count() < color.middlenumber ? color.middlecolor : color.crowdedcolor);
                 peopleLocationDataDto.Add(peopleLocation);
             }
 
-            
             locationDataDto.EventlocationDataMV = eventLocationDataDto;
 
             locationDataDto.locationMV = peopleLocationDataDto;
@@ -1668,7 +1684,7 @@ namespace Social.Services.Implementation
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
             var x = eventDataList.ToList();
-            var eventDataListEntity = SetLatAndLang(x, userLat, userLong, distance, distanceMax);
+            var eventDataListEntity = FilterByDistanceAndSetLatAndLang(x, userLat, userLong, distance, distanceMax);
             // filter private events
             if (!string.IsNullOrEmpty(user.Code))
             {

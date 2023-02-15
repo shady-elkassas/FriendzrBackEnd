@@ -2272,7 +2272,7 @@ namespace Social.Controllers
                     _userService.UpdateUserDetails(userDetails);
                 }
                 var eventsAroundUser =
-                    _Event.GetUserLocationsWithDateFilter(pageNumber, pageSize, loggedInUser.User.UserDetails, appConfiguration, categories, dateCriteria, startDate, endDate);
+                    _Event.GetEventsLocationsWithDateFilter(pageNumber, pageSize, loggedInUser.User.UserDetails, appConfiguration, categories, dateCriteria, startDate, endDate);
 
 
                 return StatusCode(StatusCodes.Status200OK,
@@ -2287,6 +2287,36 @@ namespace Social.Controllers
 
             }
         }
+
+        [HttpPost]
+        [Route("ClosedUsersLocations")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> ClosedUsersLocations()
+        {
+            try
+            {
+                var appConfiguration = appConfigrationService.GetData().FirstOrDefault();
+                var loggedInUser = HttpContext.GetUser();
+
+                var userDetails = loggedInUser.User.UserDetails;
+                
+                var closedUsersLocations =
+                    _Event.GetClosedUsersLocations(userDetails,appConfiguration);
+
+
+                return StatusCode(StatusCodes.Status200OK,
+                    new ResponseModel<object>(StatusCodes.Status200OK, true,
+                        "data ", closedUsersLocations));
+
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "Events/AllLocationEvente", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+
+            }
+        }
+
         [HttpPost]
         [Route("EventsByLocation")]
         [Consumes("application/x-www-form-urlencoded")]
