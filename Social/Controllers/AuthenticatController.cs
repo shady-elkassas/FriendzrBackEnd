@@ -227,11 +227,11 @@ namespace Social.Controllers
                             {
                                 Email = model.Email,
                                 SecurityStamp = Guid.NewGuid().ToString(),
-                                UserName = (model.UserName == "" || model.UserName == null) ? ("UserName" + code1).Replace(" ", "-") : (model.UserName + code1).Replace(" ", "-"),
+                                UserName = string.IsNullOrEmpty(model.UserName) ? model.Email.Split('@')[0] + code1 : (model.UserName + code1).Replace(" ", "-"),//(model.UserName == "" || model.UserName == null) ? ("UserName" + code1).Replace(" ", "-") : (model.UserName + code1).Replace(" ", "-"),
                                 logintypevalue = model.registertype,
                                 UserloginId = model.UserID,
                                 PasswordHash = model.Password,
-                                DisplayedUserName = (model.UserName == "" || model.UserName == null) ? ("User Name").Replace(" ", "-") : model.UserName,
+                                DisplayedUserName = string.IsNullOrEmpty(model.UserName) ? ("User Name").Replace(" ", "-") : model.UserName,
                                 EmailConfirmedOn = DateTime.Now,
                                 EmailConfirmed = true
                             };
@@ -624,7 +624,7 @@ namespace Social.Controllers
                     {
                         Email = model.Email,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                        UserName = (model.UserName == "" || model.UserName == null) ? ("UserName_" + code).Replace(" ", "-") : (model.UserName + code).Replace(" ", "-"),
+                        UserName = string.IsNullOrEmpty(model.UserName) ? model.Email.Split('@')[0] + code : (model.UserName + code).Replace(" ", "-"),// (model.UserName == "" || model.UserName == null) ? ("UserName_" + code).Replace(" ", "-") : (model.UserName + code).Replace(" ", "-"),
                         logintypevalue = model.logintype,
                         UserloginId = model.UserId,
                         PasswordHash = model.Password,

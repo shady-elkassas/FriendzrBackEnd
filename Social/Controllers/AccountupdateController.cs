@@ -102,7 +102,7 @@ namespace Social.Controllers
                     {
 
 
-                        user.UserName = (model.Username + code1).Replace(" ", "-");
+                        user.UserName =model.Username.Trim().ToLower() =="username"? model.Email.Split('@')[0] + code1 :  (model.Username + code1).Replace(" ", "-");
                     }
                 }
                 if (model.Email != null)
