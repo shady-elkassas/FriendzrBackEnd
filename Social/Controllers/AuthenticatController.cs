@@ -155,7 +155,7 @@ namespace Social.Controllers
                         logintypevalue = model.registertype,
                         UserloginId = model.UserID,
                         PasswordHash = model.Password,
-                        UserName = (model.UserName.Replace(" ", "-") + code1).Replace(" ", "-")
+                        UserName = GenerateValidUserName((model.UserName.Replace(" ", "-") + code1).Replace(" ", "-"))
 
                     };
 
@@ -227,7 +227,7 @@ namespace Social.Controllers
                             {
                                 Email = model.Email,
                                 SecurityStamp = Guid.NewGuid().ToString(),
-                                UserName = string.IsNullOrEmpty(model.UserName) ? model.Email.Split('@')[0] + code1 : (model.UserName + code1).Replace(" ", "-"),//(model.UserName == "" || model.UserName == null) ? ("UserName" + code1).Replace(" ", "-") : (model.UserName + code1).Replace(" ", "-"),
+                                UserName = string.IsNullOrEmpty(model.UserName) ? GenerateValidUserName( model.Email.Split('@')[0] + code1) : GenerateValidUserName((model.UserName + code1).Replace(" ", "-")),//(model.UserName == "" || model.UserName == null) ? ("UserName" + code1).Replace(" ", "-") : (model.UserName + code1).Replace(" ", "-"),
                                 logintypevalue = model.registertype,
                                 UserloginId = model.UserID,
                                 PasswordHash = model.Password,
@@ -449,6 +449,8 @@ namespace Social.Controllers
             }
         }
 
+
+
         [HttpPost]
         [Route("login")]
         [Consumes("application/x-www-form-urlencoded")]
@@ -624,7 +626,7 @@ namespace Social.Controllers
                     {
                         Email = model.Email,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                        UserName = string.IsNullOrEmpty(model.UserName) ? model.Email.Split('@')[0] + code : (model.UserName + code).Replace(" ", "-"),// (model.UserName == "" || model.UserName == null) ? ("UserName_" + code).Replace(" ", "-") : (model.UserName + code).Replace(" ", "-"),
+                        UserName = string.IsNullOrEmpty(model.UserName) ? GenerateValidUserName(model.Email.Split('@')[0] + code) : GenerateValidUserName((model.UserName + code).Replace(" ", "-")),// (model.UserName == "" || model.UserName == null) ? ("UserName_" + code).Replace(" ", "-") : (model.UserName + code).Replace(" ", "-"),
                         logintypevalue = model.logintype,
                         UserloginId = model.UserId,
                         PasswordHash = model.Password,
@@ -658,7 +660,7 @@ namespace Social.Controllers
                         UserId = CreatedUser.Id,
                         Email = model.Email,
                         FcmToken = model.FcmToken,
-                        userName = (model.UserName == "" || model.UserName == null) ? ("UserName" + code).Replace(" ", "-") : model.UserName,
+                        userName = string.IsNullOrEmpty(model.UserName) ? GenerateValidUserName(model.Email.Split('@')[0] + code) : GenerateValidUserName((model.UserName + code).Replace(" ", "-")),// (model.UserName == "" || model.UserName == null) ? ("UserName_" + code).Replace(" ", "-") : (model.UserName + code).Replace(" ", "-"),
                         Filteringaccordingtoage = true,
                         agefrom = (int)appcon.AgeFiltering_Min,
                         whatAmILookingFor = model.whatAmILookingFor,
@@ -775,6 +777,27 @@ namespace Social.Controllers
 
                    _localizer["useridinvalid"], null));
             }
+        }
+
+        private string GenerateValidUserName(string userName)
+        {
+            while (UserNameExists(userName))
+            {
+                var random = new Random();
+                var codeFromNumbers = random.Next(000000, 9) + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Second;
+                var codeFromChar = Guid.NewGuid().ToString().Substring(9, 2);
+                var useNameWithCode = userName + codeFromNumbers + codeFromChar;
+                userName = useNameWithCode;
+            }
+
+            return userName;
+            
+        }
+
+        private bool UserNameExists(string userName)
+        {
+            var existUser = userManager.Users.FirstOrDefault(u => u.UserName == userName);
+            return existUser != null;
         }
 
         [HttpPost]

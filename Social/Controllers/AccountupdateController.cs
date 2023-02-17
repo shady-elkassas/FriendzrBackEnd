@@ -330,15 +330,15 @@ namespace Social.Controllers
 
                 this._userService.UpdateUserDetails(userDeatils);
 
-                var result = await userManager.UpdateAsync(user);
+                //var result = await userManager.UpdateAsync(user);
 
 
-                if (!result.Succeeded)
-                {
-                    return StatusCode(StatusCodes.Status406NotAcceptable,
-                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
-                        result.Errors.FirstOrDefault().Description, null));
-                }
+                //if (!result.Succeeded)
+                //{
+                //    return StatusCode(StatusCodes.Status406NotAcceptable,
+                //        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, false,
+                //        result.Errors.FirstOrDefault().Description, null));
+                //}
                 updateUserModelview modl = new updateUserModelview();
                 modl.UserName = user.DisplayedUserName;
                 modl.Gender = userDeatils.Gender;
