@@ -115,7 +115,7 @@ namespace Social.Controllers
                     DisplayedUserName = m.User.UserName,
                     UserName = m.User.DisplayedUserName,
                     email = m.User.Email,
-                    image = string.IsNullOrEmpty(m.UserImage) ? "https://www.friendzsocialmedia.com/Images/Userprofile/person_default_a353371c-fcc2-43c3-ab55-d02229fba815.png" : _configuration["BaseUrl"] + m.UserImage,
+                    image = string.IsNullOrEmpty(m.UserImage) ? "" : _configuration["BaseUrl"] + m.UserImage,
                     key = 0
                 }).Where(k => k.key != 4 && k.key != 5).ToList();
 
