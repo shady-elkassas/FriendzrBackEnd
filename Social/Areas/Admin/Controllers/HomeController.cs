@@ -840,8 +840,16 @@ namespace Social.Areas.Admin.Controllers
 
         public async Task<IActionResult> FinishedRegistrationUserStatictes()
         {
-            List<UserDetails> users = await authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
-            users = users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
+            List<UserDetails> users = await authDBContext.UserDetails
+                .Where(q => q.birthdate != null 
+                            && q.listoftags.Any() 
+                            && q.Email.ToLower().Contains("@owner") == false 
+                            && q.Email != "dev@dev.com" 
+                            && q.User.EmailConfirmed == true 
+                            && (q.ProfileCompleted != null && q.ProfileCompleted == true))
+                .ToListAsync();
+
+           var usersOver18 = users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
 
             StatisticsByGenderAndAgeViewModel finishedRegistrationUserStatictes = new StatisticsByGenderAndAgeViewModel()
             {
@@ -849,22 +857,28 @@ namespace Social.Areas.Admin.Controllers
                 Male = users.Where(q => q.Gender == "male").Count(),
                 Female = users.Where(q => q.Gender == "female").Count(),
                 Other = users.Where(q => q.Gender == "other").Count(),
-                From18To25 = users.Where(q => GetAge(q.birthdate.Value) >= 18 && GetAge(q.birthdate.Value) <= 25).Count(),
-                From25To34 = users.Where(q => GetAge(q.birthdate.Value) >= 26 && GetAge(q.birthdate.Value) <= 34).Count(),
-                From35To44 = users.Where(q => GetAge(q.birthdate.Value) >= 35 && GetAge(q.birthdate.Value) <= 44).Count(),
-                From45To54 = users.Where(q => GetAge(q.birthdate.Value) >= 45 && GetAge(q.birthdate.Value) <= 54).Count(),
-                From55To64 = users.Where(q => GetAge(q.birthdate.Value) >= 55 && GetAge(q.birthdate.Value) <= 64).Count(),
-                From65AndMore = users.Where(q => GetAge(q.birthdate.Value) >= 65).Count(),               
+                From18To25 = usersOver18.Where(q => GetAge(q.birthdate.Value) >= 18 && GetAge(q.birthdate.Value) <= 25).Count(),
+                From25To34 = usersOver18.Where(q => GetAge(q.birthdate.Value) >= 26 && GetAge(q.birthdate.Value) <= 34).Count(),
+                From35To44 = usersOver18.Where(q => GetAge(q.birthdate.Value) >= 35 && GetAge(q.birthdate.Value) <= 44).Count(),
+                From45To54 = usersOver18.Where(q => GetAge(q.birthdate.Value) >= 45 && GetAge(q.birthdate.Value) <= 54).Count(),
+                From55To64 = usersOver18.Where(q => GetAge(q.birthdate.Value) >= 55 && GetAge(q.birthdate.Value) <= 64).Count(),
+                From65AndMore = usersOver18.Where(q => GetAge(q.birthdate.Value) >= 65).Count(),               
             };
             return Ok(finishedRegistrationUserStatictes);
         }
 
         public async Task<IActionResult> GenderOfUsersStatictes()
         {
-            List<UserDetails> users = await authDBContext.UserDetails.Where(q => q.birthdate != null && q.listoftags.Any() 
-            && q.Email.ToLower().Contains("@owner") == false && q.Email != "dev@dev.com" && q.User.EmailConfirmed == true
-            && (q.ProfileCompleted != null && q.ProfileCompleted == true)).ToListAsync();
-            users =  users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
+            List<UserDetails> users = await authDBContext.UserDetails
+                .Where(q => q.birthdate != null 
+                            && q.listoftags.Any() 
+                            && q.Email.ToLower().Contains("@owner") == false
+                            && q.Email != "dev@dev.com" 
+                            && q.User.EmailConfirmed == true
+                            && (q.ProfileCompleted != null
+                            && q.ProfileCompleted == true))
+                .ToListAsync();
+          //  users =  users.Where(q => GetAge(q.birthdate.Value) >= 18).ToList();
             StatisticsByGenderAndAgeViewModel genderOfUserStatictes = new StatisticsByGenderAndAgeViewModel()
             {
                 All = users.Count(),
