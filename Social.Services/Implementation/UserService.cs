@@ -1194,6 +1194,116 @@ namespace Social.Services.Implementation
 
             if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
             {
+                var userToSkip = await _authContext.UserDetails
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(q => q.UserId == userId);
+
+                if (userToSkip != null)
+                {
+                    var skippedBefore = await _authContext.SkippedUsers
+                        .AnyAsync(q => q.UserId == userDeatil.PrimaryId 
+                                       && q.SkippedUserId == userToSkip.PrimaryId);
+
+                    if (!skippedBefore)
+                    {
+                        _authContext.SkippedUsers.Add(new SkippedUser()
+                        {
+                            UserId = userDeatil.PrimaryId,
+                            SkippedUserId = userToSkip.PrimaryId,
+                            Date = DateTime.Now
+                        });
+                        await _authContext.SaveChangesAsync();
+                    }
+                }
+
+            }
+
+            var skippedUsers = await _authContext.SkippedUsers
+                .Where(q => q.UserId == userDeatil.PrimaryId)
+                .Select(q => q.SkippedUserId).ToListAsync();
+
+            var appConfig = await _authContext.AppConfigrations.FirstOrDefaultAsync();
+
+            var distanceMin = appConfig.RecommendedPeopleArea_Min ?? 0;
+            var distanceMax = appConfig.RecommendedPeopleArea_Max ?? 0;
+
+            var currentUserRequests = await _authContext.Requestes
+                .Where(q => q.UserId == userDeatil.PrimaryId 
+                            || q.UserRequestId == userDeatil.PrimaryId)
+                .ToListAsync();
+
+            var recentRequests = new List<int>();
+
+            recentRequests.AddRange(currentUserRequests.Select(q => q.UserId.Value).ToList());
+            recentRequests.AddRange(currentUserRequests.Select(q => q.UserRequestId.Value).ToList());
+
+            recentRequests = recentRequests.Distinct().ToList();
+            //  Return Users Logged in Only.
+            var loggedInUsers = _authContext.LoggedinUser.Select(u => u.UserId); 
+            
+            var userDetails =  _authContext.UserDetails
+                //.Include(q => q.User)
+                .Include(q => q.AppearanceTypes)
+                .Include(q => q.listoftags)
+                .ThenInclude(q => q.Interests)
+                .Where(
+                 q =>  loggedInUsers.Contains(q.UserId)
+                                  && !string.IsNullOrEmpty(q.lat) 
+                                  && !string.IsNullOrEmpty(q.lang)
+                                  && q.birthdate != null 
+                                  && q.listoftags.Any() 
+                                  && q.PrimaryId != userDeatil.PrimaryId 
+                                  && !skippedUsers.Contains(q.PrimaryId) 
+                                  && !recentRequests.Contains(q.PrimaryId))
+                .ToList();
+
+            var usersList = userDetails.Where(q=> (q.ghostmode != true || type(q.AppearanceTypes, userDeatil.Gender))).ToList();
+
+
+            if (userDeatil.ghostmode)
+            {
+                usersList = usersList.Where(m => m.allowmylocation).ToList();
+                usersList = usersList.Where(m => (userDeatil.ghostmode != true || type(userDeatil.AppearanceTypes, m.Gender))).ToList();
+
+            }
+            if (userDeatil.Filteringaccordingtoage)
+            {
+                usersList = usersList.Where(p => (userDeatil.Filteringaccordingtoage != true || birtdate(userDeatil.agefrom, userDeatil.ageto, p.birthdate?.Date ?? DateTime.Now.Date))).ToList();
+            }
+
+            var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
+
+           
+            var recommendedPeople = usersList.Select(q => new RecommendedPeopleViewModel()
+            {
+                UserId = q.UserId,
+                ImageIsVerified = q.ImageIsVerified ?? false,
+                Name = q.User.DisplayedUserName,
+                Image = string.IsNullOrEmpty(q.UserImage) 
+                    ? _configuration["DefaultImage"] 
+                    : $"{_configuration["BaseUrl"]}{q.UserImage}",
+                DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
+                InterestMatchPercent = (q.listoftags
+                    .Select(q => q.InterestsId)
+                    .Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
+                MatchedInterests = q.listoftags
+                    .Where(q => currentUserInterests.Contains(q.InterestsId))
+                    .Select(i => i.Interests.name).ToList(),
+            }).Where(q => q.DistanceFromYou <= distanceMax
+                          && q.DistanceFromYou >= distanceMin)
+                .OrderByDescending(q => q.InterestMatchPercent)
+                .FirstOrDefault();
+
+            var message = recommendedPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
+
+            return (recommendedPeople, message);
+        }
+        // Not Used
+        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFixOld(UserDetails userDeatil, string userId)
+        {
+
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
+            {
                 UserDetails userToSkipe = await _authContext.UserDetails.AsNoTracking().FirstOrDefaultAsync(q => q.UserId == userId);
                 if (userToSkipe != null)
                 {
@@ -1223,12 +1333,12 @@ namespace Social.Services.Implementation
 
             recentRequests = recentRequests.Distinct().ToList();
             //  Return Users Logged in Only.
-            var loggedinUsers = _authContext.LoggedinUser.Select(u => u.UserId);           
+            var loggedinUsers = _authContext.LoggedinUser.Select(u => u.UserId);
             var userDetails = await _authContext.UserDetails.Include(q => q.User)
                 //.Include(q => q.Requestesfor).Include(q => q.Requestesto)
                 .Include(q => q.listoftags).ThenInclude(q => q.Interests)
                 .AsQueryable().Where(
-                 q => !string.IsNullOrEmpty(q.lat) && !string.IsNullOrEmpty(q.lang)&&
+                 q => !string.IsNullOrEmpty(q.lat) && !string.IsNullOrEmpty(q.lang) &&
                  q.birthdate != null && q.listoftags.Any() && q.PrimaryId != userDeatil.PrimaryId && !skippedUsers.Contains(q.PrimaryId) &&
                  !recentRequests.Contains(q.PrimaryId) && loggedinUsers.Contains(q.UserId)
                 ).ToListAsync();
@@ -1243,7 +1353,7 @@ namespace Social.Services.Implementation
             {
                 userDetails = userDetails.Where(m => m.allowmylocation == true).ToList();
                 userDetails = userDetails.Where(m => (userDeatil.ghostmode == true ? type(userDeatil.AppearanceTypes, m.Gender) : true)).ToList();
-            //    alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
+                //    alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
 
             }
             if (userDeatil.Filteringaccordingtoage)
@@ -1280,8 +1390,6 @@ namespace Social.Services.Implementation
 
             return (recommendedPeople, message);
         }
-        
-
         public async Task<(List<RecentlyConnectedViewModel>, string, int)> RecentlyConnected(UserDetails userDeatil, int pageNumber, int pageSize)
         {
             IQueryable<Requestes> data = _authContext.Requestes.Where(q => (q.UserId == userDeatil.PrimaryId || q.UserRequestId == userDeatil.PrimaryId) && q.status == 1);

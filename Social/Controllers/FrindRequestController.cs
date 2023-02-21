@@ -856,11 +856,11 @@ namespace Social.Controllers
         {
             try
             {
-                UserDetails userDeatil = HttpContext.GetUser().User.UserDetails;               
+                var userDetails = HttpContext.GetUser().User.UserDetails;               
 
-                (RecommendedPeopleViewModel People, string message) recommendedPeople = await _userService.RecommendedPeopleFix(userDeatil, userId);
+                var (people, message) = await _userService.RecommendedPeopleFix(userDetails, userId);
 
-                return StatusCode(StatusCodes.Status200OK, new ResponseModel<RecommendedPeopleViewModel>(StatusCodes.Status200OK, true, recommendedPeople.message, recommendedPeople.People));
+                return StatusCode(StatusCodes.Status200OK, new ResponseModel<RecommendedPeopleViewModel>(StatusCodes.Status200OK, true, message, people));
             }
             catch (Exception ex)
             {
