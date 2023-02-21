@@ -1983,9 +1983,123 @@ namespace Social.Services.Implementation
             }
             return locationMV;
         }
-      
+
 
         public async Task<(RecommendedEventViewModel, string)> RecommendedEvent(UserDetails userDeatil, string eventId)
+        {
+            if (!string.IsNullOrEmpty(eventId) && !string.IsNullOrWhiteSpace(eventId))
+            {
+                var eventToSkip = await _authContext.EventData
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(q => q.EntityId == eventId);
+
+                if (eventToSkip != null)
+                {
+                    var skippedBefore = await _authContext.SkippedEvents
+                        .AnyAsync(q =>
+                            q.UserId == userDeatil.PrimaryId
+                            && q.EventId == eventToSkip.Id);
+
+                    if (!skippedBefore)
+                    {
+                        _authContext.SkippedEvents
+                            .Add(new SkippedEvent()
+                            {
+                                UserId = userDeatil.PrimaryId,
+                                EventId = eventToSkip.Id,
+                                Date = DateTime.Now
+                            });
+                        await _authContext.SaveChangesAsync();
+                    }
+                }
+            }
+
+            var skippedEvents = await _authContext.SkippedEvents
+                .Where(q => q.UserId == userDeatil.PrimaryId)
+                .Select(q => q.EventId).ToListAsync();
+
+            var appConfig = await _authContext.AppConfigrations.FirstOrDefaultAsync();
+
+            var distanceMin = appConfig.RecommendedEventArea_Min ?? 0;
+            var distanceMax = appConfig.RecommendedEventArea_Max ?? 0;
+
+            IQueryable<EventData> eventData = _authContext.EventData
+                .Include(q => q.EventChatAttend)
+                .Include(q => q.EventTypeList)
+                .Where(q =>
+                    q.eventdateto.Value.Date >= DateTime.UtcNow
+                    && q.IsActive == true
+                    && !skippedEvents.Contains(q.Id)
+                    && q.EventChatAttend.All(u => u.UserattendId != userDeatil.PrimaryId));
+
+            //eventData = eventData.Where(q => q.eventdateto.Value.Date >= DateTime.Now);
+            //eventData = eventData.Where(q => !skippedEvents.Contains(q.Id));
+            //eventData = eventData.Where(q => !q.EventChatAttend.Any(q => q.UserattendId == userDeatil.PrimaryId));
+
+            var eventList = eventData.ToList();
+            var eventListAfterCalculation = eventList.Where(q => googleLocationService
+                                               .CalculateDistance(Convert.ToDouble(userDeatil.lat),
+                                                   Convert.ToDouble(userDeatil.lang),
+                                                   Convert.ToDouble(q.lat),
+                                                   Convert.ToDouble(q.lang), 'M') <= (distanceMax)
+                                           && googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat),
+                                               Convert.ToDouble(userDeatil.lang),
+                                               Convert.ToDouble(q.lat),
+                                               Convert.ToDouble(q.lang), 'M') >= (distanceMin))
+                .OrderBy(q => CalculateDistance(Convert.ToDouble(userDeatil.lat),
+                    Convert.ToDouble(userDeatil.lang),
+                    Convert.ToDouble(q.lat),
+                    Convert.ToDouble(q.lang))).ToList();
+            var eventEntity = eventListAfterCalculation.FirstOrDefault();
+
+            //   events = events.Where(p => googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang),'M') <= (distanceMax) && googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang),'M') >= (distanceMin) && p.IsActive == true).ToList();
+
+            var recommendedEvent = new RecommendedEventViewModel();
+            if (eventEntity == null)
+            {
+                recommendedEvent = null;
+            }
+
+            if (eventEntity != null)
+            {
+                var nearbyEvent = new EventVM
+                {
+                    Id = eventEntity.EntityId,
+                    Title = eventEntity.Title,
+                    description = eventEntity.description,
+                    eventdate = eventEntity.eventdate?.ToString("dd/MM/yyyy"),
+                    image = (eventEntity.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + eventEntity.image,
+                    joined = GetEventattend(eventEntity.EntityId, eventEntity.EventChatAttend.ToList()),
+                    totalnumbert = eventEntity.totalnumbert,
+                    eventtype = eventEntity.EventTypeList.Name,
+                    eventColor = eventEntity.EventTypeList.color,
+                    eventtypecolor = (eventEntity.eventtype == null &&
+                                      eventEntity.eventtype == Guid.Parse("265583AA-2511-4FD3-883E-6CAF1F8E4355"))
+                        ? "#0BBEA1"
+                        : "#00284c",
+                    DistanceBetweenLocationAndEvent = CalculateDistance(Convert.ToDouble(userDeatil.lat),
+                        Convert.ToDouble(userDeatil.lang),
+                        Convert.ToDouble(eventEntity.lat), Convert.ToDouble(eventEntity.lang))
+                };
+
+                recommendedEvent.EventId = nearbyEvent.Id;
+                recommendedEvent.Title = nearbyEvent.Title;
+                recommendedEvent.Description = nearbyEvent.description;
+                recommendedEvent.Image = nearbyEvent.image;
+                recommendedEvent.eventtype = nearbyEvent.eventtype;
+                recommendedEvent.eventColor = nearbyEvent.eventColor;
+                recommendedEvent.eventtypecolor = nearbyEvent.eventtypecolor;
+                recommendedEvent.EventDate = nearbyEvent.eventdate;
+                recommendedEvent.Attendees = nearbyEvent.joined;
+                recommendedEvent.From = nearbyEvent.totalnumbert;
+            }
+
+            var message = eventEntity != null ? "Your data" : "See Map for Nearby Events";
+
+            return (recommendedEvent, message);
+        }
+        // Not Used
+        public async Task<(RecommendedEventViewModel, string)> RecommendedEventOld(UserDetails userDeatil, string eventId)
         {
             if (!string.IsNullOrEmpty(eventId) && !string.IsNullOrWhiteSpace(eventId))
             {
@@ -2016,7 +2130,7 @@ namespace Social.Services.Implementation
 
             List<EventData> events = await eventData.AsNoTracking().ToListAsync();
 
-            events = events.Where(p => googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang),'M') <= (distanceMax) && googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang),'M') >= (distanceMin) && p.IsActive == true).ToList();
+            events = events.Where(p => googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang), 'M') <= (distanceMax) && googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang), 'M') >= (distanceMin) && p.IsActive == true).ToList();
 
             EventVM nearbyEvent = events.Select(q => new EventVM()
             {

@@ -2452,11 +2452,11 @@ namespace Social.Controllers
         {
             try
             {
-                UserDetails userDeatil = HttpContext.GetUser().User.UserDetails;
+                var userDetails = HttpContext.GetUser().User.UserDetails;
 
-                (RecommendedEventViewModel events, string message) recommendedEventResponse = await _Event.RecommendedEvent(userDeatil, eventId);
+                var (events, message) = await _Event.RecommendedEvent(userDetails, eventId);
 
-                return StatusCode(StatusCodes.Status200OK, new ResponseModel<RecommendedEventViewModel>(StatusCodes.Status200OK, true, recommendedEventResponse.message, recommendedEventResponse.events));
+                return StatusCode(StatusCodes.Status200OK, new ResponseModel<RecommendedEventViewModel>(StatusCodes.Status200OK, true, message, events));
             }
             catch (Exception ex)
             {
