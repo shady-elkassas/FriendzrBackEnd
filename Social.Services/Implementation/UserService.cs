@@ -1241,8 +1241,8 @@ namespace Social.Services.Implementation
             //  Return Users Logged in Only.
             var loggedInUsers = _authContext.LoggedinUser.Select(u => u.UserId); 
             
-            var userDetails =  _authContext.UserDetails
-                //.Include(q => q.User)
+            var usersDetails =await  _authContext.UserDetails
+                .Include(q=>q.User)
                 .Include(q => q.AppearanceTypes)
                 .Include(q => q.listoftags)
                 .ThenInclude(q => q.Interests)
@@ -1255,201 +1255,231 @@ namespace Social.Services.Implementation
                                   && q.PrimaryId != userDeatil.PrimaryId 
                                   && !skippedUsers.Contains(q.PrimaryId) 
                                   && !recentRequests.Contains(q.PrimaryId))
-                .ToList();
-
-            var usersList = userDetails.Where(q=> (q.ghostmode != true || type(q.AppearanceTypes, userDeatil.Gender))).ToList();
-
-
-            if (userDeatil.ghostmode)
-            {
-                usersList = usersList.Where(m => m.allowmylocation).ToList();
-                usersList = usersList.Where(m => (userDeatil.ghostmode != true || type(userDeatil.AppearanceTypes, m.Gender))).ToList();
-
-            }
-            if (userDeatil.Filteringaccordingtoage)
-            {
-                usersList = usersList.Where(p => (userDeatil.Filteringaccordingtoage != true || birtdate(userDeatil.agefrom, userDeatil.ageto, p.birthdate?.Date ?? DateTime.Now.Date))).ToList();
-            }
+                .ToListAsync();
 
             var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
-           
-            var recommendedPeople = usersList.Select(q => new RecommendedPeopleViewModel()
-            {
-                UserId = q.UserId,
-                ImageIsVerified = q.ImageIsVerified ?? false,
-                Name = q.User.DisplayedUserName,
-                Image = string.IsNullOrEmpty(q.UserImage) 
-                    ? _configuration["DefaultImage"] 
-                    : $"{_configuration["BaseUrl"]}{q.UserImage}",
-                DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
-                InterestMatchPercent = (q.listoftags
-                    .Select(q => q.InterestsId)
-                    .Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
-                MatchedInterests = q.listoftags
-                    .Where(q => currentUserInterests.Contains(q.InterestsId))
-                    .Select(i => i.Interests.name).ToList(),
-            }).Where(q => q.DistanceFromYou <= distanceMax
-                          && q.DistanceFromYou >= distanceMin)
-                .OrderByDescending(q => q.InterestMatchPercent)
-                .FirstOrDefault();
+            var usersList = GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
+
+            var recommendedPeople = usersList.OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
 
             var message = recommendedPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
 
             return (recommendedPeople, message);
         }
-        // Not Used
-        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFixOld(UserDetails userDeatil, string userId)
+
+        public List<RecommendedPeopleViewModel> GetRecommendedClosedUsersInParallelInWithBatches(List<UserDetails> users, UserDetails user,
+            List<int> currentUserInterests, double distanceMin, double distanceMax)
         {
 
-            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
+            var tasks = new List<Task<List<RecommendedPeopleViewModel>>>();
+
+            for (int i = 0; i < users.Count; i += 500)
             {
-                UserDetails userToSkipe = await _authContext.UserDetails.AsNoTracking().FirstOrDefaultAsync(q => q.UserId == userId);
-                if (userToSkipe != null)
+                var usersDetails = users.Skip(i).Take(500).ToList();
+                tasks.Add(Task.Run(() =>
+                    RecommendedClosedUsers(usersDetails, user, currentUserInterests, distanceMin, distanceMax)
+                        .ToList()));
+
+            }
+
+            var m = (Task.WhenAll(tasks).Result).ToList();
+            var oneList = m.SelectMany(a => a).ToList();
+            return oneList;
+        }
+
+        private List<RecommendedPeopleViewModel> RecommendedClosedUsers(List<UserDetails> usersList, UserDetails user , List<int> currentUserInterests ,double distanceMin , double distanceMax)
+            {
+                usersList = usersList.Where(q => (q.ghostmode != true || type(q.AppearanceTypes, user.Gender))).ToList();
+
+                if (user.ghostmode)
                 {
-                    bool skippedBefore = await _authContext.SkippedUsers.AnyAsync(q => q.UserId == userDeatil.PrimaryId && q.SkippedUserId == userToSkipe.PrimaryId);
-                    if (userToSkipe != null && !skippedBefore)
-                    {
-                        _authContext.SkippedUsers.Add(new SkippedUser() { UserId = userDeatil.PrimaryId, SkippedUserId = userToSkipe.PrimaryId, Date = DateTime.Now });
-                        await _authContext.SaveChangesAsync();
-                    }
+                    usersList = usersList.Where(m => m.allowmylocation).ToList();
+                    usersList = usersList.Where(m => (user.ghostmode != true || type(user.AppearanceTypes, m.Gender))).ToList();
+
+                }
+                if (user.Filteringaccordingtoage)
+                {
+                    usersList = usersList.Where(p => (user.Filteringaccordingtoage != true || birtdate(user.agefrom, user.ageto, p.birthdate?.Date ?? DateTime.Now.Date))).ToList();
                 }
 
+                var recommendPeople = usersList.Select(q => new RecommendedPeopleViewModel()
+                {
+                    UserId = q.UserId,
+                    ImageIsVerified = q.ImageIsVerified ?? false,
+                    Name = q.User.DisplayedUserName,
+                    Image = string.IsNullOrEmpty(q.UserImage)
+                        ? _configuration["DefaultImage"]
+                        : $"{_configuration["BaseUrl"]}{q.UserImage}",
+                    DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat),
+                        Convert.ToDouble(q.lang),
+                        Convert.ToDouble(user.lat),
+                        Convert.ToDouble(user.lang),
+                        'M'), 2),
+                    InterestMatchPercent = (q.listoftags
+                        .Select(q => q.InterestsId)
+                        .Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
+                    MatchedInterests = q.listoftags
+                        .Where(q => currentUserInterests.Contains(q.InterestsId))
+                        .Select(i => i.Interests.name).ToList(),
+                }).Where(q => q.DistanceFromYou <= distanceMax
+                              && q.DistanceFromYou >= distanceMin).ToList();
+
+                return recommendPeople;
             }
 
-            List<int> skippedUsers = await _authContext.SkippedUsers.Where(q => q.UserId == userDeatil.PrimaryId).Select(q => q.SkippedUserId).ToListAsync();
-
-            AppConfigration appConfigration = await _authContext.AppConfigrations.FirstOrDefaultAsync();
-
-            int distanceMin = ((appConfigration.RecommendedPeopleArea_Min == null ? 0 : (int)appConfigration.RecommendedPeopleArea_Min));
-            int distanceMax = ((appConfigration.RecommendedPeopleArea_Max == null ? 0 : (int)appConfigration.RecommendedPeopleArea_Max));
-
-            List<Requestes> currentUserRequests = await _authContext.Requestes.Where(q => q.UserId == userDeatil.PrimaryId || q.UserRequestId == userDeatil.PrimaryId).ToListAsync();
-
-            List<int> recentRequests = new List<int>();
-
-            recentRequests.AddRange(currentUserRequests.Select(q => q.UserId.Value).ToList());
-            recentRequests.AddRange(currentUserRequests.Select(q => q.UserRequestId.Value).ToList());
-
-            recentRequests = recentRequests.Distinct().ToList();
-            //  Return Users Logged in Only.
-            var loggedinUsers = _authContext.LoggedinUser.Select(u => u.UserId);
-            var userDetails = await _authContext.UserDetails.Include(q => q.User)
-                //.Include(q => q.Requestesfor).Include(q => q.Requestesto)
-                .Include(q => q.listoftags).ThenInclude(q => q.Interests)
-                .AsQueryable().Where(
-                 q => !string.IsNullOrEmpty(q.lat) && !string.IsNullOrEmpty(q.lang) &&
-                 q.birthdate != null && q.listoftags.Any() && q.PrimaryId != userDeatil.PrimaryId && !skippedUsers.Contains(q.PrimaryId) &&
-                 !recentRequests.Contains(q.PrimaryId) && loggedinUsers.Contains(q.UserId)
-                ).ToListAsync();
-            //userDetails = userDetails.Where(q => !string.IsNullOrEmpty(q.lat) && !string.IsNullOrEmpty(q.lang));
-            //userDetails = userDetails.Where(q => q.birthdate != null);
-            //userDetails = userDetails.Where(q => q.listoftags.Any());
-            //userDetails = userDetails.Where(q => q.PrimaryId != userDeatil.PrimaryId);
-            //userDetails = userDetails.Where(q => !skippedUsers.Contains(q.PrimaryId));
-            //userDetails = userDetails.Where(q => !recentRequests.Contains(q.PrimaryId));
-            //userDetails = userDetails.Where(q => loggedinUsers.Contains(q.UserId));
-            if (userDeatil.ghostmode)
+            // Not Used
+            public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFixOld(UserDetails userDeatil, string userId)
             {
-                userDetails = userDetails.Where(m => m.allowmylocation == true).ToList();
-                userDetails = userDetails.Where(m => (userDeatil.ghostmode == true ? type(userDeatil.AppearanceTypes, m.Gender) : true)).ToList();
-                //    alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
 
+                if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
+                {
+                    UserDetails userToSkipe = await _authContext.UserDetails.AsNoTracking().FirstOrDefaultAsync(q => q.UserId == userId);
+                    if (userToSkipe != null)
+                    {
+                        bool skippedBefore = await _authContext.SkippedUsers.AnyAsync(q => q.UserId == userDeatil.PrimaryId && q.SkippedUserId == userToSkipe.PrimaryId);
+                        if (userToSkipe != null && !skippedBefore)
+                        {
+                            _authContext.SkippedUsers.Add(new SkippedUser() { UserId = userDeatil.PrimaryId, SkippedUserId = userToSkipe.PrimaryId, Date = DateTime.Now });
+                            await _authContext.SaveChangesAsync();
+                        }
+                    }
+
+                }
+
+                List<int> skippedUsers = await _authContext.SkippedUsers.Where(q => q.UserId == userDeatil.PrimaryId).Select(q => q.SkippedUserId).ToListAsync();
+
+                AppConfigration appConfigration = await _authContext.AppConfigrations.FirstOrDefaultAsync();
+
+                int distanceMin = ((appConfigration.RecommendedPeopleArea_Min == null ? 0 : (int)appConfigration.RecommendedPeopleArea_Min));
+                int distanceMax = ((appConfigration.RecommendedPeopleArea_Max == null ? 0 : (int)appConfigration.RecommendedPeopleArea_Max));
+
+                List<Requestes> currentUserRequests = await _authContext.Requestes.Where(q => q.UserId == userDeatil.PrimaryId || q.UserRequestId == userDeatil.PrimaryId).ToListAsync();
+
+                List<int> recentRequests = new List<int>();
+
+                recentRequests.AddRange(currentUserRequests.Select(q => q.UserId.Value).ToList());
+                recentRequests.AddRange(currentUserRequests.Select(q => q.UserRequestId.Value).ToList());
+
+                recentRequests = recentRequests.Distinct().ToList();
+                //  Return Users Logged in Only.
+                var loggedinUsers = _authContext.LoggedinUser.Select(u => u.UserId);
+                var userDetails = await _authContext.UserDetails.Include(q => q.User)
+                    //.Include(q => q.Requestesfor).Include(q => q.Requestesto)
+                    .Include(q => q.listoftags).ThenInclude(q => q.Interests)
+                    .AsQueryable().Where(
+                        q => !string.IsNullOrEmpty(q.lat) && !string.IsNullOrEmpty(q.lang) &&
+                             q.birthdate != null && q.listoftags.Any() && q.PrimaryId != userDeatil.PrimaryId && !skippedUsers.Contains(q.PrimaryId) &&
+                             !recentRequests.Contains(q.PrimaryId) && loggedinUsers.Contains(q.UserId)
+                    ).ToListAsync();
+                //userDetails = userDetails.Where(q => !string.IsNullOrEmpty(q.lat) && !string.IsNullOrEmpty(q.lang));
+                //userDetails = userDetails.Where(q => q.birthdate != null);
+                //userDetails = userDetails.Where(q => q.listoftags.Any());
+                //userDetails = userDetails.Where(q => q.PrimaryId != userDeatil.PrimaryId);
+                //userDetails = userDetails.Where(q => !skippedUsers.Contains(q.PrimaryId));
+                //userDetails = userDetails.Where(q => !recentRequests.Contains(q.PrimaryId));
+                //userDetails = userDetails.Where(q => loggedinUsers.Contains(q.UserId));
+                if (userDeatil.ghostmode)
+                {
+                    userDetails = userDetails.Where(m => m.allowmylocation == true).ToList();
+                    userDetails = userDetails.Where(m => (userDeatil.ghostmode == true ? type(userDeatil.AppearanceTypes, m.Gender) : true)).ToList();
+                    //    alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
+
+                }
+                if (userDeatil.Filteringaccordingtoage)
+                {
+                    userDetails = userDetails.Where(p => (userDeatil.Filteringaccordingtoage == true ? birtdate(userDeatil.agefrom, userDeatil.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
+                }
+                //List<UserDetails> userList = userDetails.ToList();
+                userDetails = userDetails.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, userDeatil.Gender) : true)).ToList();
+
+                List<int> currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
+
+
+                //List<RecommendedPeopleViewModel> recommendedPeopleTest = userList.Select(q => new RecommendedPeopleViewModel()
+                //{
+                //    UserId = q.UserId,
+                //    Name = q.User.DisplayedUserName,
+                //    Image = $"{_configuration["BaseUrl"]}{q.UserImage}",
+                //    DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
+                //    InterestMatchPercent = (q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
+                //    MatchedInterests = q.listoftags.Where(q => currentUserInterests.Contains(q.InterestsId)).Select(i => i.Interests.name).ToList()
+                //}).Where(q => q.DistanceFromYou <= distanceMax && q.DistanceFromYou >= distanceMin).OrderByDescending(q => q.InterestMatchPercent).ToList();
+                RecommendedPeopleViewModel recommendedPeople = userDetails.Select(q => new RecommendedPeopleViewModel()
+                {
+                    UserId = q.UserId,
+                    ImageIsVerified = q.ImageIsVerified ?? false,
+                    Name = q.User.DisplayedUserName,
+                    Image = string.IsNullOrEmpty(q.UserImage) ? _configuration["DefaultImage"] : $"{_configuration["BaseUrl"]}{q.UserImage}",
+                    DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
+                    InterestMatchPercent = (q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
+                    MatchedInterests = q.listoftags.Where(q => currentUserInterests.Contains(q.InterestsId)).Select(i => i.Interests.name).ToList(),
+                }).Where(q => q.DistanceFromYou <= distanceMax && q.DistanceFromYou >= distanceMin).OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
+
+                string message = recommendedPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
+
+                return (recommendedPeople, message);
             }
-            if (userDeatil.Filteringaccordingtoage)
+            public async Task<(List<RecentlyConnectedViewModel>, string, int)> RecentlyConnected(UserDetails userDeatil, int pageNumber, int pageSize)
             {
-                userDetails = userDetails.Where(p => (userDeatil.Filteringaccordingtoage == true ? birtdate(userDeatil.agefrom, userDeatil.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
+                IQueryable<Requestes> data = _authContext.Requestes.Where(q => (q.UserId == userDeatil.PrimaryId || q.UserRequestId == userDeatil.PrimaryId) && q.status == 1);
+
+                int totalRowCount = data.Count();
+                //DateTime.ParseExact(this.Text, "dd/MM/yyyy", null)
+                List<Requestes> requestes = await data.OrderByDescending(q => q.AcceptingDate).ThenBy(q => q.regestdata).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+                List<RecentlyConnectedViewModel> RecentlyConnected = requestes.Select(q => new RecentlyConnectedViewModel()
+                {
+                    UserId = q.UserId == userDeatil.PrimaryId ? q.UserRequest.UserId : q.User.UserId,
+                    ImageIsVerified = q.UserRequest?.ImageIsVerified ?? false,
+                    Name = q.UserId == userDeatil.PrimaryId ? q.UserRequest.User.DisplayedUserName : q.User.User.DisplayedUserName,
+                    Image = q.UserId == userDeatil.PrimaryId 
+                        ? string.IsNullOrEmpty(q.UserRequest.UserImage)
+                            ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.UserRequest.UserImage
+                        : string.IsNullOrEmpty(q.User.UserImage) 
+                            ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.User.UserImage,
+                    Date = q.AcceptingDate == null?q.regestdata.ToString("dd/MM/yyyy"):q.AcceptingDate.Value.ToString("dd/MM/yyyy")
+                }).OrderByDescending(q => DateTime.ParseExact(q.Date, "dd/MM/yyyy", null)).ToList();
+
+                string message = requestes.Count() != 0 ? "Your data" : "You have no connections yet. Feel free to connect with friendzrs!";
+
+                return (RecentlyConnected, message, totalRowCount);
             }
-            //List<UserDetails> userList = userDetails.ToList();
-            userDetails = userDetails.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, userDeatil.Gender) : true)).ToList();
 
-            List<int> currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
+            #region public
 
-
-            //List<RecommendedPeopleViewModel> recommendedPeopleTest = userList.Select(q => new RecommendedPeopleViewModel()
-            //{
-            //    UserId = q.UserId,
-            //    Name = q.User.DisplayedUserName,
-            //    Image = $"{_configuration["BaseUrl"]}{q.UserImage}",
-            //    DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
-            //    InterestMatchPercent = (q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
-            //    MatchedInterests = q.listoftags.Where(q => currentUserInterests.Contains(q.InterestsId)).Select(i => i.Interests.name).ToList()
-            //}).Where(q => q.DistanceFromYou <= distanceMax && q.DistanceFromYou >= distanceMin).OrderByDescending(q => q.InterestMatchPercent).ToList();
-            RecommendedPeopleViewModel recommendedPeople = userDetails.Select(q => new RecommendedPeopleViewModel()
+            public async Task<List<UserDetails>> PublicAllUsers(double myLat, double myLon, AppConfigrationVM AppConfigrationVM)
             {
-                UserId = q.UserId,
-                ImageIsVerified = q.ImageIsVerified ?? false,
-                Name = q.User.DisplayedUserName,
-                Image = string.IsNullOrEmpty(q.UserImage) ? _configuration["DefaultImage"] : $"{_configuration["BaseUrl"]}{q.UserImage}",
-                DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(q.lat), Convert.ToDouble(q.lang), Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), 'M'), 2),
-                InterestMatchPercent = (q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100),
-                MatchedInterests = q.listoftags.Where(q => currentUserInterests.Contains(q.InterestsId)).Select(i => i.Interests.name).ToList(),
-            }).Where(q => q.DistanceFromYou <= distanceMax && q.DistanceFromYou >= distanceMin).OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
+                int distancemax = (int)((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max) * 1000);
 
-            string message = recommendedPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
+                var alluserr = await this._authContext.LoggedinUser.Include(n => n.User.UserDetails).Where(p => p.User.UserDetails.lat != null && p.User.UserDetails.lang != null).ToListAsync();
 
-            return (recommendedPeople, message);
-        }
-        public async Task<(List<RecentlyConnectedViewModel>, string, int)> RecentlyConnected(UserDetails userDeatil, int pageNumber, int pageSize)
-        {
-            IQueryable<Requestes> data = _authContext.Requestes.Where(q => (q.UserId == userDeatil.PrimaryId || q.UserRequestId == userDeatil.PrimaryId) && q.status == 1);
+                var alluser = alluserr.Where(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang)) <= Convert.ToDouble(distancemax)).Select(m => m.User.UserDetails).ToList();
 
-            int totalRowCount = data.Count();
-            //DateTime.ParseExact(this.Text, "dd/MM/yyyy", null)
-            List<Requestes> requestes = await data.OrderByDescending(q => q.AcceptingDate).ThenBy(q => q.regestdata).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+                alluser = alluser.Where(m => m.allowmylocation == true).ToList();
 
-            List<RecentlyConnectedViewModel> RecentlyConnected = requestes.Select(q => new RecentlyConnectedViewModel()
+                alluser = alluser.Where(m => m.Gender != null).ToList();
+
+                return alluser.OrderBy(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang))).ToList();
+            }
+
+            public async Task<List<UserDetails>> PublicAllUsersDirection(double myLat, double myLon, double degree, AppConfigrationVM AppConfigrationVM)
             {
-                UserId = q.UserId == userDeatil.PrimaryId ? q.UserRequest.UserId : q.User.UserId,
-                ImageIsVerified = q.UserRequest?.ImageIsVerified ?? false,
-                Name = q.UserId == userDeatil.PrimaryId ? q.UserRequest.User.DisplayedUserName : q.User.User.DisplayedUserName,
-                Image = q.UserId == userDeatil.PrimaryId 
-                    ? string.IsNullOrEmpty(q.UserRequest.UserImage)
-                        ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.UserRequest.UserImage
-                    : string.IsNullOrEmpty(q.User.UserImage) 
-                        ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.User.UserImage,
-                Date = q.AcceptingDate == null?q.regestdata.ToString("dd/MM/yyyy"):q.AcceptingDate.Value.ToString("dd/MM/yyyy")
-            }).OrderByDescending(q => DateTime.ParseExact(q.Date, "dd/MM/yyyy", null)).ToList();
+                List<UserDetails> usersDetails = await this._authContext.LoggedinUser.Include(n => n.User.UserDetails).Where(p => p.User.UserDetails.lat != null && p.User.UserDetails.lang != null)
+                    .Include(n => n.User.UserDetails).Include(m => m.User)
+                    .Select(m => m.User.UserDetails).Where(a => a.lang != null && a.lat != null).ToListAsync();
 
-            string message = requestes.Count() != 0 ? "Your data" : "You have no connections yet. Feel free to connect with friendzrs!";
-
-            return (RecentlyConnected, message, totalRowCount);
-        }
-
-        #region public
-
-        public async Task<List<UserDetails>> PublicAllUsers(double myLat, double myLon, AppConfigrationVM AppConfigrationVM)
-        {
-            int distancemax = (int)((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max) * 1000);
-
-            var alluserr = await this._authContext.LoggedinUser.Include(n => n.User.UserDetails).Where(p => p.User.UserDetails.lat != null && p.User.UserDetails.lang != null).ToListAsync();
-
-            var alluser = alluserr.Where(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang)) <= Convert.ToDouble(distancemax)).Select(m => m.User.UserDetails).ToList();
-
-            alluser = alluser.Where(m => m.allowmylocation == true).ToList();
-
-            alluser = alluser.Where(m => m.Gender != null).ToList();
-
-            return alluser.OrderBy(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang))).ToList();
-        }
-
-        public async Task<List<UserDetails>> PublicAllUsersDirection(double myLat, double myLon, double degree, AppConfigrationVM AppConfigrationVM)
-        {
-            List<UserDetails> usersDetails = await this._authContext.LoggedinUser.Include(n => n.User.UserDetails).Where(p => p.User.UserDetails.lat != null && p.User.UserDetails.lang != null)
-                .Include(n => n.User.UserDetails).Include(m => m.User)
-                .Select(m => m.User.UserDetails).Where(a => a.lang != null && a.lat != null).ToListAsync();
-
-            var alluser = usersDetails.Where(p => Cardinal2(myLat, myLon, Convert.ToDouble(p.lat), Convert.ToDouble(p.lang), degree)).ToList();
+                var alluser = usersDetails.Where(p => Cardinal2(myLat, myLon, Convert.ToDouble(p.lat), Convert.ToDouble(p.lang), degree)).ToList();
 
 
-            alluser = alluser.Where(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang)) <= myLon).ToList();
-            alluser = alluser.Where(m => m.allowmylocation == true).ToList();
-            alluser = alluser.Where(m => m.Gender != null).ToList();
+                alluser = alluser.Where(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang)) <= myLon).ToList();
+                alluser = alluser.Where(m => m.allowmylocation == true).ToList();
+                alluser = alluser.Where(m => m.Gender != null).ToList();
 
-            return alluser.ToList();
-        }
+                return alluser.ToList();
+            }
 
-        #endregion
+            #endregion
 
 
     }
