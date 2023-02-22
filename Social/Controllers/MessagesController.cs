@@ -20,6 +20,7 @@ using Social.Services.ModelView;
 using Social.Services.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -67,6 +68,19 @@ namespace Social.Controllers
         [Route("SendMessage")]
         public async Task<IActionResult> SendMessage([FromForm] MessageDTO MessageDTO)
         {
+            DateTime dt;
+            var ok = DateTime.TryParse(MessageDTO.Messagesdate, out dt);
+
+            if (ok)
+            {
+                MessageDTO.Messagesdate = MessageDTO.Messagesdate;
+            }
+            else
+            {
+                var ds2 = MessageDTO.Messagesdate;
+                var dt2 = DateTime.ParseExact(ds2, "dd-MM-yyyy", CultureInfo.CurrentCulture);
+                MessageDTO.Messagesdate = dt2.ToString("yyyy-MM-dd");
+            }
             try
             {
 
@@ -163,7 +177,7 @@ namespace Social.Controllers
 
                 }
                 string message = "You are not a friend with " + Deatils.User.DisplayedUserName;
-                if (Request == null && !userDeatils.IsWhiteLabel.HasValue)
+                if (Request == null && !userDeatils.IsWhiteLabel.Value)
                 {
                     return StatusCode(StatusCodes.Status406NotAcceptable,
                           new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
