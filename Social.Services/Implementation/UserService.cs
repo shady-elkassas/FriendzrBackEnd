@@ -1241,7 +1241,7 @@ namespace Social.Services.Implementation
             //  Return Users Logged in Only.
             var loggedInUsers = _authContext.LoggedinUser.Select(u => u.UserId); 
             
-            var usersDetails =await  _authContext.UserDetails
+            var usersDetails =  _authContext.UserDetails
                 .Include(q=>q.User)
                 .Include(q => q.AppearanceTypes)
                 .Include(q => q.listoftags)
@@ -1254,12 +1254,11 @@ namespace Social.Services.Implementation
                                   && q.listoftags.Any() 
                                   && q.PrimaryId != userDeatil.PrimaryId 
                                   && !skippedUsers.Contains(q.PrimaryId) 
-                                  && !recentRequests.Contains(q.PrimaryId))
-                .ToListAsync();
+                                  && !recentRequests.Contains(q.PrimaryId)).ToList();
 
             var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
-            var usersList = GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
+            var usersList = await GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
 
             var recommendedPeople = usersList.OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
 
@@ -1268,39 +1267,35 @@ namespace Social.Services.Implementation
             return (recommendedPeople, message);
         }
 
-        public List<RecommendedPeopleViewModel> GetRecommendedClosedUsersInParallelInWithBatches(List<UserDetails> users, UserDetails user,
+        public async Task<IEnumerable<RecommendedPeopleViewModel>> GetRecommendedClosedUsersInParallelInWithBatches(IEnumerable<UserDetails> users, UserDetails user,
             List<int> currentUserInterests, double distanceMin, double distanceMax)
         {
+            var tasks = new List<Task<IEnumerable<RecommendedPeopleViewModel>>>();
+            var batchSize = 100;
+            int numberOfBatches = (int)Math.Ceiling((double)users.Count() / batchSize);
 
-            var tasks = new List<Task<List<RecommendedPeopleViewModel>>>();
-
-            for (int i = 0; i < users.Count; i += 500)
+            for (int i = 0; i < numberOfBatches; i++)
             {
-                var usersDetails = users.Skip(i).Take(500).ToList();
-                tasks.Add(Task.Run(() =>
-                    RecommendedClosedUsers(usersDetails, user, currentUserInterests, distanceMin, distanceMax)
-                        .ToList()));
-
+                var currentUsers = users.Skip(i * batchSize).Take(batchSize);
+                tasks.Add(RecommendedClosedUsers(currentUsers, user, currentUserInterests, distanceMin, distanceMax));
             }
 
-            var m = (Task.WhenAll(tasks).Result).ToList();
-            var oneList = m.SelectMany(a => a).ToList();
-            return oneList;
+            return (await Task.WhenAll(tasks)).SelectMany(u => u);
         }
 
-        private List<RecommendedPeopleViewModel> RecommendedClosedUsers(List<UserDetails> usersList, UserDetails user , List<int> currentUserInterests ,double distanceMin , double distanceMax)
+        private async Task<IEnumerable<RecommendedPeopleViewModel>> RecommendedClosedUsers(IEnumerable<UserDetails> usersList, UserDetails user , List<int> currentUserInterests ,double distanceMin , double distanceMax)
             {
-                usersList = usersList.Where(q => (q.ghostmode != true || type(q.AppearanceTypes, user.Gender))).ToList();
+                usersList = usersList.Where(q => (q.ghostmode != true || type(q.AppearanceTypes, user.Gender)));
 
                 if (user.ghostmode)
                 {
                     usersList = usersList.Where(m => m.allowmylocation).ToList();
-                    usersList = usersList.Where(m => (user.ghostmode != true || type(user.AppearanceTypes, m.Gender))).ToList();
+                    usersList = usersList.Where(m => (user.ghostmode != true || type(user.AppearanceTypes, m.Gender)));
 
                 }
                 if (user.Filteringaccordingtoage)
                 {
-                    usersList = usersList.Where(p => (user.Filteringaccordingtoage != true || birtdate(user.agefrom, user.ageto, p.birthdate?.Date ?? DateTime.Now.Date))).ToList();
+                    usersList = usersList.Where(p => (user.Filteringaccordingtoage != true || birtdate(user.agefrom, user.ageto, p.birthdate?.Date ?? DateTime.Now.Date)));
                 }
 
                 var recommendPeople = usersList.Select(q => new RecommendedPeopleViewModel()
@@ -1323,7 +1318,7 @@ namespace Social.Services.Implementation
                         .Where(q => currentUserInterests.Contains(q.InterestsId))
                         .Select(i => i.Interests.name).ToList(),
                 }).Where(q => q.DistanceFromYou <= distanceMax
-                              && q.DistanceFromYou >= distanceMin).ToList();
+                              && q.DistanceFromYou >= distanceMin);
 
                 return recommendPeople;
             }
