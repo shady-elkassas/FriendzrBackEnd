@@ -2033,7 +2033,7 @@ namespace Social.Services.Implementation
                     && q.EventChatAttend.All(u => u.UserattendId != userDeatil.PrimaryId));
 
             var eventList = eventData.ToList();
-            var eventListAfterCalculation = GetRecommendedClosedEventsInParallelInWithBatches(eventList,userDeatil,distanceMin,distanceMax);
+            var eventListAfterCalculation = await GetRecommendedClosedEventsInParallelInWithBatches(eventList,userDeatil,distanceMin,distanceMax);
             var eventEntity = eventListAfterCalculation.OrderBy(q => CalculateDistance(Convert.ToDouble(userDeatil.lat),
                 Convert.ToDouble(userDeatil.lang),
                 Convert.ToDouble(q.lat),
@@ -2084,26 +2084,22 @@ namespace Social.Services.Implementation
 
             return (recommendedEvent, message);
         }
-        public List<EventData> GetRecommendedClosedEventsInParallelInWithBatches(List<EventData> events, UserDetails user, double distanceMin, double distanceMax)
+        public async Task<IEnumerable<EventData>> GetRecommendedClosedEventsInParallelInWithBatches(IEnumerable<EventData> events, UserDetails user, double distanceMin, double distanceMax)
         {
-
-            var tasks = new List<Task<List<EventData>>>();
-
-            for (int i = 0; i < events.Count; i += 500)
+            var tasks = new List<Task<IEnumerable<EventData>>>();
+            var batchSize = 400;
+            int numberOfBatches = (int)Math.Ceiling((double)events.Count() / batchSize);
+            
+            for (int i = 0; i < numberOfBatches; i++)
             {
-                var eventsList = events.Skip(i).Take(500).ToList();
-                tasks.Add(Task.Run(() =>
-                    RecommendedClosedEvents(eventsList, user,distanceMin,distanceMax)
-                        .ToList()));
-
+                var currentEvents = events.Skip(i * batchSize).Take(batchSize);
+                tasks.Add(RecommendedClosedEvents(currentEvents, user, distanceMin, distanceMax));
             }
 
-            var m = (Task.WhenAll(tasks).Result).ToList();
-            var oneList = m.SelectMany(a => a).ToList();
-            return oneList;
+            return (await Task.WhenAll(tasks)).SelectMany(u => u);
         }
 
-        private List<EventData> RecommendedClosedEvents(List<EventData> usersList, UserDetails user, double distanceMin, double distanceMax)
+        private async Task<IEnumerable<EventData>> RecommendedClosedEvents(IEnumerable<EventData> usersList, UserDetails user, double distanceMin, double distanceMax)
         {
             usersList = usersList.Where(q => googleLocationService
                                                  .CalculateDistance(Convert.ToDouble(user.lat),
@@ -2113,7 +2109,7 @@ namespace Social.Services.Implementation
                                              && googleLocationService.CalculateDistance(Convert.ToDouble(user.lat),
                                                  Convert.ToDouble(user.lang),
                                                  Convert.ToDouble(q.lat),
-                                                 Convert.ToDouble(q.lang), 'M') >= (distanceMin)).ToList();
+                                                 Convert.ToDouble(q.lang), 'M') >= (distanceMin));
             return usersList;
         }
         // Not Used
