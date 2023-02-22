@@ -774,9 +774,9 @@ namespace Social.Controllers
                             }
                             catch (Exception ex)
                             {
-                               return StatusCode(StatusCodes.Status500InternalServerError,
-                                  new ResponseModel<object>(StatusCodes.Status500InternalServerError, true,
-                                  "Failed to send the messages", ex));
+                               //return StatusCode(StatusCodes.Status500InternalServerError,
+                               //   new ResponseModel<object>(StatusCodes.Status500InternalServerError, true,
+                               //   "Failed to send the messages", ex));
                             }
                             var addnoti = MessageServes.getFireBaseData(userto.PrimaryId, fireBaseInfo);
                             await MessageServes.addFireBaseDatamodel(addnoti);
