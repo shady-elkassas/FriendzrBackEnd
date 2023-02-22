@@ -2032,27 +2032,13 @@ namespace Social.Services.Implementation
                     && !skippedEvents.Contains(q.Id)
                     && q.EventChatAttend.All(u => u.UserattendId != userDeatil.PrimaryId));
 
-            //eventData = eventData.Where(q => q.eventdateto.Value.Date >= DateTime.Now);
-            //eventData = eventData.Where(q => !skippedEvents.Contains(q.Id));
-            //eventData = eventData.Where(q => !q.EventChatAttend.Any(q => q.UserattendId == userDeatil.PrimaryId));
-
             var eventList = eventData.ToList();
-            var eventListAfterCalculation = eventList.Where(q => googleLocationService
-                                               .CalculateDistance(Convert.ToDouble(userDeatil.lat),
-                                                   Convert.ToDouble(userDeatil.lang),
-                                                   Convert.ToDouble(q.lat),
-                                                   Convert.ToDouble(q.lang), 'M') <= (distanceMax)
-                                           && googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat),
-                                               Convert.ToDouble(userDeatil.lang),
-                                               Convert.ToDouble(q.lat),
-                                               Convert.ToDouble(q.lang), 'M') >= (distanceMin))
-                .OrderBy(q => CalculateDistance(Convert.ToDouble(userDeatil.lat),
-                    Convert.ToDouble(userDeatil.lang),
-                    Convert.ToDouble(q.lat),
-                    Convert.ToDouble(q.lang))).ToList();
-            var eventEntity = eventListAfterCalculation.FirstOrDefault();
+            var eventListAfterCalculation = GetRecommendedClosedEventsInParallelInWithBatches(eventList,userDeatil,distanceMin,distanceMax);
+            var eventEntity = eventListAfterCalculation.OrderBy(q => CalculateDistance(Convert.ToDouble(userDeatil.lat),
+                Convert.ToDouble(userDeatil.lang),
+                Convert.ToDouble(q.lat),
+                Convert.ToDouble(q.lang))).FirstOrDefault();
 
-            //   events = events.Where(p => googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang),'M') <= (distanceMax) && googleLocationService.CalculateDistance(Convert.ToDouble(userDeatil.lat), Convert.ToDouble(userDeatil.lang), Convert.ToDouble(p.lat), Convert.ToDouble(p.lang),'M') >= (distanceMin) && p.IsActive == true).ToList();
 
             var recommendedEvent = new RecommendedEventViewModel();
             if (eventEntity == null)
@@ -2097,6 +2083,38 @@ namespace Social.Services.Implementation
             var message = eventEntity != null ? "Your data" : "See Map for Nearby Events";
 
             return (recommendedEvent, message);
+        }
+        public List<EventData> GetRecommendedClosedEventsInParallelInWithBatches(List<EventData> events, UserDetails user, double distanceMin, double distanceMax)
+        {
+
+            var tasks = new List<Task<List<EventData>>>();
+
+            for (int i = 0; i < events.Count; i += 500)
+            {
+                var eventsList = events.Skip(i).Take(500).ToList();
+                tasks.Add(Task.Run(() =>
+                    RecommendedClosedEvents(eventsList, user,distanceMin,distanceMax)
+                        .ToList()));
+
+            }
+
+            var m = (Task.WhenAll(tasks).Result).ToList();
+            var oneList = m.SelectMany(a => a).ToList();
+            return oneList;
+        }
+
+        private List<EventData> RecommendedClosedEvents(List<EventData> usersList, UserDetails user, double distanceMin, double distanceMax)
+        {
+            usersList = usersList.Where(q => googleLocationService
+                                                 .CalculateDistance(Convert.ToDouble(user.lat),
+                                                     Convert.ToDouble(user.lang),
+                                                     Convert.ToDouble(q.lat),
+                                                     Convert.ToDouble(q.lang), 'M') <= (distanceMax)
+                                             && googleLocationService.CalculateDistance(Convert.ToDouble(user.lat),
+                                                 Convert.ToDouble(user.lang),
+                                                 Convert.ToDouble(q.lat),
+                                                 Convert.ToDouble(q.lang), 'M') >= (distanceMin)).ToList();
+            return usersList;
         }
         // Not Used
         public async Task<(RecommendedEventViewModel, string)> RecommendedEventOld(UserDetails userDeatil, string eventId)
