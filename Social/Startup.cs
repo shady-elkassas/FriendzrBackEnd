@@ -31,6 +31,7 @@ using Social.Services.DateTimeModelBinderProvider;
 using Social.Services.FireBase_Helper;
 using Social.Services.Helpers;
 using Social.Services.Implementation;
+using Social.Services.PushNotification;
 using Social.Services.Services;
 using System;
 using System.Globalization;
@@ -167,6 +168,7 @@ namespace Social
             services.AddScoped<IEventReportService, EventReportService>();
             services.AddScoped<IEventCategoryService, EventCategoryService>();
             services.AddScoped<IEventTypeListService, EventTypeListService>();
+            services.AddScoped<IPushNotification, PushNotification>();
 
             services.AddScoped<IReportReasonService, ReportReasonService>();
             services.AddScoped<IFilteringAccordingToAgeHistoryService, FilteringAccordingToAgeHistoryService>();
@@ -313,6 +315,7 @@ namespace Social
 
             RecurringJob.RemoveIfExists(nameof(INotifyUpdateProfileJob.SendUpdateProfileNotification));
             RecurringJob.AddOrUpdate<INotifyUpdateProfileJob>(j => j.SendUpdateProfileNotification(), cronExpression: configuration["Jobs:UpdateProfile:CronExpression"], timeZone: TimeZoneInfo.Local);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
