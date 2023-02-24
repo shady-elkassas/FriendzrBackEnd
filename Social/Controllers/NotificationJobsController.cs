@@ -9,7 +9,7 @@ namespace Social.Controllers
     [ApiController]
     public class NotificationJobsController : ControllerBase
     {
-
+        
         public NotificationJobsController()
         {
         }

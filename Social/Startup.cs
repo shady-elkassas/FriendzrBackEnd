@@ -310,6 +310,10 @@ namespace Social
         //Call the Jobs
         private void EnqueueHangFireJobs(IConfiguration configuration)
         {
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter24H(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter72H(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationForWomenOnly(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
+           
             RecurringJob.RemoveIfExists(nameof(IExternalEventJob.ExportExternalEvents));
             RecurringJob.AddOrUpdate<IExternalEventJob>(j => j.ExportExternalEvents(), cronExpression: configuration["Jobs:ExternalEvent:CronExpression"], timeZone: TimeZoneInfo.Local);
 

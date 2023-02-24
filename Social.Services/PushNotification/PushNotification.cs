@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Social.Entity.ModelView;
 using Social.FireBase;
 using System.Linq.Dynamic.Core.Tokenizer;
+using Newtonsoft.Json.Linq;
+using Social.Services.Implementation;
 
 namespace Social.Services.PushNotification
 {
@@ -90,36 +92,31 @@ namespace Social.Services.PushNotification
         #region Private Functions
         private async Task SendNotification(List<UserDetails> users, string body, string action)
         {
+            var tokens = users.Select(s=>s.FcmToken).ToList();
+            var usersIds = users.Select(s=>s.PrimaryId).ToList();
+
             body = body.Replace("@", System.Environment.NewLine);
-            foreach (var user in users)
+
+            var fireBaseInfo = new FireBaseData()
             {
-                var fireBaseInfo = new FireBaseData()
-                {
-                    muit = false,
-                    Title = "Friendzr",
-                    imageUrl = _configuration["BaseUrl"] + user.UserImage,
-                    Body = body,
-                    Action_code = user.UserId,
-                    Action = action
-                };
-                try
-                {
-                    if (user.FcmToken != null)
-                    {
-                        var result = await _fireBaseManager.SendNotification(user.FcmToken, fireBaseInfo);
-                        if (result)
-                        {
-                            var messageSent =
-                                _messageServes.getFireBaseData(user.PrimaryId, fireBaseInfo, DateTime.Today);
-                            await _messageServes.addFireBaseDatamodel(messageSent);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
+                Title = "Friendzr",
+                imageUrl = null,
+                Body = body,
+                Action = action
+            };
+
+             try
+             {
+                 await _fireBaseManager.SendNotification(tokens.Where(x => string.IsNullOrEmpty(x) == false).ToList(), fireBaseInfo);
+                 var fireBaseDataModels = usersIds.Select(x => _messageServes.getFireBaseData(x, fireBaseInfo, DateTime.Today)).ToList();
+                 await _messageServes.addFireBaseDatamodel(fireBaseDataModels);
+                    
+             }
+             catch (Exception ex)
+             {
+                 Console.WriteLine(ex.Message); 
+             }
+            
 
         }
         #endregion
