@@ -16,6 +16,7 @@ using Social.FireBase;
 using System.Linq.Dynamic.Core.Tokenizer;
 using Newtonsoft.Json.Linq;
 using Social.Services.Implementation;
+using Social.Services.ModelView;
 
 namespace Social.Services.PushNotification
 {
@@ -82,12 +83,40 @@ namespace Social.Services.PushNotification
                 .ToList();
 
             const string body = "Only looking for [female/male] friends? @Use Private Mode to hide your profile";
-            const string action = "Private _mode";
+            const string action = "Private_mode";
 
             await SendNotification(users, body, action);
         }
 
         #endregion
+
+        #region Send Notification If User Has Requests Unanswered
+
+        public async Task SendNotificationIfUserHasRequestsUnanswered()
+        {
+            var requests = _authContext.Requestes
+                .Include(a => a.User)
+                .Include(a => a.UserRequest)
+                .Where(a =>
+                    a.status == 0
+                    && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
+                .ToList();
+
+            foreach (var request in requests)
+            {
+                var users = new List<UserDetails>();
+                var userName = request?.User.userName;
+                var userRequest = request?.UserRequest;
+                users.Add(userRequest);
+                var body = $"[{userName}] sent you a friend request.@Click here to view and connect";
+                const string action = "Friend_Requests";
+                await SendNotification(users, body, action);
+            }
+
+        }
+
+        #endregion
+
 
         #region Private Functions
         private async Task SendNotification(List<UserDetails> users, string body, string action)

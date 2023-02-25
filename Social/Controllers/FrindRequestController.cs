@@ -771,13 +771,21 @@ namespace Social.Controllers
             {
                 var meDeatils = HttpContext.GetUser().User.UserDetails;
                 var Deatils = this._userService.GetUserDetails(userid);
-                Requestes Requestes = new Requestes();
-                Requestes.UserId = meDeatils.PrimaryId;
-                Requestes.UserRequestId = Deatils.PrimaryId;
-                Requestes.status = 0;
-                Requestes.regestdata = DateTime.Now.Date;
+                Requestes Requestes = new Requestes
+                {
+                    UserId = meDeatils.PrimaryId,
+                    UserRequestId = Deatils.PrimaryId,
+                    status = 0,
+                    regestdata = DateTime.Now.Date
+                };
                 await _FrindRequest.addrequest(Requestes);
-                FireBaseData fireBaseInfo = new FireBaseData() { muit = false, Title = "Friend Request ", imageUrl = _configuration["BaseUrl"] + meDeatils.UserImage, Body = meDeatils.userName + "  " + " sent Friend Request ", Action_code = Deatils.UserId, Action = "Accept_Friend_Request" };
+                FireBaseData fireBaseInfo = new FireBaseData() 
+                    { muit = false, Title = "Friend Request ",
+                        imageUrl = _configuration["BaseUrl"] + meDeatils.UserImage,
+                        Body = meDeatils.userName + "  " + " sent Friend Request ",
+                        Action_code = Deatils.UserId, Action = "Accept_Friend_Request"
+
+                    };
                 SendNotificationcs sendNotificationcs = new SendNotificationcs();
                 try
                 {
