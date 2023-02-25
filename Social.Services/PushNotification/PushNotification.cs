@@ -1,22 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Social.Entity.DBContext;
 using Social.Entity.Models;
+using Social.Entity.ModelView;
 using Social.Services.FireBase_Helper;
 using Social.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Social.Entity.ModelView;
-using Social.FireBase;
-using System.Linq.Dynamic.Core.Tokenizer;
-using Newtonsoft.Json.Linq;
-using Social.Services.Implementation;
-using Social.Services.ModelView;
 
 namespace Social.Services.PushNotification
 {
