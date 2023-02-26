@@ -74,7 +74,7 @@ namespace Social.Services.PushNotification
                                 .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 5)
                 .ToList();
 
-            const string body = "Only looking for [female/male] friends? @Use Private Mode to hide your profile";
+            const string body = "Only looking for [female/male] friends? @Use Private Mode to hide your profile from anyone";
             const string action = "Private_mode";
 
             await SendNotification(users, body, action);
@@ -86,19 +86,14 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationIfUserHasRequestsUnanswered()
         {
-            //var requests = _authContext.Requestes
-            //    .Include(a => a.User)
-            //    .Include(a => a.UserRequest)
-            //    .Where(a =>
-            //        a.status == 0
-            //        && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
-            //    .ToList();
-
             var requests = _authContext.Requestes
                 .Include(a => a.User)
                 .Include(a => a.UserRequest)
                 .Where(a =>
-                    a.Id == 17229).ToList();
+                    a.status == 0
+                    && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
+                .ToList();
+
 
             foreach (var request in requests)
             {
@@ -115,6 +110,56 @@ namespace Social.Services.PushNotification
 
         #endregion
 
+        #region Send Notification If User Has Messages NotRead
+
+        public async Task SendNotificationIfUserHasMessagesNotRead()
+        {
+            var requests = _authContext.UserMessages
+                .Include(a => a.User)
+                .Include(a => a.ToUser)
+                .Where(a =>
+                    a.UserNotreadcount > 0
+                    && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                .ToList();
+
+
+            foreach (var request in requests)
+            {
+                var users = new List<UserDetails>();
+                var userName = request?.ToUser.userName;
+                var userRequest = request?.User;
+                users.Add(userRequest);
+                var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
+                const string action = "Inbox_chat";
+                await SendNotification(users, body, action);
+            }
+
+        }
+        public async Task SendNotificationIfToUserHasMessagesNotRead()
+        {
+            var requests = _authContext.UserMessages
+                .Include(a => a.User)
+                .Include(a => a.ToUser)
+                .Where(a =>
+                    a.ToUserNotreadcount > 0
+                    && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                .ToList();
+
+
+            foreach (var request in requests)
+            {
+                var users = new List<UserDetails>();
+                var userName = request?.User.userName;
+                var userRequest = request?.ToUser;
+                users.Add(userRequest);
+                var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
+                const string action = "Inbox_chat";
+                await SendNotification(users, body, action);
+            }
+
+        }
+
+        #endregion
 
         #region Private Functions
         private async Task SendNotification(List<UserDetails> users, string body, string action)
