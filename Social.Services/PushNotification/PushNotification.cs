@@ -92,7 +92,7 @@ namespace Social.Services.PushNotification
                 .Where(a =>
                     a.status == 0
                     && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
-                .Select(a=>a.UserRequestId).Distinct().ToList();
+                .Select(a => a.UserRequestId).Distinct().ToList();
 
 
             foreach (var requests in usersRequestIds.Select(id => _authContext.Requestes
@@ -114,7 +114,7 @@ namespace Social.Services.PushNotification
                         users.Add(userRequest);
                         var body = $"[{userName}] sent you a friend request.@Click here to view and connect";
                         const string action = "Friend_Requests";
-                       // await SendNotification(users, body, action);
+                        await SendNotification(users, body, action);
                         break;
                     }
                     default:
@@ -129,7 +129,7 @@ namespace Social.Services.PushNotification
                                 users.Add(userRequest);
                                 var body = $"You have {requestsCount} requests waiting.@Click here to view and connect";
                                 const string action = "Friend_Requests";
-                              //  await SendNotification(users, body, action);
+                                await SendNotification(users, body, action);
                                 break;
                             }
                         }
