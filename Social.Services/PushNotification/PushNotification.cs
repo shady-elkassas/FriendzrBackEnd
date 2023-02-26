@@ -86,13 +86,19 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationIfUserHasRequestsUnanswered()
         {
+            //var requests = _authContext.Requestes
+            //    .Include(a => a.User)
+            //    .Include(a => a.UserRequest)
+            //    .Where(a =>
+            //        a.status == 0
+            //        && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
+            //    .ToList();
+
             var requests = _authContext.Requestes
                 .Include(a => a.User)
                 .Include(a => a.UserRequest)
                 .Where(a =>
-                    a.status == 0
-                    && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
-                .ToList();
+                    a.Id == 17229).ToList();
 
             foreach (var request in requests)
             {

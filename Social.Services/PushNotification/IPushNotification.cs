@@ -11,5 +11,7 @@ namespace Social.Services.PushNotification
         Task SendUpdateProfileNotificationAfter72H();
         Task SendNotificationForWomenOnly();
         Task SendNotificationIfUserHasRequestsUnanswered();
+        Task SendNotificationIfUserHasMessagesNotRead();
+        Task SendNotificationIfToUserHasMessagesNotRead();
     }
 }
