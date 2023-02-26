@@ -19,13 +19,14 @@ namespace Social.Controllers
 
         [HttpGet("Recurring")]
         [AllowAnonymous]
-        public async Task<IActionResult> Get()
+        public  IActionResult Get()
         {
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter24H(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter72H(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationForWomenOnly(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasRequestsUnanswered(), cronExpression: Cron.Daily, timeZone: TimeZoneInfo.Utc);
-          await  _pushNotification.SendNotificationIfUserHasRequestsUnanswered();
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter24H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter72H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationForWomenOnly(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasRequestsUnanswered(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfToUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             return Ok("Job Fired Successfully");
         }
        
