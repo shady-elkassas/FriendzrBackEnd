@@ -86,26 +86,58 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationIfUserHasRequestsUnanswered()
         {
-            var requests = _authContext.Requestes
+            var usersRequestIds = _authContext.Requestes
                 .Include(a => a.User)
                 .Include(a => a.UserRequest)
                 .Where(a =>
                     a.status == 0
                     && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
-                .ToList();
+                .Select(a=>a.UserRequestId).Distinct().ToList();
 
 
-            foreach (var request in requests)
+            foreach (var requests in usersRequestIds.Select(id => _authContext.Requestes
+                         .Include(a => a.User)
+                         .Include(a => a.UserRequest)
+                         .Where(a =>
+                             a.status == 0
+                             && a.UserRequestId == id
+                             && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
+                         .ToList()))
             {
-                var users = new List<UserDetails>();
-                var userName = request?.User.userName;
-                var userRequest = request?.UserRequest;
-                users.Add(userRequest);
-                var body = $"[{userName}] sent you a friend request.@Click here to view and connect";
-                const string action = "Friend_Requests";
-                await SendNotification(users, body, action);
-            }
+                switch (requests.Count())
+                {
+                    case 1:
+                    {
+                        var users = new List<UserDetails>();
+                        var userName = requests[0]?.User.userName;
+                        var userRequest = requests[0]?.UserRequest;
+                        users.Add(userRequest);
+                        var body = $"[{userName}] sent you a friend request.@Click here to view and connect";
+                        const string action = "Friend_Requests";
+                       // await SendNotification(users, body, action);
+                        break;
+                    }
+                    default:
+                    {
+                        switch (requests.Count() > 1)
+                        {
+                            case true:
+                            {
+                                var users = new List<UserDetails>();
+                                var requestsCount = requests.Count;
+                                var userRequest = requests[0]?.UserRequest;
+                                users.Add(userRequest);
+                                var body = $"You have {requestsCount} requests waiting.@Click here to view and connect";
+                                const string action = "Friend_Requests";
+                              //  await SendNotification(users, body, action);
+                                break;
+                            }
+                        }
 
+                        break;
+                    }
+                }
+            }
         }
 
         #endregion
