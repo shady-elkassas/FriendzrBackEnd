@@ -146,47 +146,112 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationIfUserHasMessagesNotRead()
         {
-            var requests = _authContext.UserMessages
+            var userIds = _authContext.UserMessages
                 .Include(a => a.User)
                 .Include(a => a.ToUser)
                 .Where(a =>
                     a.UserNotreadcount > 0
                     && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
-                .ToList();
+                .Select(a=>a.UserId).Distinct().ToList();
 
 
-            foreach (var request in requests)
+            foreach (var userMessages in userIds.Select(id => _authContext.UserMessages
+                         .Include(a => a.User)
+                         .Include(a => a.ToUser)
+                         .Where(a =>
+                             a.UserId == id
+                             && a.UserNotreadcount > 0
+                             && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                         .ToList()))
             {
-                var users = new List<UserDetails>();
-                var userName = request?.ToUser.userName;
-                var userRequest = request?.User;
-                users.Add(userRequest);
-                var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
-                const string action = "Inbox_chat";
-                await SendNotification(users, body, action);
-            }
+                switch (userMessages.Count)
+                {
+                    case 1:
+                    {
+                        var users = new List<UserDetails>();
+                        var userName = userMessages[0]?.ToUser.userName;
+                        var userRequest = userMessages[0]?.User;
+                        users.Add(userRequest);
+                        var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
+                        const string action = "Inbox_chat";
+                        await SendNotification(users, body, action);
+                        break;
+                    }
+                    default:
+                    {
+                        switch (userMessages.Count >1)
+                        {
+                            case true:
+                            {
+                                var users = new List<UserDetails>();
+                                var requestsCount = userMessages.Select(a => a.UserNotreadcount).Sum();
+                                var userRequest = userMessages[0]?.User;
+                                users.Add(userRequest);
+                                var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
+                                const string action = "Inbox_chat";
+                                await SendNotification(users, body, action);
+                                break;
+                            }
+                        }
 
+                        break;
+                    }
+                }
+            }
         }
         public async Task SendNotificationIfToUserHasMessagesNotRead()
         {
-            var requests = _authContext.UserMessages
-                .Include(a => a.User)
-                .Include(a => a.ToUser)
-                .Where(a =>
-                    a.ToUserNotreadcount > 0
-                    && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
-                .ToList();
+            var userIds = _authContext.UserMessages
+                 .Include(a => a.User)
+                 .Include(a => a.ToUser)
+                 .Where(a =>
+                     a.ToUserNotreadcount > 0
+                     && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                 .Select(a => a.ToUserId).Distinct().ToList();
 
 
-            foreach (var request in requests)
+            foreach (var userMessages in userIds.Select(id => _authContext.UserMessages
+                         .Include(a => a.User)
+                         .Include(a => a.ToUser)
+                         .Where(a =>
+                             a.ToUserId == id
+                             && a.ToUserNotreadcount > 0
+                             && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                         .ToList()))
             {
-                var users = new List<UserDetails>();
-                var userName = request?.User.userName;
-                var userRequest = request?.ToUser;
-                users.Add(userRequest);
-                var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
-                const string action = "Inbox_chat";
-                await SendNotification(users, body, action);
+                switch (userMessages.Count)
+                {
+                    case 1:
+                        {
+                            var users = new List<UserDetails>();
+                            var userName = userMessages[0]?.User.userName;
+                            var userRequest = userMessages[0]?.ToUser;
+                            users.Add(userRequest);
+                            var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
+                            const string action = "Inbox_chat";
+                            await SendNotification(users, body, action);
+                            break;
+                        }
+                    default:
+                        {
+                            switch (userMessages.Count > 1)
+                            {
+                                case true:
+                                    {
+                                        var users = new List<UserDetails>();
+                                        var requestsCount = userMessages.Select(a => a.ToUserNotreadcount).Sum();
+                                        var userRequest = userMessages[0]?.ToUser;
+                                        users.Add(userRequest);
+                                        var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
+                                        const string action = "Inbox_chat";
+                                        await SendNotification(users, body, action);
+                                        break;
+                                    }
+                            }
+
+                            break;
+                        }
+                }
             }
 
         }
