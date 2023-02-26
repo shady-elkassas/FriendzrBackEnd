@@ -33,31 +33,45 @@ namespace Social.Services.PushNotification
         #region Send Update Profile Notification
         public async Task SendUpdateProfileNotificationAfter24H()
         {
-            var users = _authContext.UserDetails
-                .Include(u => u.User)
-                .Where(u => u.ProfileCompleted.Value == false
-                            && EF.Functions
-                                .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 1)
-                .ToList();
-            const string body = "You're almost there!@Complete your profile to start connecting on Friendzr today";
-            const string action = "Edit_profile";
+            try
+            {
+                var users = _authContext.UserDetails
+                    .Include(u => u.User)
+                    .Where(u => u.ProfileCompleted.Value == false
+                                && EF.Functions
+                                    .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 1)
+                    .ToList();
+                const string body = "You're almost there!@Complete your profile to start connecting on Friendzr today";
+                const string action = "Edit_profile";
 
-            await SendNotification(users, body, action);
+                await SendNotification(users, body, action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public async Task SendUpdateProfileNotificationAfter72H()
         {
-            var users = _authContext.UserDetails
-                .Include(u => u.User)
-                .Where(u => u.ProfileCompleted.Value == false
-                            && EF.Functions
-                                .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 3)
-                .ToList();
+            try
+            {
+                var users = _authContext.UserDetails
+                    .Include(u => u.User)
+                    .Where(u => u.ProfileCompleted.Value == false
+                                && EF.Functions
+                                    .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 3)
+                    .ToList();
 
-            const string body = "Your profile is being viewed @Complete your profile for a better chance of finding like-minded Friendzrs";
-            const string action = "Edit_profile";
+                const string body = "Your profile is being viewed @Complete your profile for a better chance of finding like-minded Friendzrs";
+                const string action = "Edit_profile";
 
-            await SendNotification(users, body, action);
+                await SendNotification(users, body, action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         #endregion
@@ -66,18 +80,25 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationForWomenOnly()
         {
-            var users = _authContext.UserDetails
-                .Include(u => u.User)
-                .Where(u => u.ghostmode == false
-                            && u.Gender == "female"
-                            && EF.Functions
-                                .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 5)
-                .ToList();
+            try
+            {
+                var users = _authContext.UserDetails
+                    .Include(u => u.User)
+                    .Where(u => u.ghostmode == false
+                                && u.Gender == "female"
+                                && EF.Functions
+                                    .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 5)
+                    .ToList();
 
-            const string body = "Only looking for [female/male] friends? @Use Private Mode to hide your profile from anyone";
-            const string action = "Private_mode";
+                const string body = "Only looking for [female/male] friends? @Use Private Mode to hide your profile from anyone";
+                const string action = "Private_mode";
 
-            await SendNotification(users, body, action);
+                await SendNotification(users, body, action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         #endregion
@@ -86,57 +107,64 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationIfUserHasRequestsUnanswered()
         {
-            var usersRequestIds = _authContext.Requestes
-                .Include(a => a.User)
-                .Include(a => a.UserRequest)
-                .Where(a =>
-                    a.status == 0
-                    && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
-                .Select(a => a.UserRequestId).Distinct().ToList();
-
-
-            foreach (var requests in usersRequestIds.Select(id => _authContext.Requestes
-                         .Include(a => a.User)
-                         .Include(a => a.UserRequest)
-                         .Where(a =>
-                             a.status == 0
-                             && a.UserRequestId == id
-                             && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
-                         .ToList()))
+            try
             {
-                switch (requests.Count())
-                {
-                    case 1:
-                    {
-                        var users = new List<UserDetails>();
-                        var userName = requests[0]?.User.userName;
-                        var userRequest = requests[0]?.UserRequest;
-                        users.Add(userRequest);
-                        var body = $"[{userName}] sent you a friend request.@Click here to view and connect";
-                        const string action = "Friend_Requests";
-                        await SendNotification(users, body, action);
-                        break;
-                    }
-                    default:
-                    {
-                        switch (requests.Count() > 1)
-                        {
-                            case true:
-                            {
-                                var users = new List<UserDetails>();
-                                var requestsCount = requests.Count;
-                                var userRequest = requests[0]?.UserRequest;
-                                users.Add(userRequest);
-                                var body = $"You have {requestsCount} requests waiting.@Click here to view and connect";
-                                const string action = "Friend_Requests";
-                                await SendNotification(users, body, action);
-                                break;
-                            }
-                        }
+                var usersRequestIds = _authContext.Requestes
+                    .Include(a => a.User)
+                    .Include(a => a.UserRequest)
+                    .Where(a =>
+                        a.status == 0
+                        && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
+                    .Select(a => a.UserRequestId).Distinct().ToList();
 
-                        break;
+
+                foreach (var requests in usersRequestIds.Select(id => _authContext.Requestes
+                             .Include(a => a.User)
+                             .Include(a => a.UserRequest)
+                             .Where(a =>
+                                 a.status == 0
+                                 && a.UserRequestId == id
+                                 && EF.Functions.DateDiffDay(a.regestdata, DateTime.Today) == 3)
+                             .ToList()))
+                {
+                    switch (requests.Count())
+                    {
+                        case 1:
+                        {
+                            var users = new List<UserDetails>();
+                            var userName = requests[0]?.User.userName;
+                            var userRequest = requests[0]?.UserRequest;
+                            users.Add(userRequest);
+                            var body = $"[{userName}] sent you a friend request.@Click here to view and connect";
+                            const string action = "Friend_Requests";
+                            await SendNotification(users, body, action);
+                            break;
+                        }
+                        default:
+                        {
+                            switch (requests.Count() > 1)
+                            {
+                                case true:
+                                {
+                                    var users = new List<UserDetails>();
+                                    var requestsCount = requests.Count;
+                                    var userRequest = requests[0]?.UserRequest;
+                                    users.Add(userRequest);
+                                    var body = $"You have {requestsCount} requests waiting.@Click here to view and connect";
+                                    const string action = "Friend_Requests";
+                                    await SendNotification(users, body, action);
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -146,82 +174,91 @@ namespace Social.Services.PushNotification
 
         public async Task SendNotificationIfUserHasMessagesNotRead()
         {
-            var userIds = _authContext.UserMessages
-                .Include(a => a.User)
-                .Include(a => a.ToUser)
-                .Where(a =>
-                    a.UserNotreadcount > 0
-                    && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
-                .Select(a=>a.UserId).Distinct().ToList();
-
-
-            foreach (var userMessages in userIds.Select(id => _authContext.UserMessages
-                         .Include(a => a.User)
-                         .Include(a => a.ToUser)
-                         .Where(a =>
-                             a.UserId == id
-                             && a.UserNotreadcount > 0
-                             && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
-                         .ToList()))
+            try
             {
-                switch (userMessages.Count)
-                {
-                    case 1:
-                    {
-                        var users = new List<UserDetails>();
-                        var userName = userMessages[0]?.ToUser.userName;
-                        var userRequest = userMessages[0]?.User;
-                        users.Add(userRequest);
-                        var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
-                        const string action = "Inbox_chat";
-                        await SendNotification(users, body, action);
-                        break;
-                    }
-                    default:
-                    {
-                        switch (userMessages.Count >1)
-                        {
-                            case true:
-                            {
-                                var users = new List<UserDetails>();
-                                var requestsCount = userMessages.Select(a => a.UserNotreadcount).Sum();
-                                var userRequest = userMessages[0]?.User;
-                                users.Add(userRequest);
-                                var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
-                                const string action = "Inbox_chat";
-                                await SendNotification(users, body, action);
-                                break;
-                            }
-                        }
+                var userIds = _authContext.UserMessages
+                    .Include(a => a.User)
+                    .Include(a => a.ToUser)
+                    .Where(a =>
+                        a.UserNotreadcount > 0
+                        && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                    .Select(a=>a.UserId).Distinct().ToList();
 
-                        break;
+
+                foreach (var userMessages in userIds.Select(id => _authContext.UserMessages
+                             .Include(a => a.User)
+                             .Include(a => a.ToUser)
+                             .Where(a =>
+                                 a.UserId == id
+                                 && a.UserNotreadcount > 0
+                                 && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                             .ToList()))
+                {
+                    switch (userMessages.Count)
+                    {
+                        case 1:
+                        {
+                            var users = new List<UserDetails>();
+                            var userName = userMessages[0]?.ToUser.userName;
+                            var userRequest = userMessages[0]?.User;
+                            users.Add(userRequest);
+                            var body = $"[{userName}] is waiting to hear from you.@Click to read and reply to their message";
+                            const string action = "Inbox_chat";
+                            await SendNotification(users, body, action);
+                            break;
+                        }
+                        default:
+                        {
+                            switch (userMessages.Count >1)
+                            {
+                                case true:
+                                {
+                                    var users = new List<UserDetails>();
+                                    var requestsCount = userMessages.Select(a => a.UserNotreadcount).Sum();
+                                    var userRequest = userMessages[0]?.User;
+                                    users.Add(userRequest);
+                                    var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
+                                    const string action = "Inbox_chat";
+                                    await SendNotification(users, body, action);
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
         public async Task SendNotificationIfToUserHasMessagesNotRead()
         {
-            var userIds = _authContext.UserMessages
-                 .Include(a => a.User)
-                 .Include(a => a.ToUser)
-                 .Where(a =>
-                     a.ToUserNotreadcount > 0
-                     && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
-                 .Select(a => a.ToUserId).Distinct().ToList();
-
-
-            foreach (var userMessages in userIds.Select(id => _authContext.UserMessages
-                         .Include(a => a.User)
-                         .Include(a => a.ToUser)
-                         .Where(a =>
-                             a.ToUserId == id
-                             && a.ToUserNotreadcount > 0
-                             && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
-                         .ToList()))
+            try
             {
-                switch (userMessages.Count)
+                var userIds = _authContext.UserMessages
+                    .Include(a => a.User)
+                    .Include(a => a.ToUser)
+                    .Where(a =>
+                        a.ToUserNotreadcount > 0
+                        && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                    .Select(a => a.ToUserId).Distinct().ToList();
+
+
+                foreach (var userMessages in userIds.Select(id => _authContext.UserMessages
+                             .Include(a => a.User)
+                             .Include(a => a.ToUser)
+                             .Where(a =>
+                                 a.ToUserId == id
+                                 && a.ToUserNotreadcount > 0
+                                 && EF.Functions.DateDiffDay(a.startedin, DateTime.Today) == 3)
+                             .ToList()))
                 {
-                    case 1:
+                    switch (userMessages.Count)
+                    {
+                        case 1:
                         {
                             var users = new List<UserDetails>();
                             var userName = userMessages[0]?.User.userName;
@@ -232,26 +269,31 @@ namespace Social.Services.PushNotification
                             await SendNotification(users, body, action);
                             break;
                         }
-                    default:
+                        default:
                         {
                             switch (userMessages.Count > 1)
                             {
                                 case true:
-                                    {
-                                        var users = new List<UserDetails>();
-                                        var requestsCount = userMessages.Select(a => a.ToUserNotreadcount).Sum();
-                                        var userRequest = userMessages[0]?.ToUser;
-                                        users.Add(userRequest);
-                                        var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
-                                        const string action = "Inbox_chat";
-                                        await SendNotification(users, body, action);
-                                        break;
-                                    }
+                                {
+                                    var users = new List<UserDetails>();
+                                    var requestsCount = userMessages.Select(a => a.ToUserNotreadcount).Sum();
+                                    var userRequest = userMessages[0]?.ToUser;
+                                    users.Add(userRequest);
+                                    var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
+                                    const string action = "Inbox_chat";
+                                    await SendNotification(users, body, action);
+                                    break;
+                                }
                             }
 
                             break;
                         }
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
 
         }
