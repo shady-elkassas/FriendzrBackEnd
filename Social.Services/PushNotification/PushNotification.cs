@@ -306,25 +306,26 @@ namespace Social.Services.PushNotification
         {
             var template =await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");
             const string title = "Ready to get started?";
-            var users = _authContext.UserDetails
-                .Include(u => u.User)
-                .Where(u => u.ProfileCompleted.Value == false
-                            && EF.Functions
-                                .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 7)
+            var users = _authContext.Users
+                .Where(u => u.EmailConfirmedOn.Date == DateTime.UtcNow.Date)
                 .ToList();
-            //foreach (var user in users)
-            //{
-                await SendEmailJobs("Mostafakamal787@gmail.com", title, template);
+            foreach (var user in users)
+            {
+                await SendEmailJobs(user.Email, title, template);
 
-            //}
+            }
         }
 
         public async Task SendCompleteProfileEmail()
         {
             var template = await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Complete_Profile.html");
             const string title = "Your new friends await";
-            var users = _authContext.Users
-                .Where(u => u.EmailConfirmedOn.Date == DateTime.UtcNow.Date)
+            
+            var users = _authContext.UserDetails
+                .Include(u => u.User)
+                .Where(u => u.ProfileCompleted.Value == false
+                            && EF.Functions
+                                .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 7)
                 .ToList();
             foreach (var user in users)
             {
