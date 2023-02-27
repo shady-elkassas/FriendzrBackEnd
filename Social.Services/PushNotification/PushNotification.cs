@@ -312,11 +312,11 @@ namespace Social.Services.PushNotification
                             && EF.Functions
                                 .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 7)
                 .ToList();
-            foreach (var user in users)
-            {
-                await SendEmailJobs(user.Email, title, template);
+            //foreach (var user in users)
+            //{
+                await SendEmailJobs("Mostafakamal787@gmail.com", title, template);
 
-            }
+            //}
         }
 
         public async Task SendCompleteProfileEmail()
@@ -362,8 +362,13 @@ namespace Social.Services.PushNotification
             
 
         }
-        private async Task SendEmailJobs(string toEmailAddress, string title, string body)
+        private async Task<bool> SendEmailJobs(string toEmailAddress, string title, string body)
         {
+            var validEmail = toEmailAddress.Contains("@");
+            if (!validEmail)
+            {
+               return false;
+            }
             var m = new MailMessage();
             var sc = new System.Net.Mail.SmtpClient();
             m.From = new MailAddress(SenderMail);
@@ -382,10 +387,11 @@ namespace Social.Services.PushNotification
                     sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
                     sc.EnableSsl = true;
                     sc.Send(m);
+                    return true;
                 }
                 catch (Exception ex)
                 {
-                    
+                    return false;
                 }
             }
             else
@@ -396,13 +402,13 @@ namespace Social.Services.PushNotification
                     sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
                     sc.EnableSsl = false;
                     sc.Send(m);
-
+                    return true;
 
                 }
                 catch (Exception ex)
                 {
+                    return false;
 
-                    
                 }
             }
         }

@@ -316,6 +316,8 @@ namespace Social
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasRequestsUnanswered(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfToUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendWelcomeEmail(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendCompleteProfileEmail(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
 
             RecurringJob.RemoveIfExists(nameof(IExternalEventJob.ExportExternalEvents));
             RecurringJob.AddOrUpdate<IExternalEventJob>(j => j.ExportExternalEvents(), cronExpression: configuration["Jobs:ExternalEvent:CronExpression"], timeZone: TimeZoneInfo.Local);
