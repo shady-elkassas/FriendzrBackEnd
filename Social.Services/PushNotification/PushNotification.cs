@@ -8,6 +8,7 @@ using Social.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Social.Services.PushNotification
@@ -18,7 +19,8 @@ namespace Social.Services.PushNotification
         private readonly IMessageServes _messageServes;
         private readonly IConfiguration _configuration;
         private readonly IFirebaseManager _fireBaseManager;
-       
+        private string SenderMail = "Hello@friendzr.com";
+        private string _pass = "asd@1234A";
         public PushNotification(AuthDBContext authContext,
             IMessageServes messageServes,
             IConfiguration configuration,
@@ -300,6 +302,13 @@ namespace Social.Services.PushNotification
 
         #endregion
 
+        public async Task SendWelcomeEmail()
+        {
+            var template =await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");
+            var userEmail = "alaa.adel.fcis@gmail.com";
+            var title = "Ready to get started?";
+           await  SendEmailJobs(userEmail, title, template);
+        }
         #region Private Functions
         private async Task SendNotification(List<UserDetails> users, string body, string action)
         {
@@ -329,6 +338,50 @@ namespace Social.Services.PushNotification
              }
             
 
+        }
+        private async Task SendEmailJobs(string toEmailAddress, string title, string body)
+        {
+            var m = new MailMessage();
+            var sc = new System.Net.Mail.SmtpClient();
+            m.From = new MailAddress(SenderMail);
+            m.To.Add(toEmailAddress);
+            m.Subject = title;
+            m.Body = body;
+            m.IsBodyHtml = true;
+            sc.Host = "www.friendzsocialmedia.com";
+            var str1 = "gmail.com";
+            var str2 = SenderMail;
+            if (str2.Contains(str1))
+            {
+                try
+                {
+                    sc.Port = 587;
+                    sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
+                    sc.EnableSsl = true;
+                    sc.Send(m);
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
+            else
+            {
+                try
+                {
+                    sc.Port = 587;
+                    sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
+                    sc.EnableSsl = false;
+                    sc.Send(m);
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    
+                }
+            }
         }
         #endregion
     }

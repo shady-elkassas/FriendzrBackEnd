@@ -187,59 +187,6 @@ namespace Social.Sercices.Helpers
                 }
             }
         }
-        public async Task SendEmailAfterVerifyEmailAddress(string toEmailAddress , string username)
-        {
-            logger.Information("Email After Verify Email Address Start");
-            MailMessage m = new MailMessage();
-            System.Net.Mail.SmtpClient sc = new System.Net.Mail.SmtpClient();
-            m.From = new MailAddress(SenderMail);
-            m.To.Add(toEmailAddress);
-            m.Subject = "Thank You For Verify Your Email Address!";
-            m.Body = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8' /><meta http-equiv='X-UA-Compatible' content='IE=edge' /><meta name='viewport' content='width=device-width, initial-scale=1.0' /><title></title></head><body style='margin: 3px'><div class='container' style='  height: 110vh'><div class='body-email' style='top: 50%; left: 50%; '><div class='title'><img style='width: 70px; border-radius: 50%;' src='https://www.friendzsocialmedia.com/assets/media/logos/favicon.ico' /><h4 style='margin: 3px'> Thank You For Verify Your Email Address!.</h4></div><h4>Hi, " + username + ".</h4><div style='font-size: 15px'>Welcome to Friendzr. Thank You For Verify Your Email Address!.</div><footer><h5 style='margin-bottom:-20px;'>Sincerely</h5><h5>Friendzr Team</h5></footer></div></div></body></html>";
-            m.IsBodyHtml = true;
-            sc.Host = "www.friendzsocialmedia.com";
-            string str1 = "gmail.com";
-            string str2 = SenderMail;
-            if (str2.Contains(str1))
-            {
-                try
-                {
-                    sc.Port = 587;
-                    sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
-                    sc.EnableSsl = true;
-                    sc.Send(m);
-                    //Response.Write("Email Send successfully");
-                }
-                catch (Exception ex)
-                {
-                    // Response.Write("<BR><BR>* Please double check the From Address and Password to confirm that both of them are correct. <br>");
-                    // Response.Write("<BR><BR>If you are using gmail smtp to send email for the first time, please refer to this KB to setup your gmail account: http://www.smarterasp.net/support/kb/a1546/send-email-from-gmail-with-smtp-authentication-but-got-5_5_1-authentication-required-error.aspx?KBSearchID=137388");
-                    //Response.End();
-                    // throw ex;
-                }
-            }
-            else
-            {
-                try
-                {
-                    sc.Port = 587/*25*/;
-                    sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
-                    sc.EnableSsl = false;
-                    sc.Send(m);
-
-                    logger.Information($"Send Email Configration Success And Reciver Email Is:{toEmailAddress}");
-
-                    // Response.Write("Email Send successfully");
-                }
-                catch (Exception ex)
-                {
-                    logger.Information(ex, "Send Email Configration Fail", ex.Message);
-
-                    //  Response.Write("<BR><BR>* Please double check the From Address and Password to confirm that both of them are correct. <br>");
-                    // Response.End();
-                    //  throw ex;
-                }
-            }
-        }
+       
     }
 }

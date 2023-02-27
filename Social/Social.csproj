@@ -1469,6 +1469,12 @@
     <None Include="wwwroot\Components\_SharedComponent\CustomJQValidationMethods.js" />
     <None Include="wwwroot\Components\_SharedComponent\DatatableHelperFunction.js" />
     <None Include="wwwroot\Components\_SharedComponent\JqueryCommonlyUsedFunc.js" />
+    <None Include="wwwroot\EmailTemplates\Complete_Profile.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\EmailTemplates\Welcome_Email.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />

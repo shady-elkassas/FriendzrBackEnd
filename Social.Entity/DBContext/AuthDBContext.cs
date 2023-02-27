@@ -62,7 +62,7 @@ namespace Social.Entity.DBContext
         public DbSet<EventCategoryTracker> EventCategoryTrackers { get; set; }
         public DbSet<SkippedUser> SkippedUsers { get; set; }
         public DbSet<SkippedEvent> SkippedEvents { get; set; } //=>
-
+        public DbSet<EmailTemplate> EmailTemplates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
