@@ -13,7 +13,8 @@ namespace Social.HangFireJobs
         }
         public async Task SendUpdateProfileNotification()
         {
-            await this._accountupdateController.SendUpdateProfileNotification();           
+            // Stop Temporary
+            // await this._accountupdateController.SendUpdateProfileNotification();           
         }
     }
 }
