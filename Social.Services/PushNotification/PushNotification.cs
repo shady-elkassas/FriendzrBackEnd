@@ -152,7 +152,7 @@ namespace Social.Services.PushNotification
                                     var requestsCount = requests.Count;
                                     var userRequest = requests[0]?.UserRequest;
                                     users.Add(userRequest);
-                                    var body = $"You have {requestsCount} requests waiting.@Click here to view and connect";
+                                    var body = $"You have {requestsCount} requests waiting...";
                                     const string action = "Friend_Requests";
                                     await SendNotification(users, body, action);
                                     break;
@@ -219,7 +219,7 @@ namespace Social.Services.PushNotification
                                     var requestsCount = userMessages.Select(a => a.UserNotreadcount).Sum();
                                     var userRequest = userMessages[0]?.User;
                                     users.Add(userRequest);
-                                    var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
+                                    var body = $"You have {requestsCount} messages waiting...";
                                     const string action = "Inbox_chat";
                                     await SendNotification(users, body, action);
                                     break;
@@ -281,7 +281,7 @@ namespace Social.Services.PushNotification
                                     var requestsCount = userMessages.Select(a => a.ToUserNotreadcount).Sum();
                                     var userRequest = userMessages[0]?.ToUser;
                                     users.Add(userRequest);
-                                    var body = $"You have {requestsCount} messages waiting.@Click to read and reply to their message";
+                                    var body = $"You have {requestsCount} messages waiting...";
                                     const string action = "Inbox_chat";
                                     await SendNotification(users, body, action);
                                     break;
