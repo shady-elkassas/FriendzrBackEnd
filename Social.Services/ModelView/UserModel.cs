@@ -131,6 +131,19 @@ public List<LinkAccountmodel> LinkAccountmodel { get; set; }
         public List<listoftagsmodel> IamList { get; set; }
         public List<listoftagsmodel> prefertoList { get; set; }
     }
+
+    public class UpdateLocationDto
+    {
+
+        public int NeedUpdate { get; set; }
+        public string lang { get; set; }
+        public string lat { get; set; }
+        public bool? ImageIsVerified { get; set; }
+        public int? FrindRequestNumber { get; set; }
+        public int? Message_Count { get; set; }
+        public int? notificationcount { get; set; }
+       
+    }
     public class LinkAccountmodel
     {
 

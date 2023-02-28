@@ -155,95 +155,44 @@ namespace Social.Controllers
                 var user = await userManager.FindByIdAsync(loggedinUser.UserId);
                
                 var userDeatils = this.userService.GetUserDetails(user.Id);
-                //var GetLinkAccount = this.userService.GetallLinkAccount((userDeatils.PrimaryId));
-                //var Getalllistoftags = this.userService.Getalllistoftags((userDeatils.PrimaryId));
+
                 userDeatils.lang = lang;
                 userDeatils.lat = lat;
                 this.userService.UpdateUserDetails(userDeatils);
                 await userService.UpdateUserAddressFromGoogle(userDeatils, Convert.ToDouble(lat), Convert.ToDouble(lang));
-                var itemEVENT = this.userService.allEventDataaroundevent(userDeatils.PrimaryId, Convert.ToDouble(lat), Convert.ToDouble(lang));
-                var alloldnotification = authDBContext.FireBaseDatamodel;
+                //var itemEVENT = userService.allEventDataaroundevent(userDeatils.PrimaryId, Convert.ToDouble(lat), Convert.ToDouble(lang));
+                //var alloldnotification = authDBContext.FireBaseDatamodel;
 
-                try
-                {
-                    var usernotification = alloldnotification.FirstOrDefault(m => m.userid == userDeatils.PrimaryId && m.Action_code == itemEVENT.EntityId);
-                    if (usernotification == null)
-                    {
-                        FireBaseData fireBaseInfo = new FireBaseData() { Title = itemEVENT.Title, Body = "Check this hot event near you!", imageUrl = ((itemEVENT.EventTypeListid == 3 ? "" : BaseUrlDomain) + itemEVENT.image), Action_code = itemEVENT.EntityId, muit = false, Action = "Check_events_near_you" };
-                        var addnoti = messageServes.getFireBaseData(userDeatils.PrimaryId, fireBaseInfo);
-                        await messageServes.addFireBaseDatamodel(addnoti);
-                        SendNotificationcs sendNotificationcs = new SendNotificationcs();
-                        if (userDeatils.FcmToken != null)
-                            await firebaseManager.SendNotification(userDeatils.FcmToken, fireBaseInfo);
-                    }
-                }
-                catch
-                {
+                //try
+                //{
+                //    var usernotification = alloldnotification.FirstOrDefault(m => m.userid == userDeatils.PrimaryId && m.Action_code == itemEVENT.EntityId);
+                //    if (usernotification == null)
+                //    {
+                //        FireBaseData fireBaseInfo = new FireBaseData() { Title = itemEVENT.Title, Body = "Check this hot event near you!", imageUrl = ((itemEVENT.EventTypeListid == 3 ? "" : BaseUrlDomain) + itemEVENT.image), Action_code = itemEVENT.EntityId, muit = false, Action = "Check_events_near_you" };
+                //        var addnoti = messageServes.getFireBaseData(userDeatils.PrimaryId, fireBaseInfo);
+                //        await messageServes.addFireBaseDatamodel(addnoti);
+                //        SendNotificationcs sendNotificationcs = new SendNotificationcs();
+                //        if (userDeatils.FcmToken != null)
+                //            await firebaseManager.SendNotification(userDeatils.FcmToken, fireBaseInfo);
+                //    }
+                //}
+                //catch
+                //{
 
-                }
+                //}
 
-                updateUserModelviewprofile modl = new updateUserModelviewprofile();
-                modl.UserName = user.DisplayedUserName;
-                modl.DisplayedUserName = user.UserName;
-                modl.Gender = userDeatils.Gender;
-                modl.bio = userDeatils.bio;
-                modl.birthdate = userDeatils.birthdate == null ? "" : userDeatils.birthdate.Value.ConvertDateTimeToString();
-                modl.Email = user.Email;
-                modl.lat = userDeatils.lat;
-                modl.lang = userDeatils.lang;
-                modl.Manualdistancecontrol = userDeatils.Manualdistancecontrol;
-                modl.agefrom = userDeatils.agefrom;
-                modl.ageto = userDeatils.ageto;
-                modl.Filteringaccordingtoage = userDeatils.Filteringaccordingtoage;
-                modl.personalSpace = userDeatils.personalSpace;
-                modl.allowmylocation = userDeatils.allowmylocation;
-                modl.ImageIsVerified = userDeatils.ImageIsVerified ?? false;
-                modl.whatAmILookingFor = userDeatils.whatAmILookingFor;
-                modl.MyAppearanceTypes = userDeatils.AppearanceTypes.Select(x => x.AppearanceTypeID).ToList();
-                modl.ghostmode = userDeatils.ghostmode;
-                modl.NeedUpdate = userDeatils.birthdate == null ? 1 : 0;
-                modl.pushnotification = userDeatils.pushnotification;
-                modl.language = userDeatils.language;
-                modl.UserImage = string.IsNullOrEmpty(user.UserDetails.UserImage) ? "" : BaseUrlDomain + user.UserDetails.UserImage;
-                var GetLinkAccount2 = this.userService.GetallLinkAccount((userDeatils.PrimaryId));
-                var Getalllistoftags2 = this.userService.Getalllistoftags((userDeatils.PrimaryId));
-
-                List<listoftagsmodel> list2 = new List<listoftagsmodel>();
-                foreach (var item in Getalllistoftags2)
+                var modl = new UpdateLocationDto
                 {
-                    listoftagsmodel LinkAccountmodel = new listoftagsmodel();
-                    LinkAccountmodel.tagname = item.Interests.name;
-                    LinkAccountmodel.tagID = item.Interests.EntityId;
-                    list2.Add(LinkAccountmodel);
-                }
-                List<listoftagsmodel> WhatBestDescripsMeListdata = new List<listoftagsmodel>();
-                var WhatBestDescripsMeList = this.userService.GetallWhatBestDescripsMeList((userDeatils.PrimaryId));
-                foreach (var item in WhatBestDescripsMeList)
-                {
-                    listoftagsmodel LinkAccountmodel = new listoftagsmodel();
-                    LinkAccountmodel.tagname = item.WhatBestDescripsMe.name;
-                    LinkAccountmodel.tagID = item.WhatBestDescripsMe.EntityId;
-                    WhatBestDescripsMeListdata.Add(LinkAccountmodel);
-                }
-                List<listoftagsmodel> preferto = new List<listoftagsmodel>();
-                var prefertolist = this.userService.GetallIprefertolist((userDeatils.PrimaryId));
-                foreach (var item in prefertolist)
-                {
-                    listoftagsmodel LinkAccountmodel = new listoftagsmodel();
-                    LinkAccountmodel.tagname = item.preferto.name;
-                    LinkAccountmodel.tagID = item.preferto.EntityId;
-                    preferto.Add(LinkAccountmodel);
-                }
-                modl.prefertoList = preferto.Distinct().ToList();
-                userDeatils.Facebook = userDeatils.Facebook;
-
-                userDeatils.instagram = userDeatils.instagram;
+                    lat = userDeatils.lat,
+                    lang = userDeatils.lang,
+                    ImageIsVerified = userDeatils.ImageIsVerified ?? false,
+                    NeedUpdate = userDeatils.birthdate == null ? 1 : 0
+                };
                 var data = messageServes.getFireBasecount(userDeatils.PrimaryId);
                 modl.FrindRequestNumber = _FrindRequest.GetallRequestes(userDeatils.PrimaryId, RequestesType.RecivedOnly).Where(m => m.status == 0).Count();
                 modl.Message_Count = messageServes.messagelogincount(userDeatils.UserId);
                 modl.notificationcount = data;
-                modl.listoftagsmodel = list2;
-                modl.IamList = WhatBestDescripsMeListdata;
+               
                 return StatusCode(StatusCodes.Status200OK,
                       new ResponseModel<object>(StatusCodes.Status200OK, true,
                        _localizer["updateprofiledata"].Value, modl));
