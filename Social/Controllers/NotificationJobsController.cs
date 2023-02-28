@@ -18,7 +18,6 @@ namespace Social.Controllers
         }
 
         [HttpGet("testEmail")]
-        [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter24H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
