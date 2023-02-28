@@ -20,15 +20,9 @@ namespace Social.Controllers
         [HttpGet("testEmail")]
         public async Task<IActionResult> Get()
         {
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter24H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter72H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationForWomenOnly(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasRequestsUnanswered(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-            //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfToUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-           await _pushNotification.SendWelcomeEmail();
-           //await _pushNotification.SendWelcomeEmailForTest("shady_elkassas@hotmail.com");
-           //await _pushNotification.SendCompleteProfileEmailForTest("shady_elkassas@hotmail.com");
+            await _pushNotification.SendWelcomeEmailForTest("shady_elkassas@hotmail.com");
+            await _pushNotification.SendCompleteProfileEmailForTest("shady_elkassas@hotmail.com");
+           
             return Ok("email send");
         }
        
