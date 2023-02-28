@@ -321,7 +321,10 @@ namespace Social.Services.PushNotification
             var template =await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");
             const string title = "Ready to get started?";
             var users = _authContext.Users
-                .Where(u => u.EmailConfirmedOn.Date == DateTime.UtcNow.Date)
+                .Where(u =>
+                    u.EmailConfirmed 
+                    &&EF.Functions
+                    .DateDiffDay(u.RegistrationDate, DateTime.Today) == 1)
                 .ToList();
             foreach (var user in users)
             {

@@ -26,8 +26,9 @@ namespace Social.Controllers
             //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasRequestsUnanswered(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             //RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfToUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
-           await _pushNotification.SendWelcomeEmailForTest("shady_elkassas@hotmail.com");
-           await _pushNotification.SendCompleteProfileEmailForTest("shady_elkassas@hotmail.com");
+           await _pushNotification.SendWelcomeEmail();
+           //await _pushNotification.SendWelcomeEmailForTest("shady_elkassas@hotmail.com");
+           //await _pushNotification.SendCompleteProfileEmailForTest("shady_elkassas@hotmail.com");
             return Ok("email send");
         }
        
