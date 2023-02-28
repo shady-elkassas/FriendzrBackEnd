@@ -301,7 +301,21 @@ namespace Social.Services.PushNotification
         }
 
         #endregion
+        public async Task SendWelcomeEmailForTest(string email)
+        {
+            var template = await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");
+            const string title = "Ready to get started?";
 
+            await SendEmailJobs(email, title, template);
+
+            
+        }
+        public async Task SendCompleteProfileEmailForTest(string email)
+        {
+            var template = await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Complete_Profile.html");
+            const string title = "Your new friends await";
+            await SendEmailJobs(email, title, template);
+        }
         public async Task SendWelcomeEmail()
         {
             var template =await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");

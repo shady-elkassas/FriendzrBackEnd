@@ -15,5 +15,7 @@ namespace Social.Services.PushNotification
         Task SendNotificationIfToUserHasMessagesNotRead();
         Task SendWelcomeEmail();
         Task SendCompleteProfileEmail();
+        Task SendWelcomeEmailForTest(string email);
+        Task SendCompleteProfileEmailForTest(string email);
     }
 }
