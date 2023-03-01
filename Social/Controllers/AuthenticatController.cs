@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -205,6 +206,8 @@ namespace Social.Controllers
                     Random random = new Random();
                     var code = random.Next(1, 1000000).ToString("D6");
                     var token = await GenerateEmailConfirmationToken(user, Convert.ToInt32(code.ToString()));
+                    await _emailHelper.SendWelcomeEmail(userDetails.Email);
+
                     return StatusCode(StatusCodes.Status200OK,
                           new ResponseModel<object>(StatusCodes.Status200OK, true,
 
@@ -282,7 +285,6 @@ namespace Social.Controllers
                             this._userService.InsertUserDetails(userDetails);
 
 
-
                         }
 
                         var token = "";
@@ -313,6 +315,7 @@ namespace Social.Controllers
                         await userManager.UpdateAsync(user);
                         this._userService.UpdateUserDetails(userDeatils);
                         SendNotificationcs sendNotificationcs = new SendNotificationcs();
+                        await _emailHelper.SendWelcomeEmail(userDeatils.Email);
 
                         return StatusCode(StatusCodes.Status200OK,
                       new ResponseModel<object>(StatusCodes.Status200OK, true,
@@ -676,6 +679,7 @@ namespace Social.Controllers
                         // UserImage = imageName != null ? "/Images/" + imageName : "/Images/WhatsApp Image 2021-06-29 at 10.14.15 PM.jpeg",
                     };
                     this._userService.InsertUserDetails(userDetails);
+                    await _emailHelper.SendWelcomeEmail(userDetails.Email);
 
 
                 }
@@ -1400,7 +1404,6 @@ namespace Social.Controllers
             await this.ConfirmEmail(code, email);
             await _emailHelper.SendEmailregistration(email, subject, "Your Confirmation Code Is : " + code +
                   ", Note : this code is valid for 5 day !", code, /*(globalMethodsService.GetBaseDomain() +*/ redirectUrl/*)*/, username);
-            await _emailHelper.SendWelcomeEmail(email);
         }
 
         private async Task SendEmailchangepassword(string phone, string email, string subject, int code)
