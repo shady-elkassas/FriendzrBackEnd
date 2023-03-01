@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Hosting;
+using Serilog;
 using Social.Services.Services;
 using System;
 using System.Net.Mail;
@@ -13,10 +14,12 @@ namespace Social.Sercices.Helpers
         private string _pass = "asd@1234A";
         private readonly ILogger logger;
         private readonly IGlobalMethodsService globalMethodsService;
+        public IWebHostEnvironment _hostingEnvironment { get; }
         readonly string BaseUrlDomain;
-        public EmailHelper(IGlobalMethodsService globalMethodsService, ILogger logger)
+        public EmailHelper(IGlobalMethodsService globalMethodsService, ILogger logger, IWebHostEnvironment hostingEnvironment)
         {
             this.logger = logger;
+            _hostingEnvironment = hostingEnvironment;
             this.globalMethodsService = globalMethodsService;
             BaseUrlDomain = globalMethodsService.GetBaseDomain();
         }
@@ -134,8 +137,13 @@ namespace Social.Sercices.Helpers
             }
         }
 
-
-
+        public async Task SendWelcomeEmail(string email)
+        {
+            var path = _hostingEnvironment.WebRootPath + "/EmailTemplates/Welcome_Email.html";
+            var template = await System.IO.File.ReadAllTextAsync(path);
+            const string title = "Ready to get started?";
+            await SendEmailJobs(email, title, template);
+        }
         public async Task SendEmail(string toEmailAddress, string redirectUrl, string subject, string httmlMessage , string userName)
 
         {
@@ -187,6 +195,55 @@ namespace Social.Sercices.Helpers
                 }
             }
         }
-       
+        private async Task<bool> SendEmailJobs(string toEmailAddress, string title, string body)
+        {
+            var validEmail = toEmailAddress.Contains("@");
+            if (!validEmail)
+            {
+                return false;
+            }
+            var m = new MailMessage();
+            var sc = new System.Net.Mail.SmtpClient();
+            m.From = new MailAddress(SenderMail);
+            m.To.Add(toEmailAddress);
+            m.Subject = title;
+            m.Body = body;
+            m.IsBodyHtml = true;
+            sc.Host = "www.friendzsocialmedia.com";
+            var str1 = "gmail.com";
+            var str2 = SenderMail;
+            if (str2.Contains(str1))
+            {
+                try
+                {
+                    sc.Port = 587;
+                    sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
+                    sc.EnableSsl = true;
+                    sc.Send(m);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                try
+                {
+                    sc.Port = 587;
+                    sc.Credentials = new System.Net.NetworkCredential(SenderMail, _pass);
+                    sc.EnableSsl = false;
+                    sc.Send(m);
+                    return true;
+
+                }
+                catch (Exception ex)
+                {
+                    return false;
+
+                }
+            }
+        }
     }
 }

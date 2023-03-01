@@ -1400,6 +1400,7 @@ namespace Social.Controllers
             await this.ConfirmEmail(code, email);
             await _emailHelper.SendEmailregistration(email, subject, "Your Confirmation Code Is : " + code +
                   ", Note : this code is valid for 5 day !", code, /*(globalMethodsService.GetBaseDomain() +*/ redirectUrl/*)*/, username);
+            await _emailHelper.SendWelcomeEmail(email);
         }
 
         private async Task SendEmailchangepassword(string phone, string email, string subject, int code)

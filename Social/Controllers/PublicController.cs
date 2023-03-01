@@ -697,8 +697,8 @@ namespace Social.Controllers
         [Route("SendEmail")]
         public async Task<IActionResult> SendEmail([FromQuery] string email)
         {
-            await _emailHelper.SendEmailregistration(email, "Test Email", "Your Email Sent !!!  Just For Test :) ", 123456, "www.google.com", "Test User");
-
+            //  await _emailHelper.SendEmailregistration(email, "Test Email", "Your Email Sent !!!  Just For Test :) ", 123456, "www.google.com", "Test User");
+            await _emailHelper.SendWelcomeEmail(email);
             return Ok("Email Sent");
         }
 

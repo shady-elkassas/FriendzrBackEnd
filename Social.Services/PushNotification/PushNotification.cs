@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Social.Entity.DBContext;
 using Social.Entity.Models;
@@ -19,17 +20,19 @@ namespace Social.Services.PushNotification
         private readonly IMessageServes _messageServes;
         private readonly IConfiguration _configuration;
         private readonly IFirebaseManager _fireBaseManager;
+        public IWebHostEnvironment _hostingEnvironment { get; }
         private string SenderMail = "Hello@friendzr.com";
         private string _pass = "asd@1234A";
         public PushNotification(AuthDBContext authContext,
             IMessageServes messageServes,
             IConfiguration configuration,
-            IFirebaseManager fireBaseManager)
+            IFirebaseManager fireBaseManager, IWebHostEnvironment hostingEnvironment)
         {
             _authContext = authContext;
             _messageServes = messageServes;
             _configuration = configuration;
             _fireBaseManager = fireBaseManager;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         #region Send Update Profile Notification
@@ -303,8 +306,9 @@ namespace Social.Services.PushNotification
         #endregion
         public async Task SendWelcomeEmailForTest(string email)
         {
-            var template = await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");
-            const string title = "Ready to get started?";
+            var path = _hostingEnvironment.WebRootPath + "/EmailTemplates/Welcome_Email.html";
+
+            var template = await System.IO.File.ReadAllTextAsync(path); const string title = "Ready to get started?";
 
             await SendEmailJobs(email, title, template);
 
@@ -312,13 +316,16 @@ namespace Social.Services.PushNotification
         }
         public async Task SendCompleteProfileEmailForTest(string email)
         {
-            var template = await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Complete_Profile.html");
-            const string title = "Your new friends await";
+            var path = _hostingEnvironment.WebRootPath + "/EmailTemplates/Complete_Profile.html";
+
+            var template = await System.IO.File.ReadAllTextAsync(path); const string title = "Your new friends await";
             await SendEmailJobs(email, title, template);
         }
         public async Task SendWelcomeEmail()
         {
-            var template =await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Welcome_Email.html");
+            var path = _hostingEnvironment.WebRootPath + "/EmailTemplates/Welcome_Email.html";
+
+            var template =await System.IO.File.ReadAllTextAsync(path);
             const string title = "Ready to get started?";
             var users = _authContext.Users
                 .Where(u =>
@@ -335,7 +342,9 @@ namespace Social.Services.PushNotification
 
         public async Task SendCompleteProfileEmail()
         {
-            var template = await System.IO.File.ReadAllTextAsync(@"../Social/wwwroot/EmailTemplates/Complete_Profile.html");
+            var path = _hostingEnvironment.WebRootPath + "/EmailTemplates/Complete_Profile.html";
+
+            var template = await System.IO.File.ReadAllTextAsync(path);
             const string title = "Your new friends await";
             
             var users = _authContext.UserDetails
