@@ -16,12 +16,15 @@ namespace Social.Controllers
         {
             _pushNotification = pushNotification;
         }
-
+        /// <summary>
+        /// Test Email Jobs.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("testEmail")]
         public async Task<IActionResult> Get()
         {
-            await _pushNotification.SendWelcomeEmailForTest("shady_elkassas@hotmail.com");
-            await _pushNotification.SendCompleteProfileEmailForTest("shady_elkassas@hotmail.com");
+            await _pushNotification.SendWelcomeEmailForTest("alaa.adel.fcis@gmail.com");
+            await _pushNotification.SendCompleteProfileEmailForTest("alaa.adel.fcis@gmail.com");
            
             return Ok("email send");
         }
