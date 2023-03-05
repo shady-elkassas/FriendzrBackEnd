@@ -554,7 +554,24 @@ namespace Social.Controllers
                             var Messaghistory = MessageServes.getUserMessages(meDeatils.PrimaryId, Deatils.PrimaryId);
                             if (Messaghistory == null)
                             {
-                                await MessageServes.addUserMessages(UserMessages, false);
+                                var userMessageId = await MessageServes.addUserMessages(UserMessages, false);
+                                if (!string.IsNullOrEmpty(Requestes.Message))
+                                {
+                                    var messageData = new Messagedata
+                                    {
+                                        Messagesdate = DateTime.Parse(Requestes.regestdata.ToString("yyyy-MM-dd")),
+                                        Messagestime = Requestes.regestdata.TimeOfDay,
+                                        linkable = false,
+                                        EventDataid = null,
+                                        UserMessagessId = userMessageId,
+                                        UserId = Deatils.PrimaryId,
+                                        Messages = Requestes.Message,
+                                        Messagetype = 1
+                                    };
+
+                                    var messageViewDto = await MessageServes.addMessagedata(messageData);
+                                }
+
                             }
                             SendNotificationcs sendNotificationcs = new SendNotificationcs();
                             try
