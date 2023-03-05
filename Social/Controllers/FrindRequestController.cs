@@ -559,7 +559,7 @@ namespace Social.Controllers
                                 {
                                     var messageData = new Messagedata
                                     {
-                                        Messagesdate = DateTime.Parse(Requestes.regestdata.ToString("yyyy-MM-dd")),
+                                        Messagesdate =Requestes.regestdata.Date,
                                         Messagestime = Requestes.regestdata.TimeOfDay,
                                         linkable = false,
                                         EventDataid = null,
