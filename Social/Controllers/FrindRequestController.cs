@@ -207,6 +207,7 @@ namespace Social.Controllers
                           {
                               IsSentRequest = userDeatils.PrimaryId == m.UserId,
                               regestdata = m.regestdata.ToString(@"dd-MM-yyyy HH\:mm"),
+                              message = m.Message,
                               userId = userDeatils.PrimaryId == m.UserId ? m.UserRequest.UserId : m.User.UserId,
                               ImageIsVerified = m.User?.ImageIsVerified ?? false,
                               lang = userDeatils.PrimaryId == m.UserId ? m.UserRequest.lang : m.User.lang,
@@ -249,7 +250,8 @@ namespace Social.Controllers
                
                 if (!string.IsNullOrEmpty(userDeatils.Code) && userDeatils.IsWhiteLabel.HasValue && userDeatils.IsWhiteLabel.Value)
                 {
-                    var allFriend = _authContext.UserDetails.Where(u => u.Code == userDeatils.Code && u.PrimaryId != userDeatils.PrimaryId
+                    var allFriend = _authContext.UserDetails
+                        .Where(u => u.Code == userDeatils.Code && u.PrimaryId != userDeatils.PrimaryId
                     && (string.IsNullOrWhiteSpace(search) || u.User.DisplayedUserName.ToLower().Contains(search.ToLower()))).ToList();
                    
                     var pagedLandsFriend = allFriend.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
@@ -488,11 +490,14 @@ namespace Social.Controllers
                     }
                     if (Request == null && Request2 == null)
                     {
-                        Requestes Requestes = new Requestes();
-                        Requestes.UserId = meDeatils.PrimaryId;
-                        Requestes.UserRequestId = Deatils.PrimaryId;
-                        Requestes.status = 0;
-                        Requestes.regestdata = Convert.ToDateTime(Requestdate);
+                        var Requestes = new Requestes
+                        {
+                            UserId = meDeatils.PrimaryId,
+                            UserRequestId = Deatils.PrimaryId,
+                            status = 0,
+                            regestdata = Convert.ToDateTime(Requestdate),
+                            Message = message
+                        };
                         await _FrindRequest.addrequest(Requestes);
                         // FireBaseData fireBaseInfo = new FireBaseData() { Title = "Friend Request ", Body = meDeatils.userName + "  " + " sent Friend Request " };
                         FireBaseData fireBaseInfo = new FireBaseData()
@@ -530,6 +535,7 @@ namespace Social.Controllers
                         {
                             Requestes.status = 1;
                             Requestes.AcceptingDate = DateTime.Now;
+                            //Requestes.Message = null;
                             await _FrindRequest.updaterequest(Requestes);
                             FireBaseData fireBaseInfo = new FireBaseData()
                             {
