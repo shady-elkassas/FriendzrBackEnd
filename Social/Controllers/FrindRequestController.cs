@@ -468,7 +468,7 @@ namespace Social.Controllers
         [HttpPost]
         [Route("RequestFriendStatus")]
         [Consumes("application/x-www-form-urlencoded")]
-        public async Task<IActionResult> RequestFriendStatus([FromForm] string userid, [FromForm] int key, [FromForm] DateTime? Requestdate, [FromForm] bool isNotFriend)
+        public async Task<IActionResult> RequestFriendStatus([FromForm] string userid, [FromForm] int key, [FromForm] DateTime? Requestdate, [FromForm] bool isNotFriend , [FromForm] string message)
         {
             try
             {
