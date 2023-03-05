@@ -1424,7 +1424,7 @@ namespace Social.Services.Implementation
 
             var locationDataDto = new locationDataMV();
             var eventLocationDataDto = new List<EventlocationDataMV>();
-
+            var peopleLocation = new List<peoplocationDataMV>();
 
             var allRequests = _authContext.Requestes
                 .Where(m => m.status == 2 && (m.UserRequestId == userId || m.UserId == userId))
@@ -1554,7 +1554,7 @@ namespace Social.Services.Implementation
 
             locationDataDto.EventlocationDataMV = eventLocationDataDto;
 
-            locationDataDto.locationMV = GetClosedUsersLocations(user, AppConfigrationVM);
+            locationDataDto.locationMV = peopleLocation;//GetClosedUsersLocations(user, AppConfigrationVM);
 
             return (locationDataDto);
         }
