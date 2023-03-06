@@ -207,7 +207,7 @@ namespace Social.Controllers
                           {
                               IsSentRequest = userDeatils.PrimaryId == m.UserId,
                               regestdata = m.regestdata.ToString(@"dd-MM-yyyy HH\:mm"),
-                              message = m.Message,
+                              message = m.Message ?? string.Empty,
                               userId = userDeatils.PrimaryId == m.UserId ? m.UserRequest.UserId : m.User.UserId,
                               ImageIsVerified = m.User?.ImageIsVerified ?? false,
                               lang = userDeatils.PrimaryId == m.UserId ? m.UserRequest.lang : m.User.lang,
@@ -529,13 +529,14 @@ namespace Social.Controllers
                 else if (key == 2)
                 {
                     Requestes Requestes = _FrindRequest.GetReque(meDeatils.PrimaryId, Deatils.PrimaryId);
+                    var messageFriendRequest = Requestes?.Message;
                     if (Requestes != null)
                     {
                         if (Requestes.status == 0)
                         {
                             Requestes.status = 1;
                             Requestes.AcceptingDate = DateTime.Now;
-                            //Requestes.Message = null;
+                            Requestes.Message = null;
                             await _FrindRequest.updaterequest(Requestes);
                             FireBaseData fireBaseInfo = new FireBaseData()
                             {
@@ -551,27 +552,32 @@ namespace Social.Controllers
                             UserMessages.UserId = meDeatils.PrimaryId;
                             UserMessages.ToUserId = Deatils.PrimaryId;
                             UserMessages.startedin = DateTime.Now.Date;
+                            string userMessageId = string.Empty;
                             var Messaghistory = MessageServes.getUserMessages(meDeatils.PrimaryId, Deatils.PrimaryId);
+                            if (Messaghistory != null)
+                            {
+                                userMessageId = Messaghistory.Id;
+                            }
                             if (Messaghistory == null)
                             {
-                                var userMessageId = await MessageServes.addUserMessages(UserMessages, false);
-                                if (!string.IsNullOrEmpty(Requestes.Message))
+                                 userMessageId = await MessageServes.addUserMessages(UserMessages, false);
+                                
+                            }
+                            if (!string.IsNullOrEmpty(messageFriendRequest))
+                            {
+                                var messageData = new Messagedata
                                 {
-                                    var messageData = new Messagedata
-                                    {
-                                        Messagesdate =Requestes.regestdata.Date,
-                                        Messagestime = Requestes.regestdata.TimeOfDay,
-                                        linkable = false,
-                                        EventDataid = null,
-                                        UserMessagessId = userMessageId,
-                                        UserId = Deatils.PrimaryId,
-                                        Messages = Requestes.Message,
-                                        Messagetype = 1
-                                    };
+                                    Messagesdate = Requestes.regestdata.Date,
+                                    Messagestime = Requestes.regestdata.TimeOfDay,
+                                    linkable = false,
+                                    EventDataid = null,
+                                    UserMessagessId = userMessageId,
+                                    UserId = Deatils.PrimaryId,
+                                    Messages = messageFriendRequest,
+                                    Messagetype = 1
+                                };
 
-                                    var messageViewDto = await MessageServes.addMessagedata(messageData);
-                                }
-
+                                var messageViewDto = await MessageServes.addMessagedata(messageData);
                             }
                             SendNotificationcs sendNotificationcs = new SendNotificationcs();
                             try
