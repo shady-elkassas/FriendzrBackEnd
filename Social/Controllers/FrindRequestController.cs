@@ -553,7 +553,7 @@ namespace Social.Controllers
                             UserMessages.ToUserId = Deatils.PrimaryId;
                             UserMessages.startedin = DateTime.Now.Date;
                             string userMessageId = string.Empty;
-                            var Messaghistory = MessageServes.getUserMessages(Deatils.PrimaryId, meDeatils.PrimaryId,true);
+                            var Messaghistory = MessageServes.getUserMessages(Deatils.PrimaryId, meDeatils.PrimaryId);
                             if (Messaghistory != null)
                             {
                                 userMessageId = Messaghistory.Id;
@@ -576,6 +576,7 @@ namespace Social.Controllers
                                     Messages = messageFriendRequest,
                                     Messagetype = 1
                                 };
+                                 MessageServes.getUserMessages(Deatils.PrimaryId, meDeatils.PrimaryId, true);
 
                                 var messageViewDto = await MessageServes.addMessagedata(messageData);
                             }
