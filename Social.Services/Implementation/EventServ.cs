@@ -1449,7 +1449,8 @@ namespace Social.Services.Implementation
                 {
 
                     eventChatAttendList = eventChatAttendList.Where(q =>
-                        deserializedCategories.Contains(q.EventData.categorie.EntityId));
+                        deserializedCategories.Contains(q.EventData.categorie.EntityId)
+                        || deserializedCategories.Any(a => q.EventData.SubCategoriesIds.Contains(a)));
                 }
             }
 

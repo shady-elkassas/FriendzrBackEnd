@@ -26,6 +26,7 @@ namespace Social.Services.ModelView
         public venue venue { get; set; }
         public openingtimes openingtimes { get; set; }
         public int? categorieId { get; set; }
+        public string SubCategoriesIds { get; set; }
         public string status { get; set; }
         public int goingtos { get; set; }
         public int? eventTypeListid { get; set; }
