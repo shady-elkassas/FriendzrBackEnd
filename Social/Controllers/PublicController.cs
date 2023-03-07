@@ -753,15 +753,6 @@ namespace Social.Controllers
             return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, _localizer["Added"], result));
         }
 
-        [HttpPost("UpdateExternal")]
-        public async Task<IActionResult> UpdateExternalEvents()
-        {
-            var events = _authContext.EventData.Where(a=>a.EventTypeListid == 3).ToList();
-            events.ForEach(e => e.SubCategoriesIds = e.categorieId.GetSubCategoriesIdsForUpdate());
-            _authContext.UpdateRange(events);
-            await _authContext.SaveChangesAsync();
-            return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, _localizer["Added"], true));
-        }
         // for web
         [Route("ExportExternalEvents")]
         [HttpPost]
