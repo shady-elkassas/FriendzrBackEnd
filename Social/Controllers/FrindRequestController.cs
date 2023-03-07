@@ -553,7 +553,7 @@ namespace Social.Controllers
                             UserMessages.ToUserId = Deatils.PrimaryId;
                             UserMessages.startedin = DateTime.Now.Date;
                             string userMessageId = string.Empty;
-                            var Messaghistory = MessageServes.getUserMessages(meDeatils.PrimaryId, Deatils.PrimaryId,true);
+                            var Messaghistory = MessageServes.getUserMessages(Deatils.PrimaryId, meDeatils.PrimaryId,true);
                             if (Messaghistory != null)
                             {
                                 userMessageId = Messaghistory.Id;
