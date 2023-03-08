@@ -645,7 +645,7 @@ namespace Social.Services.Implementation
 
             var allrequest = await _authContext.Requestes.Where(m => m.status == 2 && (m.UserRequestId == id || m.UserId == id)).Select(m => (id == m.UserId ? m.UserRequestId : m.UserId)).ToListAsync();
 
-            IQueryable<EventData> eventDataList = _authContext.EventData.Include(q => q.EventChatAttend).Where(n => n.EventChatAttend.Any(q => q.UserattendId == id ? true : (!allrequest.Contains(n.UserId))));
+            var eventDataList = _authContext.EventData.Include(q => q.EventChatAttend).Where(n => n.EventChatAttend.Any(q => q.UserattendId == id ? true : (!allrequest.Contains(n.UserId)))).ToList();
 
             if (categories != null)
             {
@@ -653,11 +653,13 @@ namespace Social.Services.Implementation
 
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
-                    eventDataList = eventDataList.Where(q => deserializedCategories.Contains(q.categorie == null ? null : q.categorie.EntityId));
+                    eventDataList = eventDataList.Where(q => 
+                        deserializedCategories.Contains(q.categorie == null ? null : q.categorie.EntityId)
+                        || deserializedCategories.Any(a => (bool)q.SubCategoriesIds?.Contains(a))).ToList();
                 }
             }
 
-            List<EventData> eventDatas = await eventDataList.ToListAsync();
+            List<EventData> eventDatas = eventDataList;
 
             List<EventChatAttend> EventChatAttends = eventDatas.SelectMany(q => q.EventChatAttend).ToList();
 
@@ -761,7 +763,7 @@ namespace Social.Services.Implementation
 
             var allrequest = await _authContext.Requestes.Where(m => m.status == 2 && (m.UserRequestId == id || m.UserId == id)).Select(m => (id == m.UserId ? m.UserRequestId : m.UserId)).ToListAsync();
 
-            IQueryable<EventData> eventDataList = _authContext.EventData.Include(q => q.EventChatAttend).Where(n => n.EventChatAttend.Any(q => q.UserattendId == id ? true : (!allrequest.Contains(n.UserId))));
+            var eventDataList = _authContext.EventData.Include(q => q.EventChatAttend).Where(n => n.EventChatAttend.Any(q => q.UserattendId == id ? true : (!allrequest.Contains(n.UserId)))).ToList();
 
             if (categories != null)
             {
@@ -769,13 +771,15 @@ namespace Social.Services.Implementation
 
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
-                    eventDataList = eventDataList.Where(q => deserializedCategories.Contains(q.categorie == null ? null : q.categorie.EntityId));
+                    eventDataList = eventDataList.Where(q =>
+                        deserializedCategories.Contains(q.categorie == null ? null : q.categorie.EntityId)
+                        || deserializedCategories.Any(a => (bool)q.SubCategoriesIds?.Contains(a))).ToList();
                 }
             }
 
 
 
-            List<EventData> eventDatas = await eventDataList.ToListAsync();
+            List<EventData> eventDatas =  eventDataList;
 
             List<EventChatAttend> EventChatAttends = eventDatas.SelectMany(q => q.EventChatAttend).ToList();
 
@@ -1155,7 +1159,9 @@ namespace Social.Services.Implementation
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
 
-                    eventChatAttendList = eventChatAttendList.Where(q => deserializedCategories.Contains(q.EventData.categorie?.EntityId)).ToList();
+                    eventChatAttendList = eventChatAttendList.Where(q => 
+                        deserializedCategories.Contains(q.EventData.categorie?.EntityId)
+                        || deserializedCategories.Any(a => (bool)q.EventData.SubCategoriesIds?.Contains(a))).ToList();
                 }
             }
 
@@ -1677,7 +1683,9 @@ namespace Social.Services.Implementation
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
 
-                    eventChatAttendList = eventChatAttendList.Where(q => deserializedCategories.Contains(q.EventData.categorie?.EntityId)).ToList();
+                    eventChatAttendList = eventChatAttendList.Where(q => 
+                        deserializedCategories.Contains(q.EventData.categorie?.EntityId)
+                        || deserializedCategories.Any(a => (bool)q.EventData.SubCategoriesIds?.Contains(a))).ToList();
                 }
             }
 
