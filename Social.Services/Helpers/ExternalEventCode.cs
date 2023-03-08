@@ -63,7 +63,16 @@ namespace Social.Services.Helpers
             }
             return 16;
         }
-
+        /// <summary>
+        /// This Function Returns Categories Ids in String with comma separated Based on below 
+        /// FEST    => Food & Drink, Music, Creative/Art, Theatre/Film, Dance
+        /// THEATRE => Theatre/Film, Dance
+        /// EXHIB   => Exhibition, Creative/Art, Community, Food &amp; Drink, Talks/Lectures, Classes/Workshops
+        /// SPORT   => Sports/Fitness, Walks/Tours
+        /// ARTS    => Creative/Art, Theatre/Film, Dance,Talks/Lectures, Classes/Workshops
+        /// </summary>
+        /// <param name="eventCategory"></param>
+        /// <returns></returns>
         public static string GetSubCategoriesIds(this string eventCategory)
         {
             if (FEST.Contains(eventCategory))
