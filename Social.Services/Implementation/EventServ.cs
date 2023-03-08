@@ -410,6 +410,7 @@ namespace Social.Services.Implementation
         }
         public async Task<EventData> InsertEvent(EventData eventData)
         {
+            eventData.SubCategoriesIds ??= string.Empty;
             eventData.IsActive = true;
             _authContext.EventData.Add(eventData);
             await UpdateEventAddressFromGoogle(eventData);
@@ -1437,7 +1438,7 @@ namespace Social.Services.Implementation
                             && (n.EventData.StopFrom == null || (n.EventData.StopFrom.Value >= DateTime.UtcNow.Date ||
                                                                  n.EventData.StopTo.Value <= DateTime.UtcNow.Date))
                             && (n.EventData.EventTypeList.key != true ||
-                                (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2)));
+                                (n.UserattendId == userId && n.stutus != 1 && n.stutus != 2))).ToList();
 
 
 
@@ -1450,7 +1451,7 @@ namespace Social.Services.Implementation
 
                     eventChatAttendList = eventChatAttendList.Where(q =>
                         deserializedCategories.Contains(q.EventData.categorie.EntityId)
-                        || deserializedCategories.Any(a => q.EventData.SubCategoriesIds.Contains(a)));
+                        || deserializedCategories.Any(a => (bool)q.EventData.SubCategoriesIds?.Contains(a))).ToList();
                 }
             }
 
@@ -2669,6 +2670,7 @@ namespace Social.Services.Implementation
                     totalnumbert = model.totalnumbert,
                     image = model.Image,
                     Title = model.Title,
+                    SubCategoriesIds = string.Empty,
                     IsForWhiteLableOnly = model.EventTypeListid == 6 || model.EventTypeListid == 5 ? true : false,
                 };
                 yield return Obj;
