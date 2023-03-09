@@ -1453,7 +1453,18 @@ namespace Social.Services.Implementation
             var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid))
                 .Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData)
                 .Distinct();
+            if (categories != null && categories != "[]")
+            {
+                var deserializedCategories = JsonConvert.DeserializeObject<List<string>>(categories);
 
+                if (deserializedCategories != null && deserializedCategories.Count() != 0)
+                {
+
+                    eventDataList = eventDataList.Where(q =>
+                        deserializedCategories.Contains(q.categorie.EntityId)
+                        /*|| deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))*/);
+                }
+            }
 
             if (endDate != null && dateCriteria != "Custom")
             {
@@ -1476,18 +1487,7 @@ namespace Social.Services.Implementation
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
 
             var eventList = eventDataList.ToList();
-            if (categories != null && categories != "[]")
-            {
-                var deserializedCategories = JsonConvert.DeserializeObject<List<string>>(categories);
-
-                if (deserializedCategories != null && deserializedCategories.Count() != 0)
-                {
-
-                    eventList = eventList.Where(q =>
-                        deserializedCategories.Contains(q.categorie.EntityId)
-                        || deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))).ToList();
-                }
-            }
+           
             var eventDataListEntity =
                 FilterByDistanceAndSetLatAndLang(eventList, userLat, userLong, distance, distanceMax);
             dynamic eventsLocations;
