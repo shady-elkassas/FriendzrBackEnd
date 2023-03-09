@@ -1529,7 +1529,7 @@ namespace Social.Services.Implementation
             foreach (var location in eventsLocations)
             {
                 var eventsList = eventDataListEntity
-                    .Where(m => m.lang == location.lang.ToString() && m.lat == location.lat.ToString()).ToList();
+                    .Where(m => m.lang == location.lang.ToString() && m.lat == location.lat.ToString()).Distinct().ToList();
 
                 var types = eventsList.Select(m => m.EventTypeListid).Distinct().ToList();
 
@@ -1678,9 +1678,8 @@ namespace Social.Services.Implementation
             var blockedEventIds = eventChatAttendList.Where(m => (m.UserattendId == userId) && m.stutus == 2).Select(m => m.EventDataid).ToList();
 
             var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid))
-                .Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date)
+                .Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date )
                 .Select(m => m.EventData).Distinct();
-            eventDataList = eventDataList.Where(a => a.lat == eventLat && a.lang == eventLang);
 
             if (endDate != null && dateCriteria != "Custom")
             {
@@ -1695,7 +1694,6 @@ namespace Social.Services.Implementation
 
             }
 
-            var eventsList = eventDataList.ToList();
             if (categories != null && categories != "[]")
             {
                 var deserializedCategories = JsonConvert.DeserializeObject<List<string>>(categories);
@@ -1703,22 +1701,21 @@ namespace Social.Services.Implementation
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
 
-                    eventsList = eventsList.Where(q =>
+                    eventDataList = eventDataList.Where(q =>
                         deserializedCategories.Contains(q.categorie.EntityId)
-                        || deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))).ToList();
+                        /*|| deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))*/);
                 }
             }
-            var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
-            var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
+            var eventDataListAfterFilter = eventDataList.ToList();
 
-           var  eventDataListAfterFilter = FilterByDistance(eventsList, userLat, userLong, distance, distanceMax).ToList();
+            //var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
-            foreach (var eventData in eventDataListAfterFilter)
-            {
-                eventData.lat = Math.Round(double.Parse(eventData.lat), 5).ToString(CultureInfo.CurrentCulture);
-                eventData.lang = Math.Round(double.Parse(eventData.lang), 5).ToString(CultureInfo.CurrentCulture);
-            }
+            //var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
+
+            //  var eventDataListAfterFilter = eventsList;//FilterByDistance(eventsList, userLat, userLong, distance, distanceMax).ToList();
+
+            eventDataListAfterFilter = eventDataListAfterFilter.Where(a => Math.Round(double.Parse(a.lat), 5).ToString(CultureInfo.CurrentCulture) == eventLat && Math.Round(double.Parse(a.lang), 5).ToString(CultureInfo.CurrentCulture) == eventLang).ToList();
 
             // filter private events
             if (!string.IsNullOrEmpty(user.Code))
