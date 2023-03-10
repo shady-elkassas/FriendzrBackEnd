@@ -106,7 +106,7 @@ namespace Social.Areas.Admin.Controllers
                                 item.eventto = item1.timeto;
 
                                 item.checkout_details = item1.checkout_details;
-
+                                item.SubCategoriesIds = string.Empty;
                                 item.Title = item1.title;
                                 item.image = item1.image;
                                 item.lat = item1.latitude == "-" ? "0" : item1.latitude;

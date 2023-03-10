@@ -79,6 +79,7 @@ namespace Social.Entity.Models
         public DateTime? birthdate { get; set; }
         public DateTime? BanFrom { get; set; }
         public DateTime? BanTo { get; set; }
+        public DateTime? LastUpdateLocation { get; set; }
         public DateTime LastFeedRequestDate { get; set; }
         public bool IsActive { get; set; } = true;
         public bool? ProfileCompleted { get; set; }

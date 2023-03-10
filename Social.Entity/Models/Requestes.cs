@@ -15,6 +15,7 @@ namespace Social.Entity.Models
         public int status { get; set; }
         public DateTime regestdata { get; set; }
         public DateTime? AcceptingDate { get; set; }
+        public string Message { get; set; }
         public virtual UserDetails User { get; set; }
         public virtual UserDetails UserRequest { get; set; }
         public virtual UserDetails Userblock { get; set; }

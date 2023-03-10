@@ -158,6 +158,7 @@ namespace Social.Controllers
 
                 userDeatils.lang = lang;
                 userDeatils.lat = lat;
+                userDeatils.LastUpdateLocation = DateTime.UtcNow;
                 this.userService.UpdateUserDetails(userDeatils);
                 await userService.UpdateUserAddressFromGoogle(userDeatils, Convert.ToDouble(lat), Convert.ToDouble(lang));
                 //var itemEVENT = userService.allEventDataaroundevent(userDeatils.PrimaryId, Convert.ToDouble(lat), Convert.ToDouble(lang));

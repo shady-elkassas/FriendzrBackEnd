@@ -1,4 +1,5 @@
 ﻿using CRM.Services.Wrappers;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Social.Entity.DBContext;
+using Social.Entity.Migrations;
 using Social.Entity.Models;
 using Social.Entity.ModelView;
 using Social.Sercices.Helpers;
@@ -17,6 +19,7 @@ using Social.Services.ModelView;
 using Social.Services.Services;
 using System;
 using System.Collections.Generic;
+using System.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -749,6 +752,7 @@ namespace Social.Controllers
             var result = await this.ExportExternalEvents(externalEvents);
             return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, _localizer["Added"], result));
         }
+
         // for web
         [Route("ExportExternalEvents")]
         [HttpPost]
@@ -875,6 +879,7 @@ namespace Social.Controllers
                     description = q.description,
                     status = q.status,
                     categorieId = q.categorieId,
+                    SubCategoriesIds = q.SubCategoriesIds,
                     EntityId = Guid.NewGuid().ToString(),
                     EventTypeListid = id,
                     lang = q.venue.longitude,
