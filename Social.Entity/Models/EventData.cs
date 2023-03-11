@@ -20,6 +20,7 @@ namespace Social.Entity.Models
         public string EntityId { get; set; }
         public int? UserId { get; set; }
         public int? categorieId { get; set; }
+        public string SubCategoriesIds { get; set; }
         public string Title { get; set; }
         public string description { get; set; }
         public string status { get; set; }

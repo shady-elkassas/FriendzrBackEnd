@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Social.Entity.DBContext;
 
 namespace Social.Entity.Migrations
 {
     [DbContext(typeof(AuthDBContext))]
-    partial class AuthDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230307222015_AddExternalCategoriesColumnToEventTable")]
+    partial class AddExternalCategoriesColumnToEventTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1550,9 +1552,6 @@ namespace Social.Entity.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<DateTime>("LastFeedRequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastUpdateLocation")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ManagerId")

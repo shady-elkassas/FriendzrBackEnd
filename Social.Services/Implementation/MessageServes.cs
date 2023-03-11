@@ -840,8 +840,8 @@ namespace Social.Services.Implementation
         {
             var messdata = _authContext.UserMessages
                 .Where(e => e.ToUser.UserId == userid || e.User.UserId == userid).ToList();
-            var tomes = messdata.Where(e => e.ToUserNotreadcount > 0).Sum(m => m.ToUserNotreadcount);
-            var frommes = messdata.Where(e =>  e.UserNotreadcount > 0).Sum(m => m.UserNotreadcount);
+            var tomes = messdata.Where(e => e.ToUser.UserId == userid && e.ToUserNotreadcount > 0).Sum(m => m.ToUserNotreadcount);
+            var frommes = messdata.Where(e => e.User.UserId == userid && e.UserNotreadcount > 0).Sum(m => m.UserNotreadcount);
             var eventatten1 = _authContext.EventChatAttend.Where(e => e.Userattend.UserId == userid && e.EventData.eventdateto.Value.Date.AddDays(5) >= DateTime.Now.Date && e.UserNotreadcount > 0 && e.leavechat != true && e.leave != true).ToList();
             var eventatten = eventatten1.Sum(m => m.UserNotreadcount);
             var groupatten = _authContext.ChatGroupSubscribers.Where(e => e.UserID == userid && e.UserNotreadcount > 0).Sum(m => m.UserNotreadcount);

@@ -55,6 +55,24 @@
         .mfp-with-zoom.mfp-removing.mfp-bg {
             opacity: 0;
         }
+
+        #filter {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            color: #555;
+        }
+
+            #filter:hover {
+                border-color: #888;
+            }
+
+            #filter:focus {
+                border-color: #4da6ff;
+                outline: none;
+            }
     </style>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -84,6 +102,19 @@
                 </div>
             </div>
         
+        </div>
+
+        <div class="row col-md-12">
+            <div class="text-center">
+                <select name="userfilter" id="filter" style="width: 161px; font-size: 20px; ">
+                    <option value="1">week</option>
+                    <option value="2">two weeks</option>
+                    <option value="3">three weeks</option>
+                    <option value="4">four weeks</option>
+                </select>
+
+            </div>
+
         </div>
         <div class="table-responsive">
             <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border cursor-pointer rounded">

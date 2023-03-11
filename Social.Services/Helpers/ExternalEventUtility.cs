@@ -30,6 +30,7 @@ namespace Social.Services.Helpers
             var events = await GetAllEvents(totalCount,minDate,maxDate);
             events = events.FindAll(e => e.cancelled == 0);
             events.ForEach(e => e.categorieId = e.EventCode.GetCategoryId());
+            events.ForEach(e => e.SubCategoriesIds = e.EventCode.GetSubCategoriesIds());
             events = events.FindAll(e => e.categorieId != 0);
 
             return new ExternalEventDataResponse {ExternalEventData=events, TotalCount = events.Count,IsJob=true}; 
@@ -63,6 +64,7 @@ namespace Social.Services.Helpers
                 //} while (externalEvents.Count != responseCount);
                 externalEvents = externalEvents.FindAll(e => e.cancelled == 0);
                 externalEvents.ForEach(e => e.categorieId = e.EventCode.GetCategoryId());
+                externalEvents.ForEach(e => e.SubCategoriesIds = e.EventCode.GetSubCategoriesIds());
                 externalEvents = externalEvents.FindAll(e => e.categorieId != 0);
                 return new ExternalEventDataResponse {  ExternalEventData= externalEvents, TotalCount= responseCount,IsJob=false};
 

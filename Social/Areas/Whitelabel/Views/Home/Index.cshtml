@@ -7,51 +7,433 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layoutstatistics.cshtml";
 }
 @section Styless{
-<style>
-    .div_float {            
+    <style>
+        .div_float {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             flex-wrap: wrap;
         }
-         table,tr,th,td {
-        text-align: center;
-        vertical-align: middle;
-    }
-</style>
+
+        table, tr, th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            table.my-table {
+                border-collapse: collapse;
+                width: 100%;
+                max-width: 400px;
+                margin: auto;
+                margin-bottom: 20px;
+            }
+
+                table.my-table th, table.my-table td {
+                    padding: 8px;
+                    text-align: left;
+                }
+
+                table.my-table th {
+                    background-color: #333;
+                    color: #fff;
+                }
+
+                table.my-table tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+
+    </style>
 }
 
 <div class="flex-column-fluid align-items-start container-xxl">
-       
+
     <div class="row g-6 g-xl-9 mt-6">
-         <div style="display:flex;justify-content: space-between;">
-            <div class="card-toolbar" data-bs-toggle="tooltip"  data-bs-trigger="hover" >
+        <div style="display:flex;justify-content: space-between;">
+            <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-trigger="hover">
                 <a target="_blank" href="/Whitelabel/Event/Index" class="btn btn-sm btn-primary">
-                    <span><i class="bi bi-plus fs-3"></i></span>                   
+                    <span><i class="bi bi-plus fs-3"></i></span>
                     Add Event
                 </a>
             </div>
-             <div>
+            <div>
                 <button class="btn btn-sm btn-success" id="ExportMyStatistics" style="font-size:small"> Export All Statistics</button>
-             </div>
+            </div>
         </div>
-      <div class="col-lg-12 col-sm-12">            
+        @*<div class="col-lg-12 col-sm-12">
             <div class="card ">
                 <div class="card-header align-items-center pt-5">
-                    <div class="w-100 text-center">                      
-                        <div class="form-check form-check-custom form-check-solid d-inline-block">                           
+                    <div class="w-100 text-center">
+                        <div class="form-check form-check-custom form-check-solid d-inline-block">
                             <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="EventsLocationRadio">Events’ Location</label>
                         </div>
                     </div>
 
                 </div>
-                <div class="h-300px">                   
+                <div class="h-300px">
                     <div id="eventsMap" class="h-100 w-100"></div>
                 </div>
             </div>
+        </div>*@
+        <div class="col-lg-12 col-sm-12">
+            <div class="card card-xl-stretch mb-xl-8">
+                <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info" style="padding-bottom: 20px;">
+                    Alexandria University
+                </h1>
+                <div>
+                    <canvas id="myChart"></canvas>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-12 row">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info" style="padding-bottom: 20px;">
+                Our Comunity on Frindzr
+            </h1>
+
+            <!-- ####### 1 #####Chart -->
+            <div class="col-lg-6 col-sm-12">
+                <div class="card-title flex-column">
+                    <h3 class="fw-bolder mb-1">Chart1</h3>
+                </div>
+                <div class="card ">
+                    <div class="card-header align-items-center pt-5">
+                        <div class="w-100 text-center">
+                            <div class="form-check form-check-custom form-check-solid d-inline-block">
+                                <input class="form-check-input" type="radio" checked id="FRU_ByAgeRadio" name="FinishedRegistrationRadio" />
+                                <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="FinishedRegistrationAgeRadio">See by age </label>
+                            </div>
+                            <div class="form-check form-check-custom form-check-solid d-inline-block">
+                                <input class="form-check-input" type="radio" id="FRU_ByGenderRadio" name="FinishedRegistrationRadio" />
+                                <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="FinishedRegistrationGenderRadio">See by gender</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-250px">
+                        <div id="FinishedRegistrationByGender" class="card card-flush h-lg-100 d-none">
+                            <div class="card-body p-9 pt-5">
+                                <div class="d-flex flex-wrap">
+                                    <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                        <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                            <span id="TotalByGender_FRU" class="fs-2qx fw-bolder"></span>
+                                            <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                        </div>
+                                        <canvas id="FinishedRegistrationStatictisByGender_chart_WhiteLable"></canvas>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#009EF7;"></div>
+                                            <div class="text-gray-400">Male</div>
+                                            <div id="Male_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#D9214E;"></div>
+                                            <div class="text-gray-400">Female</div>
+                                            <div id="Female_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#181c32;"></div>
+                                            <div class="text-gray-400">Other </div>
+                                            <div id="Other_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="FinishedRegistrationByAge" class="card card-flush h-lg-100">
+                            <div class="card-body p-9 pt-5">
+                                <div class="d-flex flex-wrap">
+                                    <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                        <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                            <span id="TotalByAge_FRU" class="fs-2qx fw-bolder"></span>
+                                            <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                        </div>
+                                        <canvas id="FinishedRegistrationStatictisByAge_chart_WhiteLable"></canvas>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#47BE7D;"></div>
+                                            <div class="text-gray-400">18 - 24</div>
+                                            <div id="From18To25_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                            <div class="text-gray-400">25 - 34</div>
+                                            <div id="From25To34_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#ffc107;"></div>
+                                            <div class="text-gray-400">35 - 44 </div>
+                                            <div id="From35To44_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#F1416C;"></div>
+                                            <div class="text-gray-400">45 - 54 </div>
+                                            <div id="From45To54_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                            <div class="text-gray-400">55 - 64 </div>
+                                            <div id="From55To64_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#6610f2;"></div>
+                                            <div class="text-gray-400">65 + </div>
+                                            <div id="From65AndMore_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- #######2####### Chart -->
+            <div class="col-lg-6 col-sm-12">
+                <div class="card-title flex-column">
+                    <h3 class="fw-bolder mb-1">Chart2 </h3>
+                </div>
+                <div class="card ">
+                    <div class="card-header align-items-center pt-5">
+                        <div class="w-100 text-center">
+                            <div class="form-check form-check-custom form-check-solid d-inline-block">
+                                <input class="form-check-input" type="radio" checked id="UEPS_ByAgeRadio" name="UsersWhoEnabledPersonalSpaceRadio" />
+                                <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="UnverifiedUsersAgeRadio">See by age </label>
+                            </div>
+                            <div class="form-check form-check-custom form-check-solid d-inline-block">
+                                <input class="form-check-input" type="radio" id="UEPS_ByGenderRadio" name="UsersWhoEnabledPersonalSpaceRadio" />
+                                <label class="form-check-label text-dark fs-3 fw-bolder fw-bold" for="UsersWhoEnabledPersonalSpaceGenderRadio">See by gender</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-250px">
+                        <div id="UsersWhoEnabledPersonalSpaceByGender" class="card card-flush h-lg-100 d-none">
+                            <div class="card-body p-9 pt-5">
+                                <div class="d-flex flex-wrap">
+                                    <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                        <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                            <span id="TotalByGender_UEPS" class="fs-2qx fw-bolder"></span>
+                                            <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                        </div>
+                                        <canvas id="UsersWhoEnabledPersonalSpaceStatictisByGender_chart"></canvas>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#009EF7;"></div>
+                                            <div class="text-gray-400">Male</div>
+                                            <div id="Male_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#D9214E;"></div>
+                                            <div class="text-gray-400">Female</div>
+                                            <div id="Female_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#181c32;"></div>
+                                            <div class="text-gray-400">Other </div>
+                                            <div id="Other_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div id="UsersWhoEnabledPersonalSpaceByAge" class="card card-flush h-lg-100">
+                            <div class="card-body p-9 pt-5">
+                                <div class="d-flex flex-wrap">
+                                    <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                        <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                            <span id="TotalByAge_UEPS" class="fs-2qx fw-bolder"></span>
+                                            <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                        </div>
+                                        <canvas id="UsersWhoEnabledPersonalSpaceStatictisByAge_chart"></canvas>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#47BE7D;"></div>
+                                            <div class="text-gray-400">18 - 24</div>
+                                            <div id="From18To25_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                            <div class="text-gray-400">25 - 34</div>
+                                            <div id="From25To34_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#ffc107;"></div>
+                                            <div class="text-gray-400">35 - 44 </div>
+                                            <div id="From35To44_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#F1416C;"></div>
+                                            <div class="text-gray-400">45 - 54 </div>
+                                            <div id="From45To54_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                            <div class="text-gray-400">55 - 64 </div>
+                                            <div id="From55To64_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                        <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                            <div class="bullet" style="background-color:#6610f2;"></div>
+                                            <div class="text-gray-400">65 + </div>
+                                            <div id="From65AndMore_UEPS" class="ms-auto fw-bolder text-gray-700"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-          <div class="col-lg-12 col-sm-12">
+
+        <!--############################ table with filter header-->
+
+        <div class="col-lg-12 col-sm-12">
+            <div class="card-title flex-column">
+                <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info" style="padding-bottom: 20px;">
+                    Up Coming Events
+                </h1>
+            </div>
+
+            <style>
+                #data-table {
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+
+                    #data-table th, #data-table td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: center;
+                    }
+
+                    #data-table th {
+                        background-color: #f2f2f2;
+                    }
+
+                    #data-table tbody tr:nth-child(even) {
+                        background-color: #f2f2f2;
+                    }
+
+                    #data-table tbody tr:hover {
+                        background-color: #ddd;
+                    }
+
+                #year-select {
+                    font-size: 16px;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+            </style>
+
+            <select id="year-select" onchange="updateTable()">
+                <option value="0" selected>choose</option>
+                <option value="1/04/2023">1/04/2023</option>
+                <option value="28/04/2023">28/04/2023</option>
+                <option value="1/05/2023">1/05/2023</option>
+                <option value="1/05/2023">1/05/2023</option>
+                <option value="1/07/2023">1/07/2023</option>
+                <option value="14/09/2023">14/09/2023</option>
+            </select>
+
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Event date</th>
+                        <th>Event Time</th>
+                        <th>Capacity</th>
+                        <th>Booked</th>
+                        <th>%sold</th>
+                        <th>Attended</th>
+                        <th>%attended</th>
+                        <th>Total revenue</th>
+                        <th>Average Ticket Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Talk:test1</td>
+                        <td id="jan-rev">1/04/2023</td>
+                        <td id="jan-exp">10:00</td>
+                        <td id="jan-exp">70</td>
+                        <td id="jan-exp">40</td>
+                        <td id="jan-exp">57%</td>
+                        <td id="jan-exp">25</td>
+                        <td id="jan-exp">40%</td>
+                        <td id="jan-exp">800$</td>
+                        <td id="jan-exp">33.5$</td>
+                    </tr>
+                    <tr>
+                        <td>Lunch:test1</td>
+                        <td id="jan-rev">28/04/2023</td>
+                        <td id="jan-exp">12:00</td>
+                        <td id="jan-exp">74</td>
+                        <td id="jan-exp">40</td>
+                        <td id="jan-exp">53%</td>
+                        <td id="jan-exp">24</td>
+                        <td id="jan-exp">44%</td>
+                        <td id="jan-exp">870$</td>
+                        <td id="jan-exp">38.5$</td>
+                    </tr>
+                    <tr>
+                        <td>Talk:test2</td>
+                        <td id="jan-rev">1/05/2023</td>
+                        <td id="jan-exp">15:00</td>
+                        <td id="jan-exp">70</td>
+                        <td id="jan-exp">40</td>
+                        <td id="jan-exp">57%</td>
+                        <td id="jan-exp">24</td>
+                        <td id="jan-exp">44%</td>
+                        <td id="jan-exp">800$</td>
+                        <td id="jan-exp">33.5$</td>
+                    </tr>
+                    <tr>
+                        <td>Talk:test2</td>
+                        <td id="jan-rev">1/07/2023</td>
+                        <td id="jan-exp">10:00</td>
+                        <td id="jan-exp">70</td>
+                        <td id="jan-exp">30</td>
+                        <td id="jan-exp">57%</td>
+                        <td id="jan-exp">25</td>
+                        <td id="jan-exp">48%</td>
+                        <td id="jan-exp">900$</td>
+                        <td id="jan-exp">40.5$</td>
+                    </tr>
+                    <tr>
+                        <td> party: party</td>
+                        <td id="jan-rev">14/09/2023</td>
+                        <td id="jan-exp">10:00</td>
+                        <td id="jan-exp">70</td>
+                        <td id="jan-exp">40</td>
+                        <td id="jan-exp">57%</td>
+                        <td id="jan-exp">28</td>
+                        <td id="jan-exp">44%</td>
+                        <td id="jan-exp">870$</td>
+                        <td id="jan-exp">43.5$</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+        <div class="col-lg-12 col-sm-12">
+            <canvas id="myColumnChart"></canvas>
+        </div>
+        @*<div class="col-lg-12 col-sm-12">
             <div class="card card-xl-stretch mb-xl-8">
                 <div class="align-items-center ">
                     <div class="text-center m-2">
@@ -62,12 +444,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
         @*Gender part*@
-        <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
-            Users’ Genders
-        </h1>
-        <div class="col-lg-4">
+
+
+        @*<div class="col-lg-4">
 
             <div class="card card-xl-stretch mb-xl-8">
 
@@ -99,7 +480,7 @@
                     <div class="d-flex flex-column w-100 mt-12">
                         <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
                         <div class="progress h-5px w-100">
-                            <div class="progress-bar bg-primary" role="progressbar"  style="width: @(Model.Male_Rate + "%")" aria-valuenow="@(Model.Male_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(Model.Male_Rate + "%")" aria-valuenow="@(Model.Male_Rate)" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
 
@@ -107,8 +488,8 @@
 
             </div>
 
-        </div>
-        <div class="col-lg-4">
+        </div>*@
+        @*<div class="col-lg-4">
 
             <div class="card card-xl-stretch mb-xl-8">
 
@@ -148,8 +529,8 @@
 
             </div>
 
-        </div>
-        <div class="col-lg-4">
+        </div>*@
+        @*<div class="col-lg-4">
 
             <div class="card card-xl-stretch mb-5 mb-xl-8">
 
@@ -185,9 +566,139 @@
 
             </div>
 
-        </div>
+        </div>*@
         @*End Gender part*@
-         @*start list event part*@
+        @*start list event part*@
+        <!--Upcoming date Chart--------------------------------------------->
+        <div class="col-lg-12 row">
+            <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info" style="padding-bottom: 25px; padding-top: 25px; ">
+                Upcoming Date Chart
+            </h1>
+            <div class="col-lg-6">
+                <table class="my-table">
+                    <thead>
+                        <tr>
+                            <th>type</th>
+                            <th>Average % booked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Talk</td>
+                            <td>61 %</td>
+                        </tr>
+                        <tr>
+                            <td>lunch</td>
+                            <td>52 %</td>
+                        </tr>
+                        <tr>
+                            <td>Party</td>
+                            <td>70 %</td>
+                        </tr>
+                        <tr>
+                            <td>workShop</td>
+                            <td>3 %</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-6">
+                <table class="my-table">
+                    <thead>
+                        <tr>
+                            <th>Gender</th>
+                            <th>Average % Booked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Male</td>
+                            <td>40 %</td>
+                        </tr>
+                        <tr>
+                            <td>Female</td>
+                            <td>40 %</td>
+                        </tr>
+                        <tr>
+                            <td>other</td>
+                            <td>5 %</td>
+                        </tr>
+                        <tr>
+                            <td>Unknow</td>
+                            <td>15 %</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!---------------------------------->
+        <!--Upcoming Date Chart 2-------------------------->
+
+        <table class="my-table">
+            <thead>
+                <tr>
+                    <th>Days Of the Week</th>
+                    <th>Average % Booked</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Monday</td>
+                    <td>30 %</td>
+                </tr>
+                <tr>
+                    <td>Tuseday</td>
+                    <td>20 %</td>
+                </tr>
+                <tr>
+                    <td>Thursday</td>
+                    <td>30 %</td>
+                </tr>
+                <tr>
+                    <td>Friday</td>
+                    <td>10 %</td>
+                </tr>
+                <tr>
+                    <td>Saterday</td>
+                    <td>10 %</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="my-table" >
+            <thead>
+                <tr>
+                    <th>Age</th>
+                    <th>Average % Booked</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>16-24</td>
+                    <td>48 %</td>
+                </tr>
+                <tr>
+                    <td>25-34</td>
+                    <td>33 %</td>
+                </tr>
+                <tr>
+                    <td>35-44</td>
+                    <td>14 %</td>
+                </tr>
+                <tr>
+                    <td>45-54</td>
+                    <td>4 %</td>
+                </tr>
+                <tr>
+                    <td>55+</td>
+                    <td>1 %</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!---------------------------->
         <h1 class="text-dark fw-bolder my-1 fs-3 w-100 text-center text-active-info">
             Events Data
         </h1>
@@ -209,233 +720,233 @@
                             <th>@Html.DisplayNameFor(x => eventsData.IsActive)</th>
                             <th class=""></th>
                         }
-                        
+
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
-         @*End list events part*@
-         @*Start the Modal view*@
-         <div></div>
-    <div class="modal fade" id="EventUserInterests" tabindex="-1" aria-hidden="true">
-    <input type="hidden" id="EventID" />
-    <div class="modal-dialog modal-dialog-centered modal-xl mw-850px">
-        <div class="modal-content rounded">
-            <div class="modal-header pb-0 border-0 justify-content-end">
-                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                    <span><i class="bi bi-x-lg"></i></span>
-                </div>
-            </div>
-
-            <div class="modal-body scroll-y pt-0">
-                <div class="mb-13 text-center">
-                    <h1 class="mb-3"> <span id="EventName"></span> @_localizer["Statistics"]</h1>
-                </div>
-                <div class="card-body py-3">
-                 @*User Statistics*@
-                  <h1 class="text-dark fw-bolder my-1 fs-3 w-100  text-active-info">
-            Users’ Genders
-        </h1>
-        <div class="div_float">
-        <div class="col-lg-4">
-
-            <div class="card card-xl-stretch mb-xl-8">
-
-                <div class="card-body">
-
-                    <div class="d-flex flex-stack">
-
-                        <div class="d-flex align-items-center">
-
-                            <div class="symbol symbol-60px me-5">
-                                <span class="symbol-label bg-danger-light">
-                                    <img src="~/assets/media/svg/avatars/029-boy-11.svg" class="h-50 align-self-center" alt="" />
-                                </span>
-                            </div>
-
-
-                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                <span class="text-dark fw-bolder text-hover-primary fs-5">
-                                    Male
-                                </span>
-                                <span class="text-muted fw-bold" id="maleCount">count:</span>
-                                <span class="text-muted fw-bold" id ="maleRate">percentage: %</span>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                    <div class="d-flex flex-column w-100 mt-12">
-                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
-                        <div class="progress h-5px w-100">
-                            <div class="progress-bar bg-primary" role="progressbar" id="maleProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        @*End list events part*@
+        @*Start the Modal view*@
+        <div></div>
+        <div class="modal fade" id="EventUserInterests" tabindex="-1" aria-hidden="true">
+            <input type="hidden" id="EventID" />
+            <div class="modal-dialog modal-dialog-centered modal-xl mw-850px">
+                <div class="modal-content rounded">
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <span><i class="bi bi-x-lg"></i></span>
                         </div>
                     </div>
 
-                </div>
-
-            </div>
-
-        </div>
-        <div class="col-lg-4">
-
-            <div class="card card-xl-stretch mb-xl-8">
-
-                <div class="card-body">
-
-                    <div class="d-flex flex-stack">
-
-                        <div class="d-flex align-items-center">
-
-                            <div class="symbol symbol-60px me-5">
-                                <span class="symbol-label bg-primary-light">
-                                    <img src="~/assets/media/svg/avatars/014-girl-7.svg" class="h-50 align-self-center" alt="" />
-                                </span>
-                            </div>
-
-                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                <span class="text-dark fw-bolder text-hover-primary fs-5">Female </span>
-                                <span class="text-muted fw-bold" id="femaleCount">count: Users</span>
-                                <span class="text-muted fw-bold" id="femaleRate">percentage:  %</span>
-
-
-                            </div>
-
+                    <div class="modal-body scroll-y pt-0">
+                        <div class="mb-13 text-center">
+                            <h1 class="mb-3"> <span id="EventName"></span> @_localizer["Statistics"]</h1>
                         </div>
+                        <div class="card-body py-3">
+                            @*User Statistics*@
+                            <h1 class="text-dark fw-bolder my-1 fs-3 w-100  text-active-info">
+                                Users’ Genders
+                            </h1>
+                            <div class="div_float">
+                                <div class="col-lg-4">
 
-                    </div>
+                                    <div class="card card-xl-stretch mb-xl-8">
 
-                    <div class="d-flex flex-column w-100 mt-12">
-                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
-                        <div class="progress h-5px w-100">
-                            <div class="progress-bar bg-danger" role="progressbar" id="femaleProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
+                                        <div class="card-body">
 
+                                            <div class="d-flex flex-stack">
 
-                </div>
+                                                <div class="d-flex align-items-center">
 
-            </div>
-
-        </div>
-        <div class="col-lg-4">
-
-            <div class="card card-xl-stretch mb-5 mb-xl-8">
-
-                <div class="card-body">
-
-                    <div class="d-flex flex-stack">
-
-                        <div class="d-flex align-items-center">
-
-                            <div class="symbol symbol-60px me-5">
-                                <span class="symbol-label bg-success-light">
-                                    <img src="~/assets/media/svg/avatars/User_Circle.png" class="h-50 align-self-center" alt="" />
-
-                                </span>
-                            </div>
-                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                <span class="text-dark fw-bolder text-hover-primary fs-5">other gender </span>
-                                <span class="text-muted fw-bold" id="otherCount">count: users</span>
-                                <span class="text-muted fw-bold" id="otherRate">percentage: %</span>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column w-100 mt-12">
-                        <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
-                        <div class="progress h-5px w-100">
-                            <div class="progress-bar bg-dark" role="progressbar" id= "otherProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
+                                                    <div class="symbol symbol-60px me-5">
+                                                        <span class="symbol-label bg-danger-light">
+                                                            <img src="~/assets/media/svg/avatars/029-boy-11.svg" class="h-50 align-self-center" alt="" />
+                                                        </span>
+                                                    </div>
 
 
-                        </div>
+                                                    <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                                        <span class="text-dark fw-bolder text-hover-primary fs-5">
+                                                            Male
+                                                        </span>
+                                                        <span class="text-muted fw-bold" id="maleCount">count:</span>
+                                                        <span class="text-muted fw-bold" id="maleRate">percentage: %</span>
+                                                    </div>
+                                                </div>
 
-                    </div>
 
-                </div>
-                 @*Interests Statistics*@
-                 <div class="col-xl-12">
-                <div class="card card-flush h-lg-100">
-                    <h3 class="fw-bolder mb-1">Users In Each Interest</h3>                   
+                                            </div>
 
-                    <div class="card-body pt-10 pb-0 px-5">
+                                            <div class="d-flex flex-column w-100 mt-12">
+                                                <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                                                <div class="progress h-5px w-100">
+                                                    <div class="progress-bar bg-primary" role="progressbar" id="maleProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
 
-                        <div id="UsersInEachInterestGrapgh" class="card-rounded-bottom" style="height: 300px"></div>
+                                        </div>
 
-                    </div>
-
-                </div>
-                </div>                 
-                </div>
-                
-                @*Age Statistics*@
-                <div class="card-title flex-column">
-                <h3 class="fw-bolder mb-1">Age Statistics</h3>
-                 </div>
-                <div class="h-250px">
-                    <div id="FinishedRegistrationByAge" class="card card-flush h-lg-100">
-                        <div class="card-body p-9 pt-5">
-                            <div class="d-flex flex-wrap">
-                                <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
-                                    <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
-                                        <span id="TotalByAge_FRU" class="fs-2qx fw-bolder"></span>
-                                        <span class="fs-6 fw-bold text-gray-400">Total Users</span>
                                     </div>
-                                    <canvas id="UserStatictisByAge_chart"></canvas>
+
                                 </div>
-                                <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
-                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
-                                        <div class="bullet" style="background-color:#47BE7D;"></div>
-                                        <div class="text-gray-400">18 - 24</div>
-                                        <div id="From18To25_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                <div class="col-lg-4">
+
+                                    <div class="card card-xl-stretch mb-xl-8">
+
+                                        <div class="card-body">
+
+                                            <div class="d-flex flex-stack">
+
+                                                <div class="d-flex align-items-center">
+
+                                                    <div class="symbol symbol-60px me-5">
+                                                        <span class="symbol-label bg-primary-light">
+                                                            <img src="~/assets/media/svg/avatars/014-girl-7.svg" class="h-50 align-self-center" alt="" />
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                                        <span class="text-dark fw-bolder text-hover-primary fs-5">Female </span>
+                                                        <span class="text-muted fw-bold" id="femaleCount">count: Users</span>
+                                                        <span class="text-muted fw-bold" id="femaleRate">percentage:  %</span>
+
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="d-flex flex-column w-100 mt-12">
+                                                <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                                                <div class="progress h-5px w-100">
+                                                    <div class="progress-bar bg-danger" role="progressbar" id="femaleProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
                                     </div>
-                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
-                                        <div class="bullet" style="background-color:#0dcaf0;"></div>
-                                        <div class="text-gray-400">25 - 34</div>
-                                        <div id="From25To34_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+
+                                </div>
+                                <div class="col-lg-4">
+
+                                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+
+                                        <div class="card-body">
+
+                                            <div class="d-flex flex-stack">
+
+                                                <div class="d-flex align-items-center">
+
+                                                    <div class="symbol symbol-60px me-5">
+                                                        <span class="symbol-label bg-success-light">
+                                                            <img src="~/assets/media/svg/avatars/User_Circle.png" class="h-50 align-self-center" alt="" />
+
+                                                        </span>
+                                                    </div>
+                                                    <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                                        <span class="text-dark fw-bolder text-hover-primary fs-5">other gender </span>
+                                                        <span class="text-muted fw-bold" id="otherCount">count: users</span>
+                                                        <span class="text-muted fw-bold" id="otherRate">percentage: %</span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column w-100 mt-12">
+                                                <span class="text-dark me-2 fw-bolder pb-3">percentage</span>
+                                                <div class="progress h-5px w-100">
+                                                    <div class="progress-bar bg-dark" role="progressbar" id="otherProgress" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
                                     </div>
-                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
-                                        <div class="bullet" style="background-color:#ffc107;"></div>
-                                        <div class="text-gray-400">35 - 44 </div>
-                                        <div id="From35To44_FRU" class="ms-auto fw-bolder text-gray-700"></div>
-                                    </div>
-                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
-                                        <div class="bullet" style="background-color:#F1416C;"></div>
-                                        <div class="text-gray-400">45 - 54 </div>
-                                        <div id="From45To54_FRU" class="ms-auto fw-bolder text-gray-700"></div>
-                                    </div>
-                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
-                                        <div class="bullet" style="background-color:#E4E6EF;"></div>
-                                        <div class="text-gray-400">55 - 64 </div>
-                                        <div id="From55To64_FRU" class="ms-auto fw-bolder text-gray-700"></div>
-                                    </div>
-                                    <div class="d-flex fs-6 fw-bold align-items-center mb-3">
-                                        <div class="bullet" style="background-color:#6610f2;"></div>
-                                        <div class="text-gray-400">65 + </div>
-                                        <div id="From65AndMore_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+
+                                </div>
+                                @*Interests Statistics*@
+                                <div class="col-xl-12">
+                                    <div class="card card-flush h-lg-100">
+                                        <h3 class="fw-bolder mb-1">Users In Each Interest</h3>
+
+                                        <div class="card-body pt-10 pb-0 px-5">
+
+                                            <div id="UsersInEachInterestGrapgh" class="card-rounded-bottom" style="height: 300px"></div>
+
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
+
+                            @*Age Statistics*@
+                            <div class="card-title flex-column">
+                                <h3 class="fw-bolder mb-1">Age Statistics</h3>
+                            </div>
+                            <div class="h-250px">
+                                <div id="FinishedRegistrationByAge" class="card card-flush h-lg-100">
+                                    <div class="card-body p-9 pt-5">
+                                        <div class="d-flex flex-wrap">
+                                            <div class="position-relative d-flex flex-center h-175px w-175px me-15 mb-7">
+                                                <div class="position-absolute translate-middle start-50 top-50 d-flex flex-column flex-center">
+                                                    <span id="TotalByAge_FRU" class="fs-2qx fw-bolder"></span>
+                                                    <span class="fs-6 fw-bold text-gray-400">Total Users</span>
+                                                </div>
+                                                <canvas id="UserStatictisByAge_chart"></canvas>
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                                <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                                    <div class="bullet" style="background-color:#47BE7D;"></div>
+                                                    <div class="text-gray-400">18 - 24</div>
+                                                    <div id="From18To25_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                                </div>
+                                                <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                                    <div class="bullet" style="background-color:#0dcaf0;"></div>
+                                                    <div class="text-gray-400">25 - 34</div>
+                                                    <div id="From25To34_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                                </div>
+                                                <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                                    <div class="bullet" style="background-color:#ffc107;"></div>
+                                                    <div class="text-gray-400">35 - 44 </div>
+                                                    <div id="From35To44_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                                </div>
+                                                <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                                    <div class="bullet" style="background-color:#F1416C;"></div>
+                                                    <div class="text-gray-400">45 - 54 </div>
+                                                    <div id="From45To54_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                                </div>
+                                                <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                                    <div class="bullet" style="background-color:#E4E6EF;"></div>
+                                                    <div class="text-gray-400">55 - 64 </div>
+                                                    <div id="From55To64_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                                </div>
+                                                <div class="d-flex fs-6 fw-bold align-items-center mb-3">
+                                                    <div class="bullet" style="background-color:#6610f2;"></div>
+                                                    <div class="text-gray-400">65 + </div>
+                                                    <div id="From65AndMore_FRU" class="ms-auto fw-bolder text-gray-700"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*End Age Statistics*@
+                            <div class="text-end">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@_localizer["close"]</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                @*End Age Statistics*@
-                <div class="text-end">
-                    <button type="button" data-bs-dismiss="modal" class="btn btn-light me-3">@_localizer["close"]</button>
-                </div>
             </div>
         </div>
-        </div>
+        @*End Modal view*@
     </div>
 </div>
-         @*End Modal view*@
-      </div>
- </div>
 
 
 @*@await Component.InvokeAsync("ActiveAppConfigration");*@
@@ -449,34 +960,57 @@
     <script src="~/Components/view.js"></script>
 
     <script src="https://unpkg.com/@@googlemaps/markerclusterer/dist/index.min.js"></script>
-   
-    @await Component.InvokeAsync("WhitelabelEventsGoogleMap")
-  
+
+    @* @await Component.InvokeAsync("WhitelabelEventsGoogleMap")
+    *@
     <script src="~/Components/AgeStatistics.js"></script>
     <script src="~/Components/appConfigrationSingleEdit.js"></script>
     <script src="~/Components/UserInterestsGraph.js"></script>
     <script src="~/Components/AppStatictesGraph.js"></script>
-    <script src="~/Components/whitelabelEventsStatictes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/Components/AppStatictesGraph.js"></script>
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>*@
+
     <script>
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'April', 'May', 'Jun', 'Juli', 'Augst', 'Septemper', 'Octobar'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3, 7, 11],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
         function ActiveEventMap() {
-            
+
         }
         function StopUserForPeriod(ID) {
             let html = `<div class="row mw-100"><div class="col-md-6 fv-row">
-                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+                                                                <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
 StopFrom
-                                                        </label>
+                                                                </label>
 
-                                                            <input type="date" class="form-control form-control-solid" Id="StopFrom" />
-                                                        </div>
-                                                    <div class="col-md-6 fv-row">
-                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+                                                                    <input type="date" class="form-control form-control-solid" Id="StopFrom" />
+                                                                </div>
+                                                            <div class="col-md-6 fv-row">
+                                                                <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
 Stop To
-                                                        </label>
-                                                            <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
+                                                                </label>
+                                                                    <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
 
 
-                                                    </div></div>`
+                                                            </div></div>`
             Swal.fire({
                 didOpen: () => {
                     //    CreateSelect2DropDown(".", ".swal2-container");
@@ -542,20 +1076,20 @@ Stop To
 
         function StopEventForPeriod(ID) {
             let html = `<div class="row mw-100"><div class="col-md-6 fv-row">
-                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+                                                                <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
 StopFrom
-                                                        </label>
+                                                                </label>
 
-                                                            <input type="date" class="form-control form-control-solid" Id="StopFrom" />
-                                                        </div>
-                                                    <div class="col-md-6 fv-row">
-                                                        <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
+                                                                    <input type="date" class="form-control form-control-solid" Id="StopFrom" />
+                                                                </div>
+                                                            <div class="col-md-6 fv-row">
+                                                                <label  class="required d-flex align-items-center fs-6 fw-bold mb-2">
 Stop To
-                                                        </label>
-                                                            <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
+                                                                </label>
+                                                                    <input type="date" class="form-control form-control-solid   flatpickr_Calander" id="StopTo" />
 
 
-                                                    </div></div>`
+                                                            </div></div>`
             Swal.fire({
                 didOpen: () => {
                     //    CreateSelect2DropDown(".", ".swal2-container");
@@ -621,14 +1155,14 @@ Stop To
         function RenderEventsInCityDatatable() {
             let DatatableConfigration = {
                 TableID: "#TopTenEventsByCity",
-                Url:  "/Admin/AdminEvent/GetEventsInCity?CityID="+$("[name='CityID']").val(),
+                Url: "/Admin/AdminEvent/GetEventsInCity?CityID=" + $("[name='CityID']").val(),
                 Columns: [
                     {
                         "data": "Title",
                         "render": function (data, ypet, full, meta) {
                             let ID = full.ID;
                             ID = ID ?? full.EntityId;
-                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`                          
+                            let hidden = `<input type="hidden" value="/admin/AdminEvent/EventDetails?EventID=${ID}"/>`
                             return `<span class="font-bolder" >${data}</span>` + hidden;
                         }
                     },
@@ -683,9 +1217,9 @@ Stop To
             CreateSelect2DropDown("[name='CategoryID']", "#EventInCategoryDivContainer");
             RenderEventsInCityDatatable();
             RenderEventsInCategoryDatatable();
-            RenderPageDatatable();       
-            
-            
+            RenderPageDatatable();
+
+
 
             $(document).on("RemoveReportedUser", function (event, ID, callBack) {
                 $.post(`/Admin/Users/RemoveObj?ID=${ID}`, (res) => {
@@ -733,70 +1267,68 @@ Stop To
 
 
             });
-          
+
         })
 
-          $("#ExportMyStatistics").click(function () {
-             var xhr = new XMLHttpRequest();
-             xhr.open("GET", "ExportWhitelabelStatisticsAsExcel", true);
-             xhr.responseType = "blob";
-             xhr.onload = function (e) {
-                 if (this.status == 200) {
-                     var blob = this.response;
-            
-                     /* Get filename from Content-Disposition header */
-                     var filename = "";
-                     var disposition = xhr.getResponseHeader('Content-Disposition');
-                     if (disposition && disposition.indexOf('attachment') !== -1) {
-                         var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                         var matches = filenameRegex.exec(disposition);
-                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-                     }
-            
-                     var a = document.createElement('a');
-                     a.href = window.URL.createObjectURL(blob);
-                     a.download = filename;
-                     a.dispatchEvent(new MouseEvent('click'));
-                 }
-             }
+        $("#ExportMyStatistics").click(function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "ExportWhitelabelStatisticsAsExcel", true);
+            xhr.responseType = "blob";
+            xhr.onload = function (e) {
+                if (this.status == 200) {
+                    var blob = this.response;
+
+                    /* Get filename from Content-Disposition header */
+                    var filename = "";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+
+                    var a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = filename;
+                    a.dispatchEvent(new MouseEvent('click'));
+                }
+            }
             xhr.send();
-          });     
-            
-        function OpenEventUserInterestsModal(ID)
-        {
+        });
+
+        function OpenEventUserInterestsModal(ID) {
             GetDataForObject(ID);
         }
         function GetDataForObject(ID) {
 
-                $.get(`/${CurrentPageUrlInfo.Area}/${CurrentPageUrlInfo.Controller}/GetUsersStatistics?ID=${ID}`, (res) => {
-                    PopulateModal($("#EventUserInterests").first(), res,ID);
-                    $("#EventUserInterests").modal("show");
+            $.get(`/${CurrentPageUrlInfo.Area}/${CurrentPageUrlInfo.Controller}/GetUsersStatistics?ID=${ID}`, (res) => {
+                PopulateModal($("#EventUserInterests").first(), res, ID);
+                $("#EventUserInterests").modal("show");
 
-                }).fail((xhr, textStatus, errorThrown) => {
-                    ShowNotification("error", errorThrown);
-                });
-            }
+            }).fail((xhr, textStatus, errorThrown) => {
+                ShowNotification("error", errorThrown);
+            });
+        }
 
-       function PopulateModal(modal,data,ID)
-       {
-             $("#maleCount").html("count: "+data.Male_Count+" Users"); 
-             $("#maleRate").html("percentage: %"+data.Male_Rate); 
-             $("#femaleCount").html("count: "+data.Female_Count+" Users"); 
-             $("#femaleRate").html("percentage: %"+data.Female_Rate); 
-             $("#otherCount").html("count: "+data.Othergender_Count+" Users"); 
-             $("#otherRate").html("percentage: %"+data.Othergender_Rate); 
-             var maleProgress= document.getElementById("maleProgress");
-             maleProgress.style.width= data.Male_Rate + "%";           
-             var femaleProgress= document.getElementById("femaleProgress");
-             femaleProgress.style.width= data.Female_Rate + "%";
-             var otherProgress= document.getElementById("otherProgress");
-             otherProgress.style.width= data.Othergender_Rate + "%";             
-             UpdateUsersInEachInterestGrapgh(ID);
-             AgeUserStatictis(ID);
-       }
+        function PopulateModal(modal, data, ID) {
+            $("#maleCount").html("count: " + data.Male_Count + " Users");
+            $("#maleRate").html("percentage: %" + data.Male_Rate);
+            $("#femaleCount").html("count: " + data.Female_Count + " Users");
+            $("#femaleRate").html("percentage: %" + data.Female_Rate);
+            $("#otherCount").html("count: " + data.Othergender_Count + " Users");
+            $("#otherRate").html("percentage: %" + data.Othergender_Rate);
+            var maleProgress = document.getElementById("maleProgress");
+            maleProgress.style.width = data.Male_Rate + "%";
+            var femaleProgress = document.getElementById("femaleProgress");
+            femaleProgress.style.width = data.Female_Rate + "%";
+            var otherProgress = document.getElementById("otherProgress");
+            otherProgress.style.width = data.Othergender_Rate + "%";
+            UpdateUsersInEachInterestGrapgh(ID);
+            AgeUserStatictis(ID);
+        }
         function RenderPageDatatable() {
             $("#PageTable").removeClass("d-none")
-           // let Controller = "/" + CurrentPageUrlInfo.Controller;
+            // let Controller = "/" + CurrentPageUrlInfo.Controller;
             let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
             let DatatableConfigration = {
                 TableID: "#PageTable",
@@ -807,8 +1339,8 @@ Stop To
                             let ID = full.Id;
                             ID = ID ?? full.EntityId;
                             let button = `<div class="d-flex justify-content-end">
-                                       <button class="btn btn-success" onclick="OpenEventUserInterestsModal('${ID}')">More Details</button>
-                                      </div>`;
+                                               <button class="btn btn-success" onclick="OpenEventUserInterestsModal('${ID}')">More Details</button>
+                                              </div>`;
                             return button;
 
                         }
@@ -817,13 +1349,13 @@ Stop To
                         "data": "Title",
                         "render": function (data, ypet, full, meta) {
                             let ID = full.ID;
-                            ID = ID ?? full.EntityId;                        
+                            ID = ID ?? full.EntityId;
 
                             let hidden = `<input type="hidden" value=/Whitelabel/Home/EventDetails?EventID=${ID}"/>`
-                         
 
-                          return `<a href="/Whitelabel/Home/EventDetails?EventID=${ID}" target="_blank"><span class="font-bolder">${data}</span></a>`
-                           
+
+                            return `<a href="/Whitelabel/Home/EventDetails?EventID=${ID}" target="_blank"><span class="font-bolder">${data}</span></a>`
+
                         }
                     },
                     {
@@ -836,10 +1368,10 @@ Stop To
                         "data": "EventTypeListName",
                     },
                     {
-                        "data": "TotalAttendees", 
+                        "data": "TotalAttendees",
                     },
                     {
-                        "data": "MessageChatEventCount", 
+                        "data": "MessageChatEventCount",
                     },
                     {
                         "className": "text-center",
@@ -850,40 +1382,40 @@ Stop To
                                 isChecked = "checked";
                             }
                             let html = `<div ><div class="form-check form-switch form-check-custom form-check-solid p-0 m-0 d-inline">
-                                                                                                                    <input onchange="toogleActive(this,'${full.EntityId}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
-                                                                                                                </div></div>`;
+                                                                                                                            <input onchange="toogleActive(this,'${full.EntityId}')" class="form-check-input h-30px w-50px" type="checkbox" ${isChecked} value="" >
+                                                                                                                        </div></div>`;
                             return html;
                         }
                     },
                     //{
 
-                     //"data": "ID",
-                     //   "className": "text-center",
-                     //  "render": function (data, ypet, full, meta) {
-                     //       let ID = full.ID;
-                     //       data = ID ?? full.EntityId;
+                    //"data": "ID",
+                    //   "className": "text-center",
+                    //  "render": function (data, ypet, full, meta) {
+                    //       let ID = full.ID;
+                    //       data = ID ?? full.EntityId;
 
 
-                     //       let Edit = "";
+                    //       let Edit = "";
 
-                     //       if (full.EventTypeListid != 3) {
-                     //           Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                     //                               <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
-                     //                           </a>`
+                    //       if (full.EventTypeListid != 3) {
+                    //           Edit = `<a href="javascript:OpenPageModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                    //                               <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Edit")}"><i class="bi bi-pencil-fill fs-5 "></i></span>
+                    //                           </a>`
 
-                     //       }
-                     //       let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
-                     //                               <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
-                     //                           </a>`
-                     //      let details = `<a href="javascript:OpenEventChatAttendModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                     //                                           <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventChatAttend")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
-                     //                                       </a>`
-                     //       let Report = `<a href="javascript:OpenEventReportsModal('${data}','${full.Title}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                     //                                           <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventReports")}"><i class="fas fa-bug"></i></span>
-                     //                                       </a>`
-                     //       return Edit + Remove + details + Report;
-                            
-                       //},
+                    //       }
+                    //       let Remove = `  <a href="javascript:OpenSweetAlertConfirmModal('${data}','RemovePageObject');" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                    //                               <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("Delete")}"><i class="bi bi-trash fs-5 text-danger"></i></span>
+                    //                           </a>`
+                    //      let details = `<a href="javascript:OpenEventChatAttendModal('${data}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                    //                                           <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventChatAttend")}"><i class="bi bi-exclamation-lg fs-3"></i></span>
+                    //                                       </a>`
+                    //       let Report = `<a href="javascript:OpenEventReportsModal('${data}','${full.Title}')" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                    //                                           <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="${getToken("EventReports")}"><i class="fas fa-bug"></i></span>
+                    //                                       </a>`
+                    //       return Edit + Remove + details + Report;
+
+                    //},
                     //}
 
                 ]
@@ -891,5 +1423,371 @@ Stop To
             CreateCommonDatatableAjax(DatatableConfigration, "", false, false, "", true);
         }
 
+
+
+
+
+
+
+
+
+
+        let canvasDataForFinishedRegistrationWhiteLable = {};
+
+        function FinishedRegistrationStatictisWhiteLable() {
+
+            let result;
+
+            $('#TotalByGender_FRU').text(100);
+            $('#TotalByAge_FRU').text(20);
+            $('#Male_FRU').text(50);
+            $('#Female_FRU').text(10);
+            $('#Other_FRU').text(20);
+            $('#From18To25_FRU').text(20);
+            $('#From25To34_FRU').text(20);
+            $('#From35To44_FRU').text(20);
+            $('#From45To54_FRU').text(20);
+            $('#From55To64_FRU').text(10);
+            $('#From65AndMore_FRU').text(10);
+
+            let byAgeRadio = document.getElementById("FRU_ByAgeRadio").checked;
+            var element = document.getElementById(byAgeRadio ? "FinishedRegistrationStatictisByAge_chart_WhiteLable" : "FinishedRegistrationStatictisByGender_chart_WhiteLable");
+
+            if (!byAgeRadio) {
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [(50), (40), (10)],
+                            backgroundColor: ['#009EF7', '#D9214E', '#181c32']
+                        }],
+                        labels: ['Male', 'Female', 'Other']
+                    },
+                    options: {
+                        chart: {
+                            fontFamily: 'inherit'
+                        },
+                        cutoutPercentage: 75,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        title: {
+                            display: false
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        },
+                        tooltips: {
+                            enabled: true,
+                            intersect: false,
+                            mode: 'nearest',
+                            bodySpacing: 5,
+                            yPadding: 10,
+                            xPadding: 10,
+                            caretPadding: 0,
+                            displayColors: false,
+                            backgroundColor: '#20D489',
+                            titleFontColor: '#ffffff',
+                            cornerRadius: 4,
+                            footerSpacing: 0,
+                            titleSpacing: 0
+                        },
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                };
+            }
+            else {
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [10, 10, 20, 10, 20, 30],
+                            backgroundColor: ['#47BE7D', '#0dcaf0', '#ffc107', '#F1416C', '#E4E6EF', '#6610f2']
+                        }],
+                        labels: ['18-25', '25-34', '35-44', '45-55', '55-64', '65 +']
+                    },
+
+                    options: {
+                        chart: {
+                            fontFamily: 'inherit'
+                        },
+                        cutoutPercentage: 75,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        title: {
+                            display: false
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        },
+                        tooltips: {
+                            enabled: true,
+                            intersect: false,
+                            mode: 'nearest',
+                            bodySpacing: 5,
+                            yPadding: 10,
+                            xPadding: 10,
+                            caretPadding: 0,
+                            displayColors: false,
+                            backgroundColor: '#20D489',
+                            titleFontColor: '#ffffff',
+                            cornerRadius: 4,
+                            footerSpacing: 0,
+                            titleSpacing: 0
+                        },
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                };
+            }
+
+            var ctx = element.getContext('2d');
+            canvasDataForFinishedRegistrationWhiteLable = new Chart(ctx, config);
+
+        }
+
+
+        let canvasDataForUsersWhoEnabledPersonalSpace = {};
+
+        function UsersWhoEnabledPersonalSpaceStatictis() {
+
+
+            $('#TotalByGender_UEPS').text(100);
+            $('#TotalByAge_UEPS').text(20);
+            $('#Male_UEPS').text(20);
+            $('#Female_UEPS').text(20);
+            $('#Other_UEPS').text(40);
+            $('#From18To25_UEPS').text(20);
+            $('#From25To34_UEPS').text(20);
+            $('#From35To44_UEPS').text(20);
+            $('#From45To54_UEPS').text(10);
+            $('#From55To64_UEPS').text(10);
+            $('#From65AndMore_UEPS').text(20);
+
+            let byAgeRadio = document.getElementById("UEPS_ByAgeRadio").checked;
+            var element = document.getElementById(byAgeRadio ? "UsersWhoEnabledPersonalSpaceStatictisByAge_chart" : "UsersWhoEnabledPersonalSpaceStatictisByGender_chart");
+
+            if (!byAgeRadio) {
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [(50), (30), (20)],
+                            backgroundColor: ['#009EF7', '#D9214E', '#181c32']
+                        }],
+                        labels: ['Male', 'Female', 'Other']
+                    },
+                    options: {
+                        chart: {
+                            fontFamily: 'inherit'
+                        },
+                        cutoutPercentage: 75,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        title: {
+                            display: false
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        },
+                        tooltips: {
+                            enabled: true,
+                            intersect: false,
+                            mode: 'nearest',
+                            bodySpacing: 5,
+                            yPadding: 10,
+                            xPadding: 10,
+                            caretPadding: 0,
+                            displayColors: false,
+                            backgroundColor: '#20D489',
+                            titleFontColor: '#ffffff',
+                            cornerRadius: 4,
+                            footerSpacing: 0,
+                            titleSpacing: 0
+                        },
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                };
+            }
+            else {
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [20, 20, 20, 20, 10, 10],
+                            backgroundColor: ['#47BE7D', '#0dcaf0', '#ffc107', '#F1416C', '#E4E6EF', '#6610f2']
+                        }],
+                        labels: ['18-25', '25-34', '35-44', '45-55', '55-64', '65 +']
+                    },
+
+                    options: {
+                        chart: {
+                            fontFamily: 'inherit'
+                        },
+                        cutoutPercentage: 75,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        title: {
+                            display: false
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        },
+                        tooltips: {
+                            enabled: true,
+                            intersect: false,
+                            mode: 'nearest',
+                            bodySpacing: 5,
+                            yPadding: 10,
+                            xPadding: 10,
+                            caretPadding: 0,
+                            displayColors: false,
+                            backgroundColor: '#20D489',
+                            titleFontColor: '#ffffff',
+                            cornerRadius: 4,
+                            footerSpacing: 0,
+                            titleSpacing: 0
+                        },
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                };
+            }
+
+            var ctx = element.getContext('2d');
+            canvasDataForUsersWhoEnabledPersonalSpace = new Chart(ctx, config);
+
+
+
+        }
+
+
+
+
+
+        $(document).ready(() => {
+
+            FinishedRegistrationStatictisWhiteLable();
+            UsersWhoEnabledPersonalSpaceStatictis();
+
+            $("[name='FinishedRegistrationRadio']").change((e) => {
+                $("#FinishedRegistrationByGender").toggleClass("d-none");
+                $("#FinishedRegistrationByAge").toggleClass("d-none");
+                canvasDataForFinishedRegistrationWhiteLable.destroy();
+                FinishedRegistrationStatictisWhiteLable();
+            });
+
+
+            $("[name='UsersWhoEnabledPersonalSpaceRadio']").change((e) => {
+                $("#UsersWhoEnabledPersonalSpaceByGender").toggleClass("d-none");
+                $("#UsersWhoEnabledPersonalSpaceByAge").toggleClass("d-none");
+                canvasDataForUsersWhoEnabledPersonalSpace.destroy();
+                UsersWhoEnabledPersonalSpaceStatictis();
+            });
+
+        });
+
+
+        function updateTable() {
+            // Get the selected value from the dropdown list
+            var selectedValue = document.getElementById("year-select").value;
+
+            // Get all the rows in the table body
+            var rows = document.getElementById("data-table").getElementsByTagName("tbody")[0].rows;
+
+            // Loop through all the rows and update the ones that match the selected value
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var eventDate = row.cells[1].innerHTML;
+
+                // Check if the event date matches the selected value
+                if (eventDate === selectedValue) {
+                    // Show the row
+                    row.style.display = "table-row";
+                } else {
+                    // Hide the row
+                    row.style.display = "none";
+                }
+            }
+        }
+        //////////////////////column data///////////////////////////
+        var data = {
+            labels: ['Talk:test1', 'Lunch:test1', 'Talk:test2', 'Talk:test2', 'party: party'],
+            datasets: [
+                {
+                    label: 'Value 1',
+                    data: [20, 40, 60, 80, 100],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Value 2',
+                    data: [10, 30, 50, 70, 90],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Value 3',
+                    data: [5, 15, 25, 35, 45],
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        // Set up the options for the chart
+        var options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 120
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        };
+
+        // Create the chart
+        var rm = document.getElementById('myColumnChart').getContext('2d');
+        var myChart = new Chart(rm, {
+            type: 'bar',
+            data: data,
+            options: options
+        });
+
+        ///////////////////
     </script>
 }
