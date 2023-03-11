@@ -996,6 +996,7 @@ $(document).ready(() => {
         FinishedRegistrationStatictis();
     });
 
+   
     $("[name='UsersWhoEnabledPersonalSpaceRadio']").change((e) => {
         $("#UsersWhoEnabledPersonalSpaceByGender").toggleClass("d-none");
         $("#UsersWhoEnabledPersonalSpaceByAge").toggleClass("d-none");
