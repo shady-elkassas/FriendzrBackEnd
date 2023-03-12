@@ -764,8 +764,34 @@ namespace Social.Services.Implementation
             //var new_longitude = Longitude + num1;
             return (new_latitude, new_longitude);
         }
-
         public (List<UserDetails> userDetails, List<int> currentUserInterests) allusers(double myLat, double myLon, string usertype, UserDetails user, AppConfigrationVM AppConfigrationVM, bool sortByInterestMatch)
+        {
+
+            int distance = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Min == null ? 0 : (int)AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Min) * 1000) : (int)(user.Manualdistancecontrol * 1000);
+            int distancemax = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max == null ? 0 : (int)AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max) * 1000) : (int)(user.Manualdistancecontrol * 1000);
+
+            var alluserr = this._authContext.LoggedinUser.Include(n => n.User.UserDetails).Where(p => (p.User.UserDetails.listoftags != null && p.User.UserDetails.listoftags.Count() != 0) && p.User.UserDetails.lat != null && p.User.UserDetails.lang != null).ToList();
+            var alluser = alluserr.Where(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang)) <= ((user.Manualdistancecontrol == 0 ? Convert.ToDouble(distancemax) : Convert.ToDouble(user.Manualdistancecontrol * 1000))))
+
+                .Select(m => m.User.UserDetails).ToList();
+            alluser = alluser.Where(m => m.allowmylocation == true).ToList();
+            alluser = alluser.Where(m => m.Gender != null).ToList();
+            alluser = alluser.Where(p => (user.Filteringaccordingtoage == true ? birtdate(user.agefrom, user.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
+
+            alluser = alluser.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, usertype) : true)).ToList();
+            alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
+
+            List<int> currentUserInterests = user.listoftags.Select(q => q.InterestsId).ToList();
+
+            if (!sortByInterestMatch)
+            {
+                return (alluser.OrderBy(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang))).ToList(), currentUserInterests);
+            }
+
+            return (alluser.OrderByDescending(q => ((q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100)).ToList(), currentUserInterests);
+
+        }
+        public (List<UserDetails> userDetails, List<int> currentUserInterests) allusersInParallel(double myLat, double myLon, string usertype, UserDetails user, AppConfigrationVM AppConfigrationVM, bool sortByInterestMatch)
         {
 
             var distanceMax = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max ?? 0) * 1000) : (int)(user.Manualdistancecontrol * 1000);
