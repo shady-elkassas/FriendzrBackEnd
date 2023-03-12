@@ -768,31 +768,61 @@ namespace Social.Services.Implementation
         public (List<UserDetails> userDetails, List<int> currentUserInterests) allusers(double myLat, double myLon, string usertype, UserDetails user, AppConfigrationVM AppConfigrationVM, bool sortByInterestMatch)
         {
 
-            int distance = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Min == null ? 0 : (int)AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Min) * 1000) : (int)(user.Manualdistancecontrol * 1000);
-            int distancemax = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max == null ? 0 : (int)AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max) * 1000) : (int)(user.Manualdistancecontrol * 1000);
+            var distanceMax = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max ?? 0) * 1000) : (int)(user.Manualdistancecontrol * 1000);
 
-            var alluserr = this._authContext.LoggedinUser.Include(n => n.User.UserDetails).Where(p => (p.User.UserDetails.listoftags != null && p.User.UserDetails.listoftags.Count() != 0) && p.User.UserDetails.lat != null && p.User.UserDetails.lang != null).ToList();
-            var alluser = alluserr.Where(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang)) <= ((user.Manualdistancecontrol == 0 ? Convert.ToDouble(distancemax) : Convert.ToDouble(user.Manualdistancecontrol * 1000))))
+            var allLoginUsers = _authContext.LoggedinUser
+                .Include(n => n.User.UserDetails)
+                .ThenInclude(a=>a.AppearanceTypes)
+                .Where(p => 
+                    (p.User.UserDetails.listoftags != null && p.User.UserDetails.listoftags.Count() != 0) 
+                            && p.User.UserDetails.lat != null && p.User.UserDetails.lang != null
+                    && p.User.UserDetails.allowmylocation == true
+                    && p.User.UserDetails.Gender != null
+                    )
+                .ToList();
+            var allUserDetails = allLoginUsers.Select(m => m.User.UserDetails).ToList();
 
-                .Select(m => m.User.UserDetails).ToList();
-            alluser = alluser.Where(m => m.allowmylocation == true).ToList();
-            alluser = alluser.Where(m => m.Gender != null).ToList();
-            alluser = alluser.Where(p => (user.Filteringaccordingtoage == true ? birtdate(user.agefrom, user.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
-
-            alluser = alluser.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, usertype) : true)).ToList();
-            alluser = alluser.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
+            allUserDetails = GetClosedUsersByDistance(allUserDetails, user, myLat, myLon, user.Manualdistancecontrol,
+                distanceMax, user.Gender);
 
             List<int> currentUserInterests = user.listoftags.Select(q => q.InterestsId).ToList();
 
             if (!sortByInterestMatch)
             {
-                return (alluser.OrderBy(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang))).ToList(), currentUserInterests);
+                return (allUserDetails.OrderBy(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang))).ToList(), currentUserInterests);
             }
 
-            return (alluser.OrderByDescending(q => ((q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100)).ToList(), currentUserInterests);
+            return (allUserDetails.OrderByDescending(q => ((q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100)).ToList(), currentUserInterests);
 
         }
+        private List<UserDetails> GetClosedUsersByDistance(List<UserDetails> closedUsers, UserDetails user, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
+        {
+            var tasks = new List<Task<List<UserDetails>>>();
+            for (int i = 0; i < closedUsers.Count; i += 500)
+            {
+                var gg = closedUsers.Skip(i).Take(500).ToList();
+                tasks.Add(Task.Run(() => CalculateDistanceClosedUsers(gg , user, userLat, userLong, userManualDistanceControl, userDistanceMax, userGender).ToList()));
 
+            }
+
+            var m = (Task.WhenAll(tasks).Result).ToList();
+            var oneList = m.SelectMany(a => a).ToList();
+            return oneList;
+        }
+
+        private IEnumerable<UserDetails> CalculateDistanceClosedUsers(List<UserDetails> data,UserDetails user, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
+        {
+            data = data.Where(p => CalculateDistance(userLat,
+                                       userLong,
+                                       Convert.ToDouble(p.lat),
+                                       Convert.ToDouble(p.lang)) <= (userManualDistanceControl == 0
+                                       ? Convert.ToDouble(userDistanceMax)
+                                       : Convert.ToDouble(userManualDistanceControl * 1000))
+                                   && user.Filteringaccordingtoage ? birtdate(user.agefrom, user.ageto, p.birthdate?.Date ?? DateTime.Now.Date) : true
+                                   && (!user.ghostmode || type(user.AppearanceTypes, p.Gender))
+                                   && (!p.ghostmode || type(p.AppearanceTypes, userGender))).ToList();
+            return data;
+        }
         public IQueryable<UserDetails> allusers()
         {
             //var com = ("select * from UserDetails");

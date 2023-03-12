@@ -81,7 +81,7 @@ namespace Social.Controllers
                     userDeatils.lat = userlat;
                     this._userService.UpdateUserDetails(userDeatils);
                 }
-                var allReq = _authContext.Requestes.ToList();
+               // var allReq = _authContext.Requestes.ToList();
                 var lat = userDeatils.lat is null ? 0 : Convert.ToDouble(userDeatils.lat);
                 var lang = userDeatils.lang is null ? 0 : Convert.ToDouble(userDeatils.lang);
                 if (lat == 0 || lang == 0)
@@ -121,8 +121,10 @@ namespace Social.Controllers
                     _userService.allusers(lat, lang, userDeatils.Gender, userDeatils, appcon, sortByInterestMatch) :
                     _userService.allusersdirection(lat, lang, userDeatils.Gender, userDeatils, degree, appcon, sortByInterestMatch);
 
-                var listdata = userDetailsList.userDetails.Where(m => m.PrimaryId != userDeatils.PrimaryId).ToList();
+                var listUsersdata = userDetailsList.userDetails.Where(m => m.PrimaryId != userDeatils.PrimaryId).ToList();
                 var validFilter = new PaginationFilter(pageNumber, pageSize);
+                var  listdata = listUsersdata.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+
                 var data = listdata.Select(q => new Feeds
                 {
                     Gender = q.Gender,
@@ -134,10 +136,10 @@ namespace Social.Controllers
                     UserName = q.User.DisplayedUserName,
                     email = q.User.Email,
                     image = string.IsNullOrEmpty(q.UserImage) ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.UserImage,
-                    key = _FrindRequest.Getallkey(userDeatils.PrimaryId, q.PrimaryId, allReq),
+                    key = _FrindRequest.GetallkeyForFeed(userDeatils.PrimaryId, q.PrimaryId),
                     InterestMatchPercent = Math.Round(((q.listoftags.Select(q => q.InterestsId).Intersect(userDetailsList.currentUserInterests).Count() / Convert.ToDecimal(userDetailsList.currentUserInterests.Count())) * 100), 0)
                 }).Where(k => k.key != 4 && k.key != 5).ToList();
-                int rowCount = data.Count();
+                int rowCount = listUsersdata.Count();
                 var pagedLands = data.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
                 var pagedModel = new PagedResponse<List<Feeds>>(pagedLands, validFilter.PageNumber, pagedLands.Count(), data.Count());
 

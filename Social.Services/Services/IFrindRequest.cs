@@ -16,6 +16,7 @@ namespace Social.Services.Services
         Task deleterequest(Requestes code);
         Task requestresponse(Requestes code);
         int Getallkey(int userid, int requserid, List<Requestes> reqs);
+        int GetallkeyForFeed(int userid, int requserid);
         Requestes GetReque(int userid, int requserid);
         int Getkey(int userid, int requserid);
         bool Getboolkey(int userid, int requserid);
