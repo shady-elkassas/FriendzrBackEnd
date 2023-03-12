@@ -838,15 +838,16 @@ namespace Social.Services.Implementation
 
         private IEnumerable<UserDetails> CalculateDistanceClosedUsers(List<UserDetails> data,UserDetails user, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
         {
-            data = data.Where(p => CalculateDistance(userLat,
-                                       userLong,
-                                       Convert.ToDouble(p.lat),
-                                       Convert.ToDouble(p.lang)) <= (userManualDistanceControl == 0
-                                       ? Convert.ToDouble(userDistanceMax)
-                                       : Convert.ToDouble(userManualDistanceControl * 1000))
-                                   && user.Filteringaccordingtoage ? birtdate(user.agefrom, user.ageto, p.birthdate?.Date ?? DateTime.Now.Date) : true
-                                   && (!user.ghostmode || type(user.AppearanceTypes, p.Gender))
-                                   && (!p.ghostmode || type(p.AppearanceTypes, userGender))).ToList();
+           
+            data = data.Where(p => (user.Filteringaccordingtoage == true ? birtdate(user.agefrom, user.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
+            data = data.Where(p =>
+                CalculateDistance(userLat, userLong, Convert.ToDouble(p.lat), Convert.ToDouble(p.lang)) <=
+                ((user.Manualdistancecontrol == 0
+                    ? Convert.ToDouble(userDistanceMax)
+                    : Convert.ToDouble(user.Manualdistancecontrol * 1000)))).ToList();
+
+            data = data.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, userGender) : true)).ToList();
+            data = data.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
             return data;
         }
         public IQueryable<UserDetails> allusers()

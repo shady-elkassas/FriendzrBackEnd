@@ -118,7 +118,7 @@ namespace Social.Controllers
                 } 
 
                 (List<UserDetails> userDetails, List<int> currentUserInterests) userDetailsList = (degree is 0) ?
-                    _userService.allusers(lat, lang, userDeatils.Gender, userDeatils, appcon, sortByInterestMatch) :
+                    _userService.allusersInParallel(lat, lang, userDeatils.Gender, userDeatils, appcon, sortByInterestMatch) :
                     _userService.allusersdirection(lat, lang, userDeatils.Gender, userDeatils, degree, appcon, sortByInterestMatch);
 
                 var listUsersdata = userDetailsList.userDetails.Where(m => m.PrimaryId != userDeatils.PrimaryId).ToList();
