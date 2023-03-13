@@ -107,10 +107,11 @@
         <div class="row col-md-12">
             <div class="text-center">
                 <select name="userfilter" id="filter" style="width: 161px; font-size: 20px; ">
-                    <option value="1">week</option>
-                    <option value="2">two weeks</option>
-                    <option value="3">three weeks</option>
-                    <option value="4">four weeks</option>
+                    <option value=null>All</option>
+                    <option value=1>week</option>
+                    <option value=2>two weeks</option>
+                    <option value=3>three weeks</option>
+                    <option value=4>four weeks</option>
                 </select>
 
             </div>
@@ -174,12 +175,15 @@
 @section scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        
         function RefreshPageDatatable() {
+            debugger;
+            let x = $('#filter').val();
             let Controller = "/" + CurrentPageUrlInfo.Controller;
             let Area = (CurrentPageUrlInfo.Area == null || CurrentPageUrlInfo.Area == undefined || CurrentPageUrlInfo.Area == "") ? "" : "/" + CurrentPageUrlInfo.Area;
             let DatatableConfigration = {
                 TableID: "#PageTable",
-                Url: Area + Controller + "/GetAll",
+                Url: Area + Controller + "/GetAll?x=" + x,
                 Columns: [
                     {
                         "data": "UserName",
@@ -428,6 +432,12 @@
             });
             RefreshPageDatatable();
         })
+
+
+        $("#filter").change(function () {
+            
+            RefreshPageDatatable();
+        });
     </script>
 
 
