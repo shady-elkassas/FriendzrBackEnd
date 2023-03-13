@@ -140,7 +140,7 @@ namespace Social.Controllers
                     InterestMatchPercent = Math.Round(((q.listoftags.Select(q => q.InterestsId).Intersect(userDetailsList.currentUserInterests).Count() / Convert.ToDecimal(userDetailsList.currentUserInterests.Count())) * 100), 0)
                 }).Where(k => k.key != 4 && k.key != 5).ToList();
                 int rowCount = listUsersdata.Count();
-                var pagedLands = data.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+                var pagedLands = data;//.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
                 var pagedModel = new PagedResponse<List<Feeds>>(pagedLands, validFilter.PageNumber, pagedLands.Count(), data.Count());
 
                 //var dataObj = (degree is 0) ? pagedModel.Data : pagedLands;
