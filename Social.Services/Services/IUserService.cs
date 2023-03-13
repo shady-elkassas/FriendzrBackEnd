@@ -61,7 +61,7 @@ namespace Social.Services.Services
         (List<UserDetails> userDetails, List<int> currentUserInterests) allusersInParallel(double myLat, double myLon,
             string usertype, UserDetails user, AppConfigrationVM AppConfigrationVM, bool sortByInterestMatch);
         Task<(RecommendedPeopleViewModel, string)> RecommendedPeople(UserDetails userDeatil, string userId);
-        Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFix(UserDetails userDeatil, string userId); 
+        Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFix(UserDetails userDeatil, string userId, bool? previous); 
         Task<(List<RecentlyConnectedViewModel>, string ,int)> RecentlyConnected(UserDetails userDeatil, int pageNumber, int pageSize);
 
         #region Public
