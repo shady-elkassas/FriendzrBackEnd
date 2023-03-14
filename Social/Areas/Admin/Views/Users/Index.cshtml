@@ -90,7 +90,7 @@
                                 <span class="spinner-border spinner-border-sm"></span>
                             </span>
                         </button>
-                    </div> 
+                    </div>
                     <div class="form-check form-check-custom form-check-solid d-inline-block">
                         <button onclick="AllowAdsForAll(false)" type="button" class="btn btn-light-danger">
                             <span class="indicator-label">Disallow Ads For All Users</span>
@@ -100,14 +100,17 @@
                         </button>
                     </div>
                 </div>
-            </div>
-        
-        </div>
 
-        <div class="row col-md-12">
-            <div class="text-center">
+            </div>
+
+
+
+        </div>
+        <div>
+            <div class="text-left">
                 <select name="userfilter" id="filter" style="width: 161px; font-size: 20px; ">
-                    <option value=null>All</option>
+                    <option value=null selected>All Time</option>
+                    <option value=0>day</option>
                     <option value=1>week</option>
                     <option value=2>two weeks</option>
                     <option value=3>three weeks</option>
@@ -117,8 +120,11 @@
             </div>
 
         </div>
+
         <div class="table-responsive">
+
             <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border cursor-pointer rounded">
+
                 <thead class="bg-light">
                     <tr class="fw-bolder fs-6 text-gray-800 px-7">
                         <th>#</th>
