@@ -2448,13 +2448,13 @@ namespace Social.Controllers
 
         [HttpGet]
         [Route("RecommendedEvent")]
-        public async Task<IActionResult> RecommendedEvent([FromQuery] string eventId)
+        public async Task<IActionResult> RecommendedEvent([FromQuery] string eventId, [FromQuery] bool? previous)
         {
             try
             {
                 var userDetails = HttpContext.GetUser().User.UserDetails;
 
-                var (events, message) = await _Event.RecommendedEvent(userDetails, eventId);
+                var (events, message) = await _Event.RecommendedEvent(userDetails, eventId, previous);
 
                 return StatusCode(StatusCodes.Status200OK, new ResponseModel<RecommendedEventViewModel>(StatusCodes.Status200OK, true, message, events));
             }

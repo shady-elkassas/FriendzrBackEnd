@@ -1245,9 +1245,63 @@ namespace Social.Services.Implementation
             return (recommendedPeople, message);
         }
 
-        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFix(UserDetails userDeatil, string userId)
+        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFix(UserDetails userDeatil, string userId, bool? previous)
         {
+            var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
+            if ( previous is true)
+            {
+                var skipped =  _authContext.SkippedUsers
+                    .Where(q => q.UserId == userDeatil.PrimaryId)
+                    .OrderByDescending(a=>a.Date)
+                    .FirstOrDefault();
+
+                if (skipped != null)
+                {
+                    var previousUser = _authContext.UserDetails
+                        .Include(q => q.User)
+                        .Include(q => q.AppearanceTypes)
+                        .Include(q => q.listoftags)
+                        .ThenInclude(q => q.Interests)
+                        .FirstOrDefault(q=>q.PrimaryId == skipped.SkippedUserId);
+                    RecommendedPeopleViewModel recommendPeople;
+                    if (previousUser != null)
+                    {
+                        recommendPeople = new RecommendedPeopleViewModel()
+                        {
+                            UserId = previousUser.UserId,
+                            ImageIsVerified = previousUser.ImageIsVerified ?? false,
+                            Name = previousUser.User.DisplayedUserName,
+                            Image = string.IsNullOrEmpty(previousUser.UserImage)
+                                ? _configuration["DefaultImage"]
+                                : $"{_configuration["BaseUrl"]}{previousUser.UserImage}",
+                            DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(
+                                Convert.ToDouble(previousUser.lat),
+                                Convert.ToDouble(previousUser.lang),
+                                Convert.ToDouble(userDeatil.lat),
+                                Convert.ToDouble(userDeatil.lang),
+                                'M'), 2),
+                            InterestMatchPercent = (previousUser.listoftags
+                                    .Select(q => q.InterestsId)
+                                    .Intersect(currentUserInterests).Count() /
+                                Convert.ToDecimal(currentUserInterests.Count()) * 100),
+                            MatchedInterests = previousUser.listoftags
+                                .Where(q => currentUserInterests.Contains(q.InterestsId))
+                                .Select(i => i.Interests.name).ToList(),
+                        };
+                        _authContext.SkippedUsers.Remove(skipped);
+                        await _authContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        recommendPeople = null;
+                    }
+
+                    var messageData = recommendPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
+
+                    return (recommendPeople, messageData);
+                }
+            }
             if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
             {
                 var userToSkip = await _authContext.UserDetails
@@ -1312,7 +1366,6 @@ namespace Social.Services.Implementation
                                   && !skippedUsers.Contains(q.PrimaryId) 
                                   && !recentRequests.Contains(q.PrimaryId)).ToList();
 
-            var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
             var usersList = await GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
 

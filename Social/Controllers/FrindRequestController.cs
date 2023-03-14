@@ -892,13 +892,13 @@ namespace Social.Controllers
 
         [HttpGet]
         [Route("RecommendedPeople")]
-        public async Task<IActionResult> RecommendedPeople([FromQuery] string userId)
+        public async Task<IActionResult> RecommendedPeople([FromQuery] string userId , [FromQuery] bool? previous)
         {
             try
             {
                 var userDetails = HttpContext.GetUser().User.UserDetails;               
 
-                var (people, message) = await _userService.RecommendedPeopleFix(userDetails, userId);
+                var (people, message) = await _userService.RecommendedPeopleFix(userDetails, userId,previous);
 
                 return StatusCode(StatusCodes.Status200OK, new ResponseModel<RecommendedPeopleViewModel>(StatusCodes.Status200OK, true, message, people));
             }

@@ -312,6 +312,8 @@ namespace Social
         {
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter24H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationAfter72H(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationHasNoPhoto24(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendUpdateProfileNotificationHasNoPhoto72(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationForWomenOnly(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasRequestsUnanswered(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IPushNotification>(j => j.SendNotificationIfUserHasMessagesNotRead(), cronExpression: "0 6 * * *", timeZone: TimeZoneInfo.Utc);
