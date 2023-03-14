@@ -46,7 +46,7 @@ namespace Social.Services.PushNotification
                                 && EF.Functions
                                     .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 1)
                     .ToList();
-                const string body = "You're almost there! @Complete your profile to start connecting on Friendzr today.";
+                const string body = "You're almost there! Complete your profile to start connecting on Friendzr today.";
                 const string action = "Edit_profile";
 
                 await SendNotification(users, body, action);
@@ -68,7 +68,7 @@ namespace Social.Services.PushNotification
                                     .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 3)
                     .ToList();
 
-                const string body = "Your profile is being viewed – @complete your profile for a better chance of finding like-minded Friendzrs.";
+                const string body = "Your profile is being viewed – complete your profile for a better chance of finding like-minded Friendzrs.";
                 const string action = "Edit_profile";
 
                 await SendNotification(users, body, action);
@@ -95,7 +95,7 @@ namespace Social.Services.PushNotification
                                     .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 5)
                     .ToList();
 
-                const string body = "Only looking for female/male friends? @Use Private Mode to hide your profile from anyone.";
+                const string body = "Only looking for female/male friends? Use Private Mode to hide your profile from anyone.";
                 const string action = "Private_mode";
 
                 await SendNotification(users, body, action);
@@ -140,7 +140,7 @@ namespace Social.Services.PushNotification
                             var userName = requests[0]?.User.userName;
                             var userRequest = requests[0]?.UserRequest;
                             users.Add(userRequest);
-                            var body = $"{userName} sent you a friend request. @Click here to view and connect.";
+                            var body = $"{userName} sent you a friend request. Click here to view and connect.";
                             const string action = "Friend_Requests";
                             await SendNotification(users, body, action);
                             break;
@@ -207,7 +207,7 @@ namespace Social.Services.PushNotification
                             var userName = userMessages[0]?.ToUser.userName;
                             var userRequest = userMessages[0]?.User;
                             users.Add(userRequest);
-                            var body = $"{userName} is waiting to hear from you. @Click to read and reply to their message.";
+                            var body = $"{userName} is waiting to hear from you. Click to read and reply to their message.";
                             const string action = "Inbox_chat";
                             await SendNotification(users, body, action);
                             break;
@@ -269,7 +269,7 @@ namespace Social.Services.PushNotification
                             var userName = userMessages[0]?.User.userName;
                             var userRequest = userMessages[0]?.ToUser;
                             users.Add(userRequest);
-                            var body = $"{userName} is waiting to hear from you. @Click to read and reply to their message.";
+                            var body = $"{userName} is waiting to hear from you. Click to read and reply to their message.";
                             const string action = "Inbox_chat";
                             await SendNotification(users, body, action);
                             break;
