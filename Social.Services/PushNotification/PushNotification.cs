@@ -68,6 +68,26 @@ namespace Social.Services.PushNotification
                                     .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 3)
                     .ToList();
 
+                const string body = "You're almost there! Complete your profile to start connecting on Friendzr today.";
+                const string action = "Edit_profile";
+
+                await SendNotification(users, body, action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        public async Task SendUpdateProfileNotificationHasNoPhoto24()
+        {
+            try
+            {
+                var users = _authContext.UserDetails
+                    .Include(u => u.User)
+                    .Where(u => u.UserImage == null && EF.Functions
+                        .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 1)
+                    .ToList();
+
                 const string body = "Your profile is being viewed – complete your profile for a better chance of finding like-minded Friendzrs.";
                 const string action = "Edit_profile";
 
@@ -78,7 +98,26 @@ namespace Social.Services.PushNotification
                 Console.WriteLine(e.Message);
             }
         }
+        public async Task SendUpdateProfileNotificationHasNoPhoto72()
+        {
+            try
+            {
+                var users = _authContext.UserDetails
+                    .Include(u => u.User)
+                    .Where(u => u.UserImage == null && EF.Functions
+                        .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 3)
+                    .ToList();
 
+                const string body = "Your profile is being viewed – complete your profile for a better chance of finding like-minded Friendzrs.";
+                const string action = "Edit_profile";
+
+                await SendNotification(users, body, action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
         #endregion
 
         #region Send Private Mode Notification For Women Only
