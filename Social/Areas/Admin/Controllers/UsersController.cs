@@ -174,7 +174,7 @@ namespace Social.Areas.Admin.Controllers
             {
                 if (x == 0)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-1).Date));
+                    data = data.Where(q => (q.LastUpdateLocation.Value.Date == DateTime.Now.AddDays(-1).Date));
                 }
                 if (x == 1)
                 {
@@ -188,7 +188,7 @@ namespace Social.Areas.Admin.Controllers
 
                 if (x == 3)
                 {
-                    data = data.Where(q =>  (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-21).Date));
+                    data = data.Where(q => (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-21).Date));
                 }
                 if (x == 4)
                 {
