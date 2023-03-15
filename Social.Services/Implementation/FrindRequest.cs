@@ -50,6 +50,23 @@ namespace Social.Services.Implementation
                 _ => 0
             };
         }
+
+        public int GetallkeyForFeed(int userid, int requserid)
+        {
+            //var regest = _authContext.Requestes.Where(m => (m.UserId == requserid || m.UserRequestId == userid)).FirstOrDefault();
+            var regest = _authContext.Requestes.FirstOrDefault(m => (m.UserId == userid && m.UserRequestId == requserid) || (m.UserId == requserid && m.UserRequestId == userid));
+
+            return regest switch
+            {
+                var req when (regest is null) => 0,
+                var req when (regest.UserId == userid && regest.status == 0) => 1,
+                var req when (regest.UserRequestId == userid && regest.status == 0) => 2,
+                var req when (regest.status == 1) => 3,
+                var req when (regest.UserblockId == userid && regest.status == 2) => 4,
+                var req when (regest.UserblockId == requserid && regest.status == 2) => 5,
+                _ => 0
+            };
+        }
         public int Getkey(int userid, int requserid)
         {
             int key = 0;

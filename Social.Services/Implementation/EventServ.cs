@@ -1991,8 +1991,68 @@ namespace Social.Services.Implementation
         }
 
 
-        public async Task<(RecommendedEventViewModel, string)> RecommendedEvent(UserDetails userDeatil, string eventId)
+        public async Task<(RecommendedEventViewModel, string)> RecommendedEvent(UserDetails userDeatil, string eventId , bool? previous)
         {
+
+            if (previous is true)
+            {
+                var skipped = _authContext.SkippedEvents
+                    .Where(q => q.UserId == userDeatil.PrimaryId)
+                    .OrderByDescending(a => a.Date)
+                    .FirstOrDefault();
+
+                if (skipped != null)
+                {
+                    var previousEvent = _authContext.EventData
+                        .Include(a=>a.EventChatAttend)
+                        .Include(a=>a.EventTypeList)
+                        .FirstOrDefault(q => q.Id == skipped.EventId);
+
+                    var recommend = new RecommendedEventViewModel();
+                    if (previousEvent != null)
+                    {
+                        var nearEvent = new EventVM
+                        {
+                            Id = previousEvent.EntityId,
+                            Title = previousEvent.Title,
+                            description = previousEvent.description,
+                            eventdate = previousEvent.eventdate?.ToString("dd/MM/yyyy"),
+                            image = (previousEvent.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + previousEvent.image,
+                            joined = GetEventattend(previousEvent.EntityId, previousEvent.EventChatAttend.ToList()),
+                            totalnumbert = previousEvent.totalnumbert,
+                            eventtype = previousEvent.EventTypeList.Name,
+                            eventColor = previousEvent.EventTypeList.color,
+                            eventtypecolor = (previousEvent.eventtype == null &&
+                                              previousEvent.eventtype == Guid.Parse("265583AA-2511-4FD3-883E-6CAF1F8E4355"))
+                                ? "#0BBEA1"
+                                : "#00284c",
+                            DistanceBetweenLocationAndEvent = CalculateDistance(Convert.ToDouble(userDeatil.lat),
+                                Convert.ToDouble(userDeatil.lang),
+                                Convert.ToDouble(previousEvent.lat), Convert.ToDouble(previousEvent.lang))
+                        };
+                        recommend.EventId = nearEvent.Id;
+                        recommend.Title = nearEvent.Title;
+                        recommend.Description = nearEvent.description;
+                        recommend.Image = nearEvent.image;
+                        recommend.eventtype = nearEvent.eventtype;
+                        recommend.eventColor = nearEvent.eventColor;
+                        recommend.eventtypecolor = nearEvent.eventtypecolor;
+                        recommend.EventDate = nearEvent.eventdate;
+                        recommend.Attendees = nearEvent.joined;
+                        recommend.From = nearEvent.totalnumbert;
+                        _authContext.SkippedEvents.Remove(skipped);
+                        await _authContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        recommend = null;
+                    }
+
+                    var messageData = recommend != null ? "Your data" : "See Map for Nearby Events";
+
+                    return (recommend, messageData);
+                }
+            }
             if (!string.IsNullOrEmpty(eventId) && !string.IsNullOrWhiteSpace(eventId))
             {
                 var eventToSkip = await _authContext.EventData

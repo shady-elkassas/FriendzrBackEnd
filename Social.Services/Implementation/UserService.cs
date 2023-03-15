@@ -764,7 +764,6 @@ namespace Social.Services.Implementation
             //var new_longitude = Longitude + num1;
             return (new_latitude, new_longitude);
         }
-
         public (List<UserDetails> userDetails, List<int> currentUserInterests) allusers(double myLat, double myLon, string usertype, UserDetails user, AppConfigrationVM AppConfigrationVM, bool sortByInterestMatch)
         {
 
@@ -792,7 +791,64 @@ namespace Social.Services.Implementation
             return (alluser.OrderByDescending(q => ((q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100)).ToList(), currentUserInterests);
 
         }
+        public (List<UserDetails> userDetails, List<int> currentUserInterests) allusersInParallel(double myLat, double myLon, string usertype, UserDetails user, AppConfigrationVM AppConfigrationVM, bool sortByInterestMatch)
+        {
 
+            var distanceMax = user.distanceFilter == false ? ((AppConfigrationVM.DistanceShowNearbyAccountsInFeed_Max ?? 0) * 1000) : (int)(user.Manualdistancecontrol * 1000);
+
+            var allLoginUsers = _authContext.LoggedinUser
+                .Include(n => n.User.UserDetails)
+                .ThenInclude(a=>a.AppearanceTypes)
+                .Where(p => 
+                    (p.User.UserDetails.listoftags != null && p.User.UserDetails.listoftags.Count() != 0) 
+                            && p.User.UserDetails.lat != null && p.User.UserDetails.lang != null
+                )
+                .ToList();
+            var allUserDetails = allLoginUsers.Select(m => m.User.UserDetails).ToList();
+
+            allUserDetails = GetClosedUsersByDistance(allUserDetails, user, myLat, myLon, user.Manualdistancecontrol,
+                distanceMax, user.Gender);
+
+            List<int> currentUserInterests = user.listoftags.Select(q => q.InterestsId).ToList();
+
+            if (!sortByInterestMatch)
+            {
+                return (allUserDetails.OrderBy(p => CalculateDistance(myLat, myLon, Convert.ToDouble(p.User.UserDetails.lat), Convert.ToDouble(p.User.UserDetails.lang))).ToList(), currentUserInterests);
+            }
+
+            return (allUserDetails.OrderByDescending(q => ((q.listoftags.Select(q => q.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count())) * 100)).ToList(), currentUserInterests);
+
+        }
+        private List<UserDetails> GetClosedUsersByDistance(List<UserDetails> closedUsers, UserDetails user, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
+        {
+            var tasks = new List<Task<List<UserDetails>>>();
+            for (int i = 0; i < closedUsers.Count; i += 500)
+            {
+                var gg = closedUsers.Skip(i).Take(500).ToList();
+                tasks.Add(Task.Run(() => CalculateDistanceClosedUsers(gg , user, userLat, userLong, userManualDistanceControl, userDistanceMax, userGender).ToList()));
+
+            }
+
+            var m = (Task.WhenAll(tasks).Result).ToList();
+            var oneList = m.SelectMany(a => a).ToList();
+            return oneList;
+        }
+
+        private IEnumerable<UserDetails> CalculateDistanceClosedUsers(List<UserDetails> data,UserDetails user, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
+        {
+            data = data.Where(m => m.allowmylocation == true).ToList();
+            data = data.Where(m => m.Gender != null).ToList();
+            data = data.Where(p => (user.Filteringaccordingtoage == true ? birtdate(user.agefrom, user.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
+            data = data.Where(p =>
+                CalculateDistance(userLat, userLong, Convert.ToDouble(p.lat), Convert.ToDouble(p.lang)) <=
+                ((user.Manualdistancecontrol == 0
+                    ? Convert.ToDouble(userDistanceMax)
+                    : Convert.ToDouble(user.Manualdistancecontrol * 1000)))).ToList();
+
+            data = data.Where(m => (m.ghostmode == true ? type(m.AppearanceTypes, userGender) : true)).ToList();
+            data = data.Where(m => (user.ghostmode == true ? type(user.AppearanceTypes, m.Gender) : true)).ToList();
+            return data;
+        }
         public IQueryable<UserDetails> allusers()
         {
             //var com = ("select * from UserDetails");
@@ -1189,9 +1245,63 @@ namespace Social.Services.Implementation
             return (recommendedPeople, message);
         }
 
-        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFix(UserDetails userDeatil, string userId)
+        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFix(UserDetails userDeatil, string userId, bool? previous)
         {
+            var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
+            if ( previous is true)
+            {
+                var skipped =  _authContext.SkippedUsers
+                    .Where(q => q.UserId == userDeatil.PrimaryId)
+                    .OrderByDescending(a=>a.Date)
+                    .FirstOrDefault();
+
+                if (skipped != null)
+                {
+                    var previousUser = _authContext.UserDetails
+                        .Include(q => q.User)
+                        .Include(q => q.AppearanceTypes)
+                        .Include(q => q.listoftags)
+                        .ThenInclude(q => q.Interests)
+                        .FirstOrDefault(q=>q.PrimaryId == skipped.SkippedUserId);
+                    RecommendedPeopleViewModel recommendPeople;
+                    if (previousUser != null)
+                    {
+                        recommendPeople = new RecommendedPeopleViewModel()
+                        {
+                            UserId = previousUser.UserId,
+                            ImageIsVerified = previousUser.ImageIsVerified ?? false,
+                            Name = previousUser.User.DisplayedUserName,
+                            Image = string.IsNullOrEmpty(previousUser.UserImage)
+                                ? _configuration["DefaultImage"]
+                                : $"{_configuration["BaseUrl"]}{previousUser.UserImage}",
+                            DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(
+                                Convert.ToDouble(previousUser.lat),
+                                Convert.ToDouble(previousUser.lang),
+                                Convert.ToDouble(userDeatil.lat),
+                                Convert.ToDouble(userDeatil.lang),
+                                'M'), 2),
+                            InterestMatchPercent = (previousUser.listoftags
+                                    .Select(q => q.InterestsId)
+                                    .Intersect(currentUserInterests).Count() /
+                                Convert.ToDecimal(currentUserInterests.Count()) * 100),
+                            MatchedInterests = previousUser.listoftags
+                                .Where(q => currentUserInterests.Contains(q.InterestsId))
+                                .Select(i => i.Interests.name).ToList(),
+                        };
+                        _authContext.SkippedUsers.Remove(skipped);
+                        await _authContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        recommendPeople = null;
+                    }
+
+                    var messageData = recommendPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
+
+                    return (recommendPeople, messageData);
+                }
+            }
             if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
             {
                 var userToSkip = await _authContext.UserDetails
@@ -1256,7 +1366,6 @@ namespace Social.Services.Implementation
                                   && !skippedUsers.Contains(q.PrimaryId) 
                                   && !recentRequests.Contains(q.PrimaryId)).ToList();
 
-            var currentUserInterests = userDeatil.listoftags.Select(q => q.InterestsId).ToList();
 
             var usersList = await GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
 

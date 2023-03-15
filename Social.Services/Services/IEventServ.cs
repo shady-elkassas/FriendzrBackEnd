@@ -1,4 +1,5 @@
-﻿using Social.Entity.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Social.Entity.Models;
 using Social.Entity.ModelView;
 using Social.Services.Helpers;
 using Social.Services.ModelView;
@@ -101,7 +102,7 @@ namespace Social.Services.Services
         Task<CommonResponse<EventDataadminMV>> Remove(string ID);
         Task<CommonResponse<EventDataadminMV>> RemoveEventById(string id);
 
-        Task<(RecommendedEventViewModel,string)> RecommendedEvent(UserDetails userDeatil, string eventId);
+        Task<(RecommendedEventViewModel,string)> RecommendedEvent(UserDetails userDeatil, string eventId,  bool? previous);
         
         #region  public
         locationDataMV GetAllEventLocations(int pageNumber, int pageSize, double myLat, double myLon, AppConfigrationVM AppConfigrationVM , string categories);

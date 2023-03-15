@@ -167,7 +167,9 @@ namespace Social.Areas.Admin.Controllers
                     RegistrationDate = x.RegistrationDate.ToShortDateString(),
 
                 });
-           
+
+            
+
             if (x != null)
             {
                 if (x == 0)
@@ -176,12 +178,12 @@ namespace Social.Areas.Admin.Controllers
                 }
                 if (x == 1)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value.Date >= DateTime.Now.AddDays(-7).Date) );
+                    data = data.Where(q => (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-7).Date) );
                 }
 
                 if (x == 2)
                 {
-                    data = data.Where(q =>  (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date));
+                    data = data.Where(q =>  (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-14).Date));
                 }
 
                 if (x == 3)
