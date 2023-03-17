@@ -206,7 +206,7 @@ namespace Social.Controllers
                     Random random = new Random();
                     var code = random.Next(1, 1000000).ToString("D6");
                     var token = await GenerateEmailConfirmationToken(user, Convert.ToInt32(code.ToString()));
-                    await _emailHelper.SendWelcomeEmail(userDetails.Email);
+                   // await _emailHelper.SendWelcomeEmail(userDetails.Email);
 
                     return StatusCode(StatusCodes.Status200OK,
                           new ResponseModel<object>(StatusCodes.Status200OK, true,
@@ -315,7 +315,7 @@ namespace Social.Controllers
                         await userManager.UpdateAsync(user);
                         this._userService.UpdateUserDetails(userDeatils);
                         SendNotificationcs sendNotificationcs = new SendNotificationcs();
-                        await _emailHelper.SendWelcomeEmail(userDeatils.Email);
+                      //  await _emailHelper.SendWelcomeEmail(userDeatils.Email);
 
                         return StatusCode(StatusCodes.Status200OK,
                       new ResponseModel<object>(StatusCodes.Status200OK, true,
@@ -679,7 +679,7 @@ namespace Social.Controllers
                         // UserImage = imageName != null ? "/Images/" + imageName : "/Images/WhatsApp Image 2021-06-29 at 10.14.15 PM.jpeg",
                     };
                     this._userService.InsertUserDetails(userDetails);
-                    await _emailHelper.SendWelcomeEmail(userDetails.Email);
+                  //  await _emailHelper.SendWelcomeEmail(userDetails.Email);
 
 
                 }
