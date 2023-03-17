@@ -134,7 +134,7 @@ namespace Social.Services.PushNotification
                                     .DateDiffDay(u.User.RegistrationDate, DateTime.Today) == 5)
                     .ToList();
 
-                const string body = "Only looking for female/male friends? Use Private Mode to hide your profile from anyone.";
+                const string body = "Only looking for female/male friends? Use Private Mode to hide your profile from others.";
                 const string action = "Private_mode";
 
                 await SendNotification(users, body, action);
