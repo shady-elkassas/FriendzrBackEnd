@@ -25,6 +25,7 @@ namespace Social.Areas.UserArea.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
+
         //[Route("Uer/ResetPassword")]
         public async Task<IActionResult> ConfirmEmail(int code, string email)
         {
@@ -55,7 +56,7 @@ namespace Social.Areas.UserArea.Controllers
                                 user.EmailConfirmed = true;
                                 await userManager.UpdateAsync(user);
                                ViewBag.Message = "Email Confirmed";
-                            return View();
+                            return Redirect("https://friendzr.onelink.me/59hw/bo9x5q4r");
 
                             }
                             ViewBag.Message = "User Not Exist";
@@ -113,6 +114,7 @@ namespace Social.Areas.UserArea.Controllers
                 //                 new ResponseModel<object>(StatusCodes.Status500InternalServerError, false,
                 //                 ex.Message, null));
             }
+        
         }
         public async Task<IActionResult> DELETEEmail(int code, string email)
         {
