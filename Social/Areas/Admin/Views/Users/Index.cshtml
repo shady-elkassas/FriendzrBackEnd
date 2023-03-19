@@ -103,41 +103,57 @@
 
             </div>
 
-        <div class="row col-md-12">
-            <div class="text-left">
-                <select name="userfilter" id="filter" style="width: 161px; font-size: 20px; ">
-                    <option value=null>All Time</option>
-                    <option value=0>one day</option>
-                    <option value=1>week</option>
-                    <option value=2>two weeks</option>
-                    <option value=3>three weeks</option>
-                    <option value=4>four weeks</option>
-                </select>
+            <div class="row col-md-12">
+                <div class="text-left">
+                    <select name="userfilter" id="filter" style="width: 161px; font-size: 20px; ">
+                        <option value=null>All Time</option>
+                        <option value=0>one day</option>
+                        <option value=1>week</option>
+                        <option value=2>two weeks</option>
+                        <option value=3>three weeks</option>
+                        <option value=4>four weeks</option>
+                    </select>
+
+                </div>
 
             </div>
 
+
+            <div class="row col-md-12">
+                <div class="text-left">
+                    <div class="form-check form-check-custom form-check-solid d-inline-block">
+                        <button id="ExportAllEmailsAsExcel" type="button" class="btn btn-light-danger">
+                            <span class="indicator-label">Export Excel</span>
+                            <span class="indicator-progress">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border cursor-pointer rounded">
+
+                    <thead class="bg-light">
+                        <tr class="fw-bolder fs-6 text-gray-800 px-7">
+                            <th>#</th>
+                            <th>@localizer["UserName"]</th>
+                            <th>@localizer["Gender"]</th>
+                            <th>@localizer["RegistrationDate"]</th>
+                            <th>@localizer["AllowAds"]</th>
+                            <th>@localizer["IsActive"]</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <div class="table-responsive">
-
-            <table id="PageTable" class="table  table-row-bordered gy-5 gs-7 border cursor-pointer rounded">
-
-                <thead class="bg-light">
-                    <tr class="fw-bolder fs-6 text-gray-800 px-7">
-                        <th>#</th>
-                        <th>@localizer["UserName"]</th>
-                        <th>@localizer["Gender"]</th>
-                        <th>@localizer["RegistrationDate"]</th>
-                        <th>@localizer["AllowAds"]</th>
-                        <th>@localizer["IsActive"]</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 <div class="modal fade" id="UserReportsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -441,6 +457,36 @@
             
             RefreshPageDatatable();
         });
+
+
+        $("#ExportAllEmailsAsExcel").click(function () {
+            let x = $("#filter").val();
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "ExportAllEmailsAsExcel?x=" +x, true);
+            xhr.responseType = "blob";
+            xhr.onload = function (e) {
+                if (this.status == 200) {
+                    var blob = this.response;
+
+                    /* Get filename from Content-Disposition header */
+                    var filename = "";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+
+                    var a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = filename;
+                    a.dispatchEvent(new MouseEvent('click'));
+                }
+            }
+            xhr.send();
+        });
+
+
     </script>
 
 

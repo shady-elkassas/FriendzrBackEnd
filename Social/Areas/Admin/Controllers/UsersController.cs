@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Social.Entity.DBContext;
 using Social.Entity.Enums;
+using Social.Entity.Models;
 using Social.Entity.ModelView;
 using Social.Services;
 using Social.Services.Attributes;
@@ -16,6 +18,7 @@ using Social.Services.Helpers;
 using Social.Services.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -172,27 +175,30 @@ namespace Social.Areas.Admin.Controllers
 
             if (x != null)
             {
+                
+
                 if (x == 0)
                 {
                     data = data.Where(q => (q.LastUpdateLocation.Value.Date == DateTime.Now.AddDays(-1).Date));
+                    
                 }
                 if (x == 1)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-7).Date) );
+                    data = data.Where(q => (q.LastUpdateLocation.Value <= DateTime.Now.Date) && (q.LastUpdateLocation.Value.Date >= DateTime.Now.AddDays(-7).Date));
                 }
 
                 if (x == 2)
                 {
-                    data = data.Where(q =>  (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-14).Date));
+                    data = data.Where(q => (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) &&  (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
                 }
 
                 if (x == 3)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-21).Date));
+                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
                 }
                 if (x == 4)
                 {
-                    data = data.Where(q =>  (q.LastUpdateLocation.Value == DateTime.Now.AddDays(-30)));
+                    data = data.Where(q =>  (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-30))  && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
                 }
 
             }
@@ -220,6 +226,109 @@ namespace Social.Areas.Admin.Controllers
 
             return Ok(JObject.FromObject(returnObj, new Newtonsoft.Json.JsonSerializer() { ContractResolver = new DefaultContractResolver() }));
 
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ExportAllEmailsAsExcel(int? x)
+        {
+
+            var data = authDBContext.Users.Include(q => q.UserDetails).Include(q => q.UserRoles).
+                ThenInclude(q => q.Role).Where(b => b.Email != "Owner@Owner.com" && b.UserRoles.Any(q => q.Role.Name != StaticApplicationRoles.WhiteLable.ToString())
+                || b.UserRoles == null || b.UserRoles.Count() == 0).OrderByDescending(b => b.RegistrationDate).Select(x => new UserParsed
+                {
+                    UserName = x.DisplayedUserName,
+                    ID = x.Id,
+                    Email = x.Email,
+                    UserImage = x.UserDetails.UserImage,
+                    Gender = x.UserDetails.Gender,
+                    AllowAds = x.UserDetails.AllowAds,
+                    IsActive = x.UserDetails.IsActive,
+                    LastUpdateLocation = x.UserDetails.LastUpdateLocation,
+                    RegistrationDate = x.RegistrationDate.ToShortDateString(),
+                    cityname = x.UserDetails.City.DisplayName
+                });
+
+            if (x != null)
+            {
+
+
+                if (x == 0)
+                {
+                    data = data.Where(q => (q.LastUpdateLocation.Value.Date == DateTime.Now.AddDays(-1).Date));
+
+                }
+                if (x == 1)
+                {
+                    data = data.Where(q => (q.LastUpdateLocation.Value <= DateTime.Now.Date) && (q.LastUpdateLocation.Value.Date >= DateTime.Now.AddDays(-7).Date));
+                }
+
+                if (x == 2)
+                {
+                    data = data.Where(q => (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) && (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
+                }
+
+                if (x == 3)
+                {
+                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
+                }
+                if (x == 4)
+                {
+                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-30)) && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
+                }
+
+            }
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+                IXLWorksheet worksheet = workbook.Worksheets.Add("All users’ Emails");
+
+
+                int currentRowR1 = 2;
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Users Details";
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Fill.SetBackgroundColor(XLColor.Gray);
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
+
+                worksheet.Cell(currentRowR1, 2).Value = "User Name";
+                worksheet.Cell(currentRowR1, 3).Value = "Email";
+                worksheet.Cell(currentRowR1, 4).Value = "Gender";
+                worksheet.Cell(currentRowR1, 5).Value = "Last opened";
+                worksheet.Cell(currentRowR1, 6).Value = "registration Date ";
+                worksheet.Cell(currentRowR1, 7).Value = "City Name";
+
+                try
+                {
+                    foreach (UserParsed user in data)
+                    {
+                        currentRowR1++;
+                        worksheet.Cell(currentRowR1, 2).Value = user.UserName;
+                        worksheet.Cell(currentRowR1, 3).Value = user.Email;
+                        worksheet.Cell(currentRowR1, 4).Value = user.Gender;
+                        worksheet.Cell(currentRowR1, 5).Value = user.LastUpdateLocation;
+                        worksheet.Cell(currentRowR1, 6).Value = user.RegistrationDate;
+                        worksheet.Cell(currentRowR1, 7).Value = user.cityname;
+
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+
+
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    byte[] content = stream.ToArray();
+
+                    return File(
+                        content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Filter Result.xlsx");
+                }
+            }
         }
 
 
@@ -314,5 +423,7 @@ namespace Social.Areas.Admin.Controllers
         public bool IsActive { get; set; }
         public string RegistrationDate { get; set; }
         public DateTime? LastUpdateLocation { get; set; }
+
+        public string? cityname { get; set; }
     }
 }
