@@ -1453,18 +1453,6 @@ namespace Social.Services.Implementation
             var eventDataList = eventChatAttendList.Where(m => !blockedEventIds.Contains(m.EventDataid))
                 .Where(m => m.EventData.eventdateto.Value.Date >= DateTime.UtcNow.Date).Select(m => m.EventData)
                 .Distinct();
-            if (categories != null && categories != "[]")
-            {
-                var deserializedCategories = JsonConvert.DeserializeObject<List<string>>(categories);
-
-                if (deserializedCategories != null && deserializedCategories.Count() != 0)
-                {
-
-                    eventDataList = eventDataList.Where(q =>
-                        deserializedCategories.Contains(q.categorie.EntityId)
-                        /*|| deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))*/);
-                }
-            }
 
             if (endDate != null && dateCriteria != "Custom")
             {
@@ -1485,8 +1473,20 @@ namespace Social.Services.Implementation
             var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
             var distanceMax = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Max ?? 0) * 1000;
-
             var eventList = eventDataList.ToList();
+
+            if (categories != null && categories != "[]")
+            {
+                var deserializedCategories = JsonConvert.DeserializeObject<List<string>>(categories);
+
+                if (deserializedCategories != null && deserializedCategories.Count() != 0)
+                {
+
+                    eventList = eventList.Where(q =>
+                            deserializedCategories.Contains(q.categorie.EntityId)
+                        || deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))).ToList();
+                }
+            }
            
             var eventDataListEntity =
                 FilterByDistanceAndSetLatAndLang(eventList, userLat, userLong, distance, distanceMax);
@@ -1659,8 +1659,8 @@ namespace Social.Services.Implementation
             }
 
             var userId = user.PrimaryId;
-            var userLat = user.lat == null ? (double)0 : Convert.ToDouble(user.lat);
-            var userLong = user.lang == null ? (double)0 : Convert.ToDouble(user.lang);
+            //var userLat = user.lat == null ? (double)0 : Convert.ToDouble(user.lat);
+            //var userLong = user.lang == null ? (double)0 : Convert.ToDouble(user.lang);
 
 
             var allRequests = _authContext.Requestes.Where(m => m.status == 2 && (m.UserRequestId == userId || m.UserId == userId))
@@ -1693,6 +1693,7 @@ namespace Social.Services.Implementation
                 eventDataList = eventDataList.Where(q => q.eventdate.Value.Date >= startDate && q.eventdateto.Value.Date <= endDate);
 
             }
+            var eventDataListAfterFilter = eventDataList.ToList();
 
             if (categories != null && categories != "[]")
             {
@@ -1701,13 +1702,12 @@ namespace Social.Services.Implementation
                 if (deserializedCategories != null && deserializedCategories.Count() != 0)
                 {
 
-                    eventDataList = eventDataList.Where(q =>
+                    eventDataListAfterFilter = eventDataListAfterFilter.Where(q =>
                         deserializedCategories.Contains(q.categorie.EntityId)
-                        /*|| deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))*/);
+                        || deserializedCategories.Any(a => (bool)q.SubCategoriesIds.Contains(a))).ToList();
                 }
             }
 
-            var eventDataListAfterFilter = eventDataList.ToList();
 
             //var distance = (AppConfigrationVM.DistanceShowNearbyEventsOnMap_Min ?? 0) * 1000;
 
