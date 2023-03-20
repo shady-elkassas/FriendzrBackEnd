@@ -124,16 +124,23 @@ namespace Social.Controllers
                         }
                     }
                 }
-
-
-                if (MessageDTO.Messagetype != 4 && MessageDTO.Attach == null && (MessageDTO.Message == null || MessageDTO.Message.Replace(" ", "") == ""))
+                if (MessageDTO.Messagetype == 5 &&  string.IsNullOrEmpty(MessageDTO.Longitude) && string.IsNullOrEmpty(MessageDTO.Latitude))
                 {
 
                     return StatusCode(StatusCodes.Status406NotAcceptable,
-                  new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
-                  "massage data required", null));
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
+                            "Location required", null));
 
                 }
+
+                //if (MessageDTO.Messagetype != 4 && MessageDTO.Attach == null && string.IsNullOrEmpty( MessageDTO.Longitude)&&(MessageDTO.Message == null || MessageDTO.Message.Replace(" ", "") == ""))
+                //{
+
+                //    return StatusCode(StatusCodes.Status406NotAcceptable,
+                //  new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
+                //  "massage data required", null));
+
+                //}
 
 
                 if (MessageDTO.Messagetype == 4 && (MessageDTO.EventLINKid == null || MessageDTO.EventLINKid == ""))
