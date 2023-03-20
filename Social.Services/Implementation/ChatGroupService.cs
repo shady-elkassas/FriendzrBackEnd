@@ -140,6 +140,8 @@ namespace Social.Services.Implementation
                 {
                     currentuserMessage = item.UserId == CurrentUser.UserDetails.PrimaryId,
                     Messages = item.Messages,
+                    Longitude = item.Longitude,
+                    Latitude = item.Latitude,
                     Messagesdate = item.Messagesdate.ConvertDateTimeToString(),
                     Messagestime = item.Messagestime.ToString(@"hh\:mm"),
                     Username = item.User.userName,
