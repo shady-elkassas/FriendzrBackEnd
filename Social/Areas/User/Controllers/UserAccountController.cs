@@ -91,7 +91,7 @@ namespace Social.Areas.UserArea.Controllers
                 else
                 {
                     ViewBag.Message = "Not Exist";
-                    return View();
+                    return Redirect("https://friendzr.onelink.me/59hw/bo9x5q4r");
 
                 }
             }
