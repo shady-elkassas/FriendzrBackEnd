@@ -1229,6 +1229,8 @@ namespace Social.Controllers
                     {
                         MessagedataVM dat = new MessagedataVM();
                         dat.Messages = item.Messages;
+                        dat.Latitude = item.Latitude;
+                        dat.Longitude = item.Longitude;
                         dat.Messagesdate = item.Messagesdate.ConvertDateTimeToString();
                         dat.Messagestime = item.Messagestime.ToString(@"hh\:mm");
                         dat.Username = item.User.userName;
