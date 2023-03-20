@@ -999,6 +999,8 @@ namespace Social.Controllers
                 var messages = MessagesData.messagedatas.Select(item => new MessagedataVM
                 {
                     Messages = item.Messages,
+                    Latitude = item.Latitude,
+                    Longitude = item.Longitude,
                     Messagesdate = item.Messagesdate.ConvertDateTimeToString(),
                     Messagestime = item.Messagestime.ToString(@"hh\:mm"),
                     Username = item.User.User.DisplayedUserName,
