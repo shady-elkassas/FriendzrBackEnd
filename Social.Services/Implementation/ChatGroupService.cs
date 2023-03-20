@@ -288,6 +288,8 @@ namespace Social.Services.Implementation
                     //Messagestime = VM.MessagesDateTime.TimeOfDay,
                     Messagestime = /*DateTime.Now.TimeOfDay*/VM.MessagesDateTime.Value.TimeOfDay,
                     Messages = VM.MessageType == Messagetype.Text ? VM.Message : null,
+                    Latitude = VM.Latitude ,
+                    Longitude = VM.Latitude ,
                     Messagetype = (int)VM.MessageType,
                     MessagesAttached = "/Images/Messagedata/" + Attach,
                     linkable = VM.linkable,
@@ -926,6 +928,11 @@ namespace Social.Services.Implementation
             else if (model.ChatGroupID == default(Guid))
             {
                 Message = localizer["ChatGroupIDRequired"];
+
+            }
+            else if (model.MessageType == Messagetype.Location && string.IsNullOrEmpty(model.Longitude) && string.IsNullOrEmpty(model.Latitude))
+            {
+                Message = "Location Is Required";
 
             }
 

@@ -9,6 +9,7 @@ namespace Social.Entity.Enums
         Text=1, 
         Image,
         File,
-        linlable
+        linlable,
+        Location
     }
 }
