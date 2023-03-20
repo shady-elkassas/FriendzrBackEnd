@@ -2287,6 +2287,38 @@ namespace Social.Controllers
 
             }
         }
+        [HttpGet]
+        [Route("FavoriteEvents")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> FavoriteEvents([FromForm] int pageNumber, [FromForm] int pageSize)
+        {
+            try
+            {
+                var loggedInUser = HttpContext.GetUser();
+
+                var userDetails = loggedInUser.User.UserDetails;
+
+                var result = await _Event.GetFavoriteEvents(userDetails.PrimaryId, pageSize, pageNumber);
+                return StatusCode(StatusCodes.Status200OK,
+                      new ResponseModel<object>(StatusCodes.Status200OK, true,
+                      "data ", new
+                      {
+                          pageNumber = pageNumber,
+                          pageSize = pageSize,
+                          totalPages = result.PagesCount,
+                          totalRecords = result.totalCount, 
+                          data = result.events
+                      }));
+
+
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "Events/FavoriteEvents", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+
+            }
+        }
 
 
         [HttpPost]
