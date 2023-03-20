@@ -1692,7 +1692,7 @@ namespace Social.Controllers
                     var data = cuserount.Select(m => new
                     {
                         eventdate = m.eventdate.Value.ConvertDateTimeToString(),
-
+                        IsFavorite = _Event.CheckFavoriteEvent(loggedinUser.User.UserDetails.PrimaryId ,id),
                         eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
                         m.allday,
                         EventHasExpired = eventHasExpired,

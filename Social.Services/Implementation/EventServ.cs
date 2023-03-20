@@ -3055,6 +3055,12 @@ namespace Social.Services.Implementation
             return await _authContext.SaveChangesAsync() > 0;
         }
 
+        public bool CheckFavoriteEvent(int userId, string eventId)
+        {
+            var entity = _authContext.FavoriteEvents.FirstOrDefault(a => a.EventEntityId == eventId && a.UserDetailsId == userId);
+            return entity != null;
+        }
+
         public async Task<List<EventChatAttend>> InsertEventChatAttends(List<EventChatAttend> eventChatAttends)
         {
             await _authContext.EventChatAttend.AddRangeAsync(eventChatAttends);
