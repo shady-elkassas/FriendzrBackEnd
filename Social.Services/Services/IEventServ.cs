@@ -108,6 +108,8 @@ namespace Social.Services.Services
         locationDataMV GetAllEventLocations(int pageNumber, int pageSize, double myLat, double myLon, AppConfigrationVM AppConfigrationVM , string categories);
         Task<(List<EventVM> eventData, int totalRowCount)> GetAllEventLocations_2(double myLat, double myLon, AppConfigrationVM AppConfigrationVM , string categories, int pageNumber, int pageSize);
         Task<List<EventData>> InsertEvents(List<EventData> eventsData);
+        Task<bool> InsertFavoriteEvent(int userId, string eventId);
+        Task<bool> DeleteFavoriteEvent(int userId, string eventId);
         Task<List<EventChatAttend>> InsertEventChatAttends(List<EventChatAttend> eventChatAttends);
         void UpdateExistEvent (EventData eventExist, AddExternalEventDataModel newEventData, int eventType);
         int ExtractEventCategory(string evntCategory);

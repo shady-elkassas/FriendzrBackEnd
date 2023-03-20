@@ -2484,5 +2484,51 @@ namespace Social.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("FavoriteEvent")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> FavoriteEvent([FromForm] string eventId , [FromForm] bool isFavorite)
+        {
+            var userDetails = await GetUserDetails();
+            if (userDetails == null)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized,
+                    new ResponseModel<object>(StatusCodes.Status401Unauthorized, false,
+                        _localizer["NotLogin"], null));
+            }
+
+            if (isFavorite)
+            {
+              var result =  await _Event.InsertFavoriteEvent(userDetails.PrimaryId, eventId);
+              
+                  return StatusCode(StatusCodes.Status200OK,
+                      new ResponseModel<object>(StatusCodes.Status200OK, true,
+                          _localizer["FavoriteEvent"], result));
+              
+            }
+            else
+            {
+                var result = await _Event.DeleteFavoriteEvent(userDetails.PrimaryId, eventId);
+
+                return StatusCode(StatusCodes.Status200OK,
+                    new ResponseModel<object>(StatusCodes.Status200OK, true,
+                        _localizer["UnFavoriteEvent"], result));
+
+            }
+        }
+
+        private async Task<UserDetails> GetUserDetails()
+        {
+            HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationToken);
+            var loggedInUser = await _userService.GetLoggedInUser(authorizationToken);
+            if (loggedInUser != null)
+            {
+                var user = await userManager.FindByIdAsync(loggedInUser.UserId);
+                return _userService.GetUserDetails(user.Id);
+            }
+
+            return null;
+        }
+
     }
 }

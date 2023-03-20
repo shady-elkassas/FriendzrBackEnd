@@ -3034,7 +3034,26 @@ namespace Social.Services.Implementation
             await _authContext.SaveChangesAsync();
             return eventsData;
         }
+        public async Task<bool> InsertFavoriteEvent(int userId , string eventId)
+        {
+            var entity = new FavoriteEvent
+            {
+                Id = Guid.NewGuid(),
+                UserDetailsId = userId,
+                EventEntityId = eventId
+            };
+            await _authContext.FavoriteEvents.AddAsync(entity);
+            return await _authContext.SaveChangesAsync() >0;
+        }
 
+        public async Task<bool> DeleteFavoriteEvent(int userId, string eventId)
+        {
+            var entity = _authContext.FavoriteEvents.Where(a => a.EventEntityId == eventId && a.UserDetailsId == userId)
+                .ToList();
+             _authContext.FavoriteEvents.RemoveRange(entity);
+            
+            return await _authContext.SaveChangesAsync() > 0;
+        }
 
         public async Task<List<EventChatAttend>> InsertEventChatAttends(List<EventChatAttend> eventChatAttends)
         {
