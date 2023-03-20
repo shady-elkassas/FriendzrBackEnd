@@ -36,6 +36,7 @@ namespace Social.Entity.DBContext
         public DbSet<DeletedEventLog> DeletedEventLogs { get; set; }
         public DbSet<ChatGroupReport> ChatGroupReports { get; set; }
         public DbSet<EventData> EventData { get; set; } // =>
+        public DbSet<FavoriteEvent> FavoriteEvents { get; set; } // =>
         public DbSet<EventCategory> EventCategories { get; set; }
         public DbSet<listoftags> listoftags { get; set; }
         public DbSet<category> category { get; set; }
