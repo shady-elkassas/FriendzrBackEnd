@@ -2287,7 +2287,7 @@ namespace Social.Controllers
 
             }
         }
-        [HttpGet]
+        [HttpPost]
         [Route("FavoriteEvents")]
         [Consumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> FavoriteEvents([FromForm] int pageNumber, [FromForm] int pageSize)
