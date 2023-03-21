@@ -679,7 +679,10 @@ namespace Social.Controllers
                         // UserImage = imageName != null ? "/Images/" + imageName : "/Images/WhatsApp Image 2021-06-29 at 10.14.15 PM.jpeg",
                     };
                     this._userService.InsertUserDetails(userDetails);
-                  //  await _emailHelper.SendWelcomeEmail(userDetails.Email);
+                    //  await _emailHelper.SendWelcomeEmail(userDetails.Email);
+                    Random random = new Random();
+                    var codeNum = random.Next(1, 1000000).ToString("D6");
+                    var res = await GenerateEmailConfirmationToken(user, Convert.ToInt32(codeNum.ToString()));
 
 
                 }
