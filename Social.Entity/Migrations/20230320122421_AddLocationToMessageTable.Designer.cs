@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Social.Entity.DBContext;
 
 namespace Social.Entity.Migrations
 {
     [DbContext(typeof(AuthDBContext))]
-    partial class AuthDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230320122421_AddLocationToMessageTable")]
+    partial class AddLocationToMessageTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1013,23 +1015,6 @@ namespace Social.Entity.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("EventTypeList");
-                });
-
-            modelBuilder.Entity("Social.Entity.Models.FavoriteEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("EventEntityId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserDetailsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FavoriteEvents");
                 });
 
             modelBuilder.Entity("Social.Entity.Models.FilteringAccordingToAgeHistory", b =>

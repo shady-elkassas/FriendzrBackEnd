@@ -9,6 +9,8 @@ namespace Social.Entity.ModelView
     {
         public string UserId { set; get; }
         public string Message { set; get; }
+        public string Longitude { get; set; }
+        public string Latitude { get; set; }
         public int Messagetype { get; set; }
         public bool linkable { get; set; }
         public String EventLINKid { get; set; }
@@ -34,6 +36,8 @@ namespace Social.Entity.ModelView
         public bool linkable { get; set; }
         public String EventLINKid { get; set; }
         public string Message { set; get; }
+        public string Longitude { get; set; }
+        public string Latitude { get; set; }
         public DateTime Messagesdate { get; set; }
         public TimeSpan Messagestime { get; set; }
         public List<IFormFile> Attach { set; get; }

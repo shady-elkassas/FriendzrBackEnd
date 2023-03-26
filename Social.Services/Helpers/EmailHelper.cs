@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
 using Serilog;
 using Social.Services.Services;
 using System;
+using System.Collections.Generic;
 using System.Net.Mail;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -27,6 +30,19 @@ namespace Social.Sercices.Helpers
         {
             var path = _hostingEnvironment.WebRootPath + "/EmailTemplates/Verify_Email.html";
             var template = await System.IO.File.ReadAllTextAsync(path);
+            var stringTemplate = new Antlr4.StringTemplate.Template(template, '$', '$');
+            var parameters = new Dictionary<string, string>
+            {
+                { "toEmailAddress", toEmailAddress },
+                { "code", code.ToString() }
+            };
+
+            foreach (var (key, s) in parameters)
+            {
+                var value = s ?? "";
+                stringTemplate.Add(key, value);
+            }
+            var renderedTemplate = stringTemplate.Render();
             logger.Information("Send Email Configration Start");
             MailMessage m = new MailMessage();
             System.Net.Mail.SmtpClient sc = new System.Net.Mail.SmtpClient();
@@ -34,7 +50,7 @@ namespace Social.Sercices.Helpers
             m.To.Add(toEmailAddress);
             m.Subject = "Verify your email address";
            // m.Body = "<!DOCTYPE html><html lang='en'><head>  <meta charset='UTF-8' /> <meta http-equiv='X-UA-Compatible' content='IE=edge' /> <meta name='viewport' content='width=device-width, initial-scale=1.0' /> <title></title></head><body style='margin: 3px'> <div class='container' style='  height: 110vh'><div class='body-email' style='top: 50%; left: 50%; '> <div class='title'><img style='width: 70px; border-radius: 50%;' src='https://www.friendzsocialmedia.com/assets/media/logos/favicon.ico' /><h4 style='margin: 3px'>Please verify your email address.</h4></div><h4>Hi, " + username + ".</h4><div style='font-size: 15px'>Welcome to Friendzr. To start using the app and create your profile, you need to confirm your email address.</div><div class='code' style='font-size: 15px;WIDTH: 70%;TEXT-ALIGN: center; font-weight: bold; margin: 17px'><a style=' color: white;background-color: #49b498;padding: 10px;text-decoration:none' href='" + RedirectURL + "?email=" + toEmailAddress + "&code=" + code + "'>Verify your email address</a> </div><h5 >If you did not sign up to create an account on Friendzr, please ignore this email and your email will be deleted. You can unsubscribe at anytime by clicking<a style = ' color:#49b498;padding: 1px;border-radius: 13%;' href = '" + globalMethodsService.GetBaseDomain() + "/User/UserAccount/DELETEEmail" + "?email=" + toEmailAddress + "&code=" + code + "'>here</a> </h5><footer><h5 style='margin-bottom:-20px;'>Sincerely</h5><h5>Friendzr Team</h5></footer></div> </div></body></html>";
-            m.Body = template;
+            m.Body = renderedTemplate;
             m.IsBodyHtml = true;
             sc.Host = "www.friendzsocialmedia.com";
             string str1 = "gmail.com";

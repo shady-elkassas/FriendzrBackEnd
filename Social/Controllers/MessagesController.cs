@@ -124,9 +124,22 @@ namespace Social.Controllers
                         }
                     }
                 }
+                if (MessageDTO.Messagetype == 5 &&  string.IsNullOrEmpty(MessageDTO.Longitude) && string.IsNullOrEmpty(MessageDTO.Latitude))
+                {
 
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
+                            "Location required", null));
 
-                if (MessageDTO.Messagetype != 4 && MessageDTO.Attach == null && (MessageDTO.Message == null || MessageDTO.Message.Replace(" ", "") == ""))
+                }
+
+                var types = new List<int>
+                {
+                    1, // message
+                    2, // image
+                    3  // file
+                };
+                if (types.Contains(MessageDTO.Messagetype) && MessageDTO.Attach == null  && (MessageDTO.Message == null || MessageDTO.Message.Replace(" ", "") == ""))
                 {
 
                     return StatusCode(StatusCodes.Status406NotAcceptable,
@@ -630,12 +643,26 @@ namespace Social.Controllers
                         }
                     }
                 }
-                if (MessageDTO.Messagetype != 4 && MessageDTO.Attach == null && (MessageDTO.Message == null || MessageDTO.Message.Replace(" ", "") == ""))
+                var types = new List<int>
+                {
+                    1, // message
+                    2, // image
+                    3  // file
+                };
+                if (types.Contains(MessageDTO.Messagetype) && MessageDTO.Attach == null && (MessageDTO.Message == null || MessageDTO.Message.Replace(" ", "") == ""))
                 {
 
                     return StatusCode(StatusCodes.Status406NotAcceptable,
                   new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
                   "massage data required", null));
+
+                }
+                if (MessageDTO.Messagetype == 5 && string.IsNullOrEmpty(MessageDTO.Longitude) && string.IsNullOrEmpty(MessageDTO.Latitude))
+                {
+
+                    return StatusCode(StatusCodes.Status406NotAcceptable,
+                        new ResponseModel<object>(StatusCodes.Status406NotAcceptable, true,
+                            "Location required", null));
 
                 }
                 if (MessageDTO.Messagetype == 4 && (MessageDTO.EventLINKid == null || MessageDTO.EventLINKid == ""))
@@ -972,6 +999,8 @@ namespace Social.Controllers
                 var messages = MessagesData.messagedatas.Select(item => new MessagedataVM
                 {
                     Messages = item.Messages,
+                    Latitude = item.Latitude,
+                    Longitude = item.Longitude,
                     Messagesdate = item.Messagesdate.ConvertDateTimeToString(),
                     Messagestime = item.Messagestime.ToString(@"hh\:mm"),
                     Username = item.User.User.DisplayedUserName,
@@ -1200,6 +1229,8 @@ namespace Social.Controllers
                     {
                         MessagedataVM dat = new MessagedataVM();
                         dat.Messages = item.Messages;
+                        dat.Latitude = item.Latitude;
+                        dat.Longitude = item.Longitude;
                         dat.Messagesdate = item.Messagesdate.ConvertDateTimeToString();
                         dat.Messagestime = item.Messagestime.ToString(@"hh\:mm");
                         dat.Username = item.User.userName;

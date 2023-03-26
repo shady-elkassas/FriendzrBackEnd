@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Social.Entity.Models;
+using Social.Sercices.Helpers;
 using Social.Services.ModelView;
 using Social.Services.Services;
 using System;
@@ -17,11 +18,13 @@ namespace Social.Areas.UserArea.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly IUserService _userService;
+        private readonly EmailHelper _emailHelper;
 
-        public UserAccountController(UserManager<User> userManager,IUserService userService)
+        public UserAccountController(UserManager<User> userManager,IUserService userService, EmailHelper emailHelper)
         {
             this.userManager = userManager;
             this._userService = userService;
+            _emailHelper = emailHelper;
         }
         [HttpGet]
         [AllowAnonymous]
@@ -29,7 +32,9 @@ namespace Social.Areas.UserArea.Controllers
         //[Route("Uer/ResetPassword")]
         public async Task<IActionResult> ConfirmEmail(int code, string email)
         {
-         
+            await _emailHelper.SendWelcomeEmail(email);
+
+
             try
             {
                 var exist = this._userService.GetUserCodeByEmail(email);
@@ -56,6 +61,7 @@ namespace Social.Areas.UserArea.Controllers
                                 user.EmailConfirmed = true;
                                 await userManager.UpdateAsync(user);
                                ViewBag.Message = "Email Confirmed";
+                              await _emailHelper.SendWelcomeEmail(email);
                             return Redirect("https://friendzr.onelink.me/59hw/bo9x5q4r");
 
                             }
@@ -85,7 +91,7 @@ namespace Social.Areas.UserArea.Controllers
                 else
                 {
                     ViewBag.Message = "Not Exist";
-                    return View();
+                    return Redirect("https://friendzr.onelink.me/59hw/bo9x5q4r");
 
                 }
             }

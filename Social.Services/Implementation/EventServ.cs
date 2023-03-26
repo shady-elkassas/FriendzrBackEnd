@@ -3034,7 +3034,60 @@ namespace Social.Services.Implementation
             await _authContext.SaveChangesAsync();
             return eventsData;
         }
+        public async Task<bool> InsertFavoriteEvent(int userId , string eventId)
+        {
+            var entity = new FavoriteEvent
+            {
+                Id = Guid.NewGuid(),
+                UserDetailsId = userId,
+                EventEntityId = eventId
+            };
+            await _authContext.FavoriteEvents.AddAsync(entity);
+            return await _authContext.SaveChangesAsync() >0;
+        }
 
+        public async Task<bool> DeleteFavoriteEvent(int userId, string eventId)
+        {
+            var entity = _authContext.FavoriteEvents.Where(a => a.EventEntityId == eventId && a.UserDetailsId == userId)
+                .ToList();
+             _authContext.FavoriteEvents.RemoveRange(entity);
+            
+            return await _authContext.SaveChangesAsync() > 0;
+        }
+        public async Task<(List<EventDataByLocationMV> events , int totalCount , int PagesCount)> GetFavoriteEvents(int userId , int pageSize,int pageNumber)
+        {
+            var eventsIds = await  _authContext.FavoriteEvents.Where(a =>  a.UserDetailsId == userId)
+                .Select(a=>a.EventEntityId).ToListAsync();
+            var events = _authContext.EventData
+                .Where(a => eventsIds.Contains(a.EntityId));
+            var totalCount = events.Count();
+            var totalPages = Convert.ToInt32(Math.Ceiling(totalCount / (double)pageSize));
+            var paged = events.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var result =
+                paged.Select(m => new EventDataByLocationMV
+            {
+                eventdate = m.eventdate.Value.ConvertDateTimeToString(),
+                allday = Convert.ToBoolean(m.allday),
+                category = m.categorie == null ? "" : m.categorie.name,
+                Title = m.Title,
+                Image = (m.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + m.image,
+                EventTypeName = m.EventTypeList.Name.Contains("White") ? "Whitelabel" : m.EventTypeList.Name,
+                Id = m.EntityId,
+                categorieId = (m.categorie == null ? "" : m.categorie.EntityId),
+                totalnumbert = m.totalnumbert,
+                lang = m.lang,
+                lat = m.lat,
+                UseraddedId = m.User?.UserId
+
+            }).ToList();
+
+            return (result ,totalCount,totalPages);
+        }
+        public bool CheckFavoriteEvent(int userId, string eventId)
+        {
+            var entity = _authContext.FavoriteEvents.FirstOrDefault(a => a.EventEntityId == eventId && a.UserDetailsId == userId);
+            return entity != null;
+        }
 
         public async Task<List<EventChatAttend>> InsertEventChatAttends(List<EventChatAttend> eventChatAttends)
         {

@@ -1692,7 +1692,7 @@ namespace Social.Controllers
                     var data = cuserount.Select(m => new
                     {
                         eventdate = m.eventdate.Value.ConvertDateTimeToString(),
-
+                        IsFavorite = _Event.CheckFavoriteEvent(loggedinUser.User.UserDetails.PrimaryId ,id),
                         eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
                         m.allday,
                         EventHasExpired = eventHasExpired,
@@ -2287,6 +2287,38 @@ namespace Social.Controllers
 
             }
         }
+        [HttpPost]
+        [Route("FavoriteEvents")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> FavoriteEvents([FromForm] int pageNumber, [FromForm] int pageSize)
+        {
+            try
+            {
+                var loggedInUser = HttpContext.GetUser();
+
+                var userDetails = loggedInUser.User.UserDetails;
+
+                var result = await _Event.GetFavoriteEvents(userDetails.PrimaryId, pageSize, pageNumber);
+                return StatusCode(StatusCodes.Status200OK,
+                      new ResponseModel<object>(StatusCodes.Status200OK, true,
+                      "data ", new
+                      {
+                          pageNumber = pageNumber,
+                          pageSize = pageSize,
+                          totalPages = result.PagesCount,
+                          totalRecords = result.totalCount, 
+                          data = result.events
+                      }));
+
+
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "Events/FavoriteEvents", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+
+            }
+        }
 
 
         [HttpPost]
@@ -2482,6 +2514,52 @@ namespace Social.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
 
             }
+        }
+
+        [HttpPost]
+        [Route("FavoriteEvent")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<IActionResult> FavoriteEvent([FromForm] string eventId , [FromForm] bool isFavorite)
+        {
+            var userDetails = await GetUserDetails();
+            if (userDetails == null)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized,
+                    new ResponseModel<object>(StatusCodes.Status401Unauthorized, false,
+                        _localizer["NotLogin"], null));
+            }
+
+            if (isFavorite)
+            {
+              var result =  await _Event.InsertFavoriteEvent(userDetails.PrimaryId, eventId);
+              
+                  return StatusCode(StatusCodes.Status200OK,
+                      new ResponseModel<object>(StatusCodes.Status200OK, true,
+                          _localizer["FavoriteEvent"], result));
+              
+            }
+            else
+            {
+                var result = await _Event.DeleteFavoriteEvent(userDetails.PrimaryId, eventId);
+
+                return StatusCode(StatusCodes.Status200OK,
+                    new ResponseModel<object>(StatusCodes.Status200OK, true,
+                        _localizer["UnFavoriteEvent"], result));
+
+            }
+        }
+
+        private async Task<UserDetails> GetUserDetails()
+        {
+            HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationToken);
+            var loggedInUser = await _userService.GetLoggedInUser(authorizationToken);
+            if (loggedInUser != null)
+            {
+                var user = await userManager.FindByIdAsync(loggedInUser.UserId);
+                return _userService.GetUserDetails(user.Id);
+            }
+
+            return null;
         }
 
     }
