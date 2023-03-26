@@ -2508,7 +2508,7 @@ namespace Social.Areas.Admin.Controllers
                 worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
 
                 worksheet.Cell(currentRowR1, 2).Value = "User Name";
-                worksheet.Cell(currentRowR1, 3).Value = "number of requests";
+                //worksheet.Cell(currentRowR1, 3).Value = "number of requests";
                 worksheet.Cell(currentRowR1, 4).Value = "location";
                 worksheet.Cell(currentRowR1, 5).Value = "email";
                 worksheet.Cell(currentRowR1, 6).Value = "age group ";
