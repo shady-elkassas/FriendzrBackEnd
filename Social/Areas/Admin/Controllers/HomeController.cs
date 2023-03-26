@@ -2379,6 +2379,175 @@ namespace Social.Areas.Admin.Controllers
         }
 
         #endregion
+
+
+        public async Task<IActionResult> Exportsatisticperview(string type , int year)
+        {
+
+            var monthes = Enumerable.Range(1, 12).Select(i => new { index = i, Month = DateTimeFormatInfo.CurrentInfo.GetAbbreviatedMonthName(i) });
+
+            List<EventTracker> eventTrackers = authDBContext.EventTrackers.Include(q => q.User).Include(q => q.Event)
+                .Where(q => q.ActionType == "view" && q.User.Email.ToLower().Contains("@owner") == false 
+                && q.Date.Date.Year == DateTime.Now.Year && q.User.listoftags.Any() 
+                
+                
+                && q.User.birthdate != null && q.User.User.EmailConfirmed == true &&
+                (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToList();
+
+
+            List<EventTracker> groupedData = eventTrackers.GroupBy(q => q.UserId).Select(q => new EventTracker() {
+                Id = q.First().Id,
+                EventId = q.First().EventId,
+                UserId = q.First().UserId,
+                User = q.First().User,
+                Event = q.First().Event,
+                Date = q.First().Date
+            }).ToList();
+
+
+            ExportStatisticsByGenderAndAgeViewModel eventTrackersPerMonth = new ExportStatisticsByGenderAndAgeViewModel();
+
+            //var groupedEventTracker = eventTrackers.ToList().GroupBy(q => new { q.EventId, q.UserId }).Select(q => new EventTracker() { Id = q.FirstOrDefault().Id, UserId = q.FirstOrDefault().UserId, EventId = q.FirstOrDefault().EventId, Date = q.FirstOrDefault().Date, ActionType = q.FirstOrDefault().ActionType }).ToList();
+
+            //var eventTrackerbyMonth = groupedEventTracker.GroupBy(x => new { Month = x.Date.Month, GenderType = eventTrackers.ToList().FirstOrDefault(q => q.UserId == x.UserId).User.Gender }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Gender = x.Key.GenderType, Birthdate = eventTrackers.FirstOrDefault(q => q.UserId == x.FirstOrDefault().UserId).User.birthdate }).OrderBy(x => x.Month).ToList();
+
+            //var From18To24 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 18 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 25).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
+            //var From25To34 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 26 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 34).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
+            //var From35To44 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 35 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 44).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
+            //var From45To54 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 45 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 54).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
+            //var From55To64 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 55 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 64).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
+            //var MoreThan65 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 65).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
+
+            //eventTrackersPerMonth.StatisticsByGender = monthes.Select(m => new StatisticsByGenderViewModel()
+            //{
+            //    Month = m.Month,
+            //    Male = eventTrackerbyMonth.Where(n => m.index == n.Month).FirstOrDefault(q => q.Gender == "male")?.Count ?? 0,
+            //    Female = eventTrackerbyMonth.Where(n => m.index == n.Month).FirstOrDefault(q => q.Gender == "female")?.Count ?? 0,
+            //    Other = eventTrackerbyMonth.Where(n => m.index == n.Month).FirstOrDefault(q => q.Gender == "other")?.Count ?? 0,
+            //}).ToList();
+
+            //eventTrackersPerMonth.StatisticsByAge = monthes.Select(m => new StatisticsByAgeViewModel()
+            //{
+            //    Month = m.Month,
+            //    From18To24 = From18To24.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
+            //    From25To34 = From25To34.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
+            //    From35To44 = From35To44.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
+            //    From45To54 = From45To54.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
+            //    From55To64 = From55To64.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
+            //    MoreThan65 = MoreThan65.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0
+            //}).ToList();
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+                IXLWorksheet worksheet = workbook.Worksheets.Add("Events View Statistics");
+
+
+                int currentRowR1 = 2;
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Events View Statistics";
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Fill.SetBackgroundColor(XLColor.Gray);
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
+
+                worksheet.Cell(currentRowR1, 2).Value = "User Name";
+                worksheet.Cell(currentRowR1, 3).Value = "number of requests";
+                worksheet.Cell(currentRowR1, 4).Value = "location";
+                worksheet.Cell(currentRowR1, 5).Value = "email";
+                worksheet.Cell(currentRowR1, 6).Value = "age group ";
+                
+
+                try
+                {
+                    foreach (var month in groupedData)
+                    {
+                        currentRowR1++;
+                        worksheet.Cell(currentRowR1, 2).Value = month.User.userName;
+                        worksheet.Cell(currentRowR1, 3).Value = month.User.Requestesfor.Count();
+                        worksheet.Cell(currentRowR1, 4).Value = month.User.City ;
+                        worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
+                        worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
+
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+
+
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    byte[] content = stream.ToArray();
+
+                    return File(
+                        content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Filter Result.xlsx");
+                }
+            }
+        }
+
+
+        public async Task<IActionResult> Exportsatisticrequestsent()
+        {
+            List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.birthdate != null && q.User.Email != "dev@dev.com" && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.User.listoftags.Any()).AsNoTracking().ToListAsync();
+
+            List<Requestes> numberOfConnectionRequests = requestes.Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToList();
+
+            List<Requestes> reqts = await authDBContext.Requestes.Where(x => x.Id != 0).ToListAsync();
+
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+                IXLWorksheet worksheet = workbook.Worksheets.Add("Events View Statistics");
+
+
+                int currentRowR1 = 2;
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Events View Statistics";
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Fill.SetBackgroundColor(XLColor.Gray);
+                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
+
+                worksheet.Cell(currentRowR1, 2).Value = "User Name";
+                worksheet.Cell(currentRowR1, 3).Value = "number of requests";
+                worksheet.Cell(currentRowR1, 4).Value = "location";
+                worksheet.Cell(currentRowR1, 5).Value = "email";
+                worksheet.Cell(currentRowR1, 6).Value = "age group ";
+
+
+                try
+                {
+                    foreach (var month in numberOfConnectionRequests)
+                    {
+                        currentRowR1++;
+                        worksheet.Cell(currentRowR1, 2).Value = month.User.userName;
+                        //worksheet.Cell(currentRowR1, 3).Value = reqts.Where(q => q.UserId == month.UserId).Count();
+                        worksheet.Cell(currentRowR1, 4).Value = month.User.City;
+                        worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
+                        worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
+
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+
+
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    byte[] content = stream.ToArray();
+
+                    return File(
+                        content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Filter Result.xlsx");
+                }
+            }
+        }
     }
 
 }
