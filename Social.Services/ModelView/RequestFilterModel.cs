@@ -15,5 +15,12 @@ namespace Social.Services.ModelView
         public string CityName { get; set; }
 
         public  UserDetails User { get; set; }
+
+       
+        public DateTime birthdate { get; set; }
+        public int Age { get {
+                return DateTime.Now.Year - birthdate.Year;
+            } set { } }
+
     }
 }

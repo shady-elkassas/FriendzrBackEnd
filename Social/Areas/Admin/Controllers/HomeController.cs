@@ -2407,35 +2407,6 @@ namespace Social.Areas.Admin.Controllers
 
             ExportStatisticsByGenderAndAgeViewModel eventTrackersPerMonth = new ExportStatisticsByGenderAndAgeViewModel();
 
-            //var groupedEventTracker = eventTrackers.ToList().GroupBy(q => new { q.EventId, q.UserId }).Select(q => new EventTracker() { Id = q.FirstOrDefault().Id, UserId = q.FirstOrDefault().UserId, EventId = q.FirstOrDefault().EventId, Date = q.FirstOrDefault().Date, ActionType = q.FirstOrDefault().ActionType }).ToList();
-
-            //var eventTrackerbyMonth = groupedEventTracker.GroupBy(x => new { Month = x.Date.Month, GenderType = eventTrackers.ToList().FirstOrDefault(q => q.UserId == x.UserId).User.Gender }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Gender = x.Key.GenderType, Birthdate = eventTrackers.FirstOrDefault(q => q.UserId == x.FirstOrDefault().UserId).User.birthdate }).OrderBy(x => x.Month).ToList();
-
-            //var From18To24 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 18 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 25).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
-            //var From25To34 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 26 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 34).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
-            //var From35To44 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 35 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 44).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
-            //var From45To54 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 45 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 54).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
-            //var From55To64 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 55 && GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) <= 64).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
-            //var MoreThan65 = groupedEventTracker.Where(q => GetAge(eventTrackers.FirstOrDefault(u => u.UserId == q.UserId).User.birthdate.Value) >= 65).GroupBy(x => new { Month = x.Date.Month }).Select(x => new { Month = x.Key.Month, Count = x.Count(), Birthdate = eventTrackers.FirstOrDefault(u => u.UserId == x.FirstOrDefault().UserId).User.birthdate.Value }).OrderBy(x => x.Month).ToList();
-
-            //eventTrackersPerMonth.StatisticsByGender = monthes.Select(m => new StatisticsByGenderViewModel()
-            //{
-            //    Month = m.Month,
-            //    Male = eventTrackerbyMonth.Where(n => m.index == n.Month).FirstOrDefault(q => q.Gender == "male")?.Count ?? 0,
-            //    Female = eventTrackerbyMonth.Where(n => m.index == n.Month).FirstOrDefault(q => q.Gender == "female")?.Count ?? 0,
-            //    Other = eventTrackerbyMonth.Where(n => m.index == n.Month).FirstOrDefault(q => q.Gender == "other")?.Count ?? 0,
-            //}).ToList();
-
-            //eventTrackersPerMonth.StatisticsByAge = monthes.Select(m => new StatisticsByAgeViewModel()
-            //{
-            //    Month = m.Month,
-            //    From18To24 = From18To24.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
-            //    From25To34 = From25To34.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
-            //    From35To44 = From35To44.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
-            //    From45To54 = From45To54.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
-            //    From55To64 = From55To64.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0,
-            //    MoreThan65 = MoreThan65.Where(n => m.index == n.Month).FirstOrDefault()?.Count ?? 0
-            //}).ToList();
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet worksheet = workbook.Worksheets.Add("Events View Statistics");
@@ -2462,7 +2433,7 @@ namespace Social.Areas.Admin.Controllers
                         worksheet.Cell(currentRowR1, 3).Value = month.User.Requestesfor.Count();
                         worksheet.Cell(currentRowR1, 4).Value = month.User.City== null ? "" : month.User.City.DisplayName;
                         worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
-                        worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
+                        worksheet.Cell(currentRowR1, 6).Value =DateTime.Now.Year - month.User.birthdate.Value.Year;
 
                     }
                 }
@@ -2507,7 +2478,8 @@ namespace Social.Areas.Admin.Controllers
                     //UserRequest = q.First().UserRequest,
                     UserId = q.First().UserId,
                     User = q.First().User,
-                   // Userblock = q.First().Userblock
+                    birthdate = q.First().User.birthdate.Value,
+                  
 
                 }).Where(x => x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
 
@@ -2515,11 +2487,11 @@ namespace Social.Areas.Admin.Controllers
 
                 using (XLWorkbook workbook = new XLWorkbook())
                 {
-                    IXLWorksheet worksheet = workbook.Worksheets.Add("Events View Statistics");
+                    IXLWorksheet worksheet = workbook.Worksheets.Add("Number of Connection Request");
 
 
                     int currentRowR1 = 2;
-                    worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Events View Statistics";
+                    worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Number of Connection Request";
                     worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Fill.SetBackgroundColor(XLColor.Gray);
                     worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
 
@@ -2528,6 +2500,8 @@ namespace Social.Areas.Admin.Controllers
                     worksheet.Cell(currentRowR1, 4).Value = "location";
                     worksheet.Cell(currentRowR1, 5).Value = "email";
                     worksheet.Cell(currentRowR1, 6).Value = "age group ";
+
+                    
 
 
                     try
@@ -2539,7 +2513,7 @@ namespace Social.Areas.Admin.Controllers
                             worksheet.Cell(currentRowR1, 3).Value = month.User.Requestesfor.Count();
                             worksheet.Cell(currentRowR1, 4).Value = month.CityName;
                             worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
-                            worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
+                            worksheet.Cell(currentRowR1, 6).Value = month.Age;
 
                         }
                     }
