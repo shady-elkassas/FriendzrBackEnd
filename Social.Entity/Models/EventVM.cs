@@ -7,6 +7,7 @@ namespace Social.Entity.Models
     public class EventVM
     {
 
+        public bool IsFavorite { get; set; }
         public string description { get; set; }
         public string categorie { get; set; }
         public string categorieimage { get; set; }

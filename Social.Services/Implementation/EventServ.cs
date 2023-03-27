@@ -844,6 +844,7 @@ namespace Social.Services.Implementation
                 EventVM.categorieimage = _configuration["BaseUrl"] + m.categorie?.image;
                 EventVM.lat = m.lat;
                 EventVM.lang = m.lang;
+                EventVM.IsFavorite = CheckFavoriteEvent(user.PrimaryId, m.EntityId);
 
                 EventVM.DistanceBetweenLocationAndEvent = CalculateDistance(myLat, myLon, Convert.ToDouble(m.lat), Convert.ToDouble(m.lang));
 
@@ -1735,6 +1736,7 @@ namespace Social.Services.Implementation
             var result = eventDataListAfterFilter.Select(m => new EventDataByLocationMV
             {
                 eventdate = m.eventdate.Value.ConvertDateTimeToString(),
+                IsFavorite = CheckFavoriteEvent(user.PrimaryId, m.EntityId),
                 //eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
                 allday = Convert.ToBoolean(m.allday),
                 //   description = m.description,
@@ -2014,6 +2016,7 @@ namespace Social.Services.Implementation
                         var nearEvent = new EventVM
                         {
                             Id = previousEvent.EntityId,
+                            IsFavorite = CheckFavoriteEvent(userDeatil.PrimaryId, previousEvent.EntityId),
                             Title = previousEvent.Title,
                             description = previousEvent.description,
                             eventdate = previousEvent.eventdate?.ToString("dd/MM/yyyy"),
@@ -2031,6 +2034,7 @@ namespace Social.Services.Implementation
                                 Convert.ToDouble(previousEvent.lat), Convert.ToDouble(previousEvent.lang))
                         };
                         recommend.EventId = nearEvent.Id;
+                        recommend.IsFavorite = nearEvent.IsFavorite;
                         recommend.Title = nearEvent.Title;
                         recommend.Description = nearEvent.description;
                         recommend.Image = nearEvent.image;
@@ -2117,6 +2121,7 @@ namespace Social.Services.Implementation
                 var nearbyEvent = new EventVM
                 {
                     Id = eventEntity.EntityId,
+                    IsFavorite = CheckFavoriteEvent(userDeatil.PrimaryId, eventEntity.EntityId),
                     Title = eventEntity.Title,
                     description = eventEntity.description,
                     eventdate = eventEntity.eventdate?.ToString("dd/MM/yyyy"),
@@ -2135,6 +2140,7 @@ namespace Social.Services.Implementation
                 };
 
                 recommendedEvent.EventId = nearbyEvent.Id;
+                recommendedEvent.IsFavorite = nearbyEvent.IsFavorite;
                 recommendedEvent.Title = nearbyEvent.Title;
                 recommendedEvent.Description = nearbyEvent.description;
                 recommendedEvent.Image = nearbyEvent.image;

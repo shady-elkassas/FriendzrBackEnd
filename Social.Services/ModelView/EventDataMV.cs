@@ -113,6 +113,7 @@ namespace Social.Entity.ModelView
         //public bool MyEvent { get; set; }
         //public string UserImage { get; set; }
         public string EventTypeName { get; set; }
+        public bool IsFavorite { get; set; }
 
     }
 
