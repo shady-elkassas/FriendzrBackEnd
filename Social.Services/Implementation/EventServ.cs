@@ -3077,13 +3077,13 @@ namespace Social.Services.Implementation
             var userCount = getalluserevent(userId, allAttend)
                 .Select(m => m.EventData)
                 .Distinct().OrderByDescending(m => m.Id);
-            if ((userCount.FirstOrDefault().eventdateto.Value.Date <= DateTime.Now.Date))
+            if ((userCount.FirstOrDefault()?.eventdateto.Value.Date <= DateTime.UtcNow.Date))
             {
-                if ((userCount.FirstOrDefault().eventto != null &&
-                     userCount.FirstOrDefault().eventdateto.Value.Date == DateTime.Now.Date &&
-                     userCount.FirstOrDefault().eventto.Value >= DateTime.Now.TimeOfDay) ||
-                    (userCount.FirstOrDefault().eventdateto.Value.Date == DateTime.Now.Date &&
-                     userCount.FirstOrDefault().allday.Value == true))
+                if ((userCount.FirstOrDefault()?.eventto != null &&
+                     userCount.FirstOrDefault()?.eventdateto.Value.Date == DateTime.UtcNow.Date &&
+                     userCount.FirstOrDefault()?.eventto.Value >= DateTime.UtcNow.TimeOfDay) ||
+                    (userCount.FirstOrDefault()?.eventdateto.Value.Date == DateTime.UtcNow.Date &&
+                     userCount.FirstOrDefault()?.allday.Value == true))
                 {
                 }
                 else
