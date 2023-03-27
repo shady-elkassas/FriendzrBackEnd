@@ -5,6 +5,7 @@ namespace Social.Services.ModelView
     public class RecommendedEventViewModel
     {
         public string EventId { get; set; }
+        public bool IsFavorite { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }

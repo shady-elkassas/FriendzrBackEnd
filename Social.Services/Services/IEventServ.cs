@@ -111,7 +111,7 @@ namespace Social.Services.Services
         Task<bool> InsertFavoriteEvent(int userId, string eventId);
         Task<bool> DeleteFavoriteEvent(int userId, string eventId);
 
-        Task<(List<EventDataByLocationMV> events, int totalCount, int PagesCount)> GetFavoriteEvents(int userId,
+        Task<(List<GetFavoriteEventsDto> events, int totalCount, int PagesCount)> GetFavoriteEvents(int userId,
             int pageSize, int pageNumber);        bool CheckFavoriteEvent(int userId, string eventId);
         Task<List<EventChatAttend>> InsertEventChatAttends(List<EventChatAttend> eventChatAttends);
         void UpdateExistEvent (EventData eventExist, AddExternalEventDataModel newEventData, int eventType);

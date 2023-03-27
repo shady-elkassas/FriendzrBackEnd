@@ -1592,6 +1592,7 @@ namespace Social.Controllers
                               data = pagedModel.Data.Select(m => new
                               {
                                   description = m.description,
+                                  IsFavorite = _Event.CheckFavoriteEvent(loggedinUser.User.UserDetails.PrimaryId, m.EntityId),
                                   categorie = m.categorie?.name,
                                   categorieimage = _configuration["BaseUrl"] + m.categorie?.image,
                                   eventtypeid = m.EventTypeList.entityID,

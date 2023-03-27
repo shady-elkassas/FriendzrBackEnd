@@ -844,6 +844,7 @@ namespace Social.Services.Implementation
                 EventVM.categorieimage = _configuration["BaseUrl"] + m.categorie?.image;
                 EventVM.lat = m.lat;
                 EventVM.lang = m.lang;
+                EventVM.IsFavorite = CheckFavoriteEvent(user.PrimaryId, m.EntityId);
 
                 EventVM.DistanceBetweenLocationAndEvent = CalculateDistance(myLat, myLon, Convert.ToDouble(m.lat), Convert.ToDouble(m.lang));
 
@@ -1735,6 +1736,7 @@ namespace Social.Services.Implementation
             var result = eventDataListAfterFilter.Select(m => new EventDataByLocationMV
             {
                 eventdate = m.eventdate.Value.ConvertDateTimeToString(),
+                IsFavorite = CheckFavoriteEvent(user.PrimaryId, m.EntityId),
                 //eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
                 allday = Convert.ToBoolean(m.allday),
                 //   description = m.description,
@@ -2014,6 +2016,7 @@ namespace Social.Services.Implementation
                         var nearEvent = new EventVM
                         {
                             Id = previousEvent.EntityId,
+                            IsFavorite = CheckFavoriteEvent(userDeatil.PrimaryId, previousEvent.EntityId),
                             Title = previousEvent.Title,
                             description = previousEvent.description,
                             eventdate = previousEvent.eventdate?.ToString("dd/MM/yyyy"),
@@ -2031,6 +2034,7 @@ namespace Social.Services.Implementation
                                 Convert.ToDouble(previousEvent.lat), Convert.ToDouble(previousEvent.lang))
                         };
                         recommend.EventId = nearEvent.Id;
+                        recommend.IsFavorite = nearEvent.IsFavorite;
                         recommend.Title = nearEvent.Title;
                         recommend.Description = nearEvent.description;
                         recommend.Image = nearEvent.image;
@@ -2117,6 +2121,7 @@ namespace Social.Services.Implementation
                 var nearbyEvent = new EventVM
                 {
                     Id = eventEntity.EntityId,
+                    IsFavorite = CheckFavoriteEvent(userDeatil.PrimaryId, eventEntity.EntityId),
                     Title = eventEntity.Title,
                     description = eventEntity.description,
                     eventdate = eventEntity.eventdate?.ToString("dd/MM/yyyy"),
@@ -2135,6 +2140,7 @@ namespace Social.Services.Implementation
                 };
 
                 recommendedEvent.EventId = nearbyEvent.Id;
+                recommendedEvent.IsFavorite = nearbyEvent.IsFavorite;
                 recommendedEvent.Title = nearbyEvent.Title;
                 recommendedEvent.Description = nearbyEvent.description;
                 recommendedEvent.Image = nearbyEvent.image;
@@ -3054,7 +3060,7 @@ namespace Social.Services.Implementation
             
             return await _authContext.SaveChangesAsync() > 0;
         }
-        public async Task<(List<EventDataByLocationMV> events , int totalCount , int PagesCount)> GetFavoriteEvents(int userId , int pageSize,int pageNumber)
+        public async Task<(List<GetFavoriteEventsDto> events , int totalCount , int PagesCount)> GetFavoriteEvents(int userId , int pageSize,int pageNumber)
         {
             var eventsIds = await  _authContext.FavoriteEvents.Where(a =>  a.UserDetailsId == userId)
                 .Select(a=>a.EventEntityId).ToListAsync();
@@ -3063,22 +3069,78 @@ namespace Social.Services.Implementation
             var totalCount = events.Count();
             var totalPages = Convert.ToInt32(Math.Ceiling(totalCount / (double)pageSize));
             var paged = events.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            var result =
-                paged.Select(m => new EventDataByLocationMV
-            {
-                eventdate = m.eventdate.Value.ConvertDateTimeToString(),
-                allday = Convert.ToBoolean(m.allday),
-                category = m.categorie == null ? "" : m.categorie.name,
-                Title = m.Title,
-                Image = (m.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + m.image,
-                EventTypeName = m.EventTypeList.Name.Contains("White") ? "Whitelabel" : m.EventTypeList.Name,
-                Id = m.EntityId,
-                categorieId = (m.categorie == null ? "" : m.categorie.EntityId),
-                totalnumbert = m.totalnumbert,
-                lang = m.lang,
-                lat = m.lat,
-                UseraddedId = m.User?.UserId
+            var eventHasExpired = false;
+            var result = new List<GetFavoriteEventsDto>();
+            if (!paged.Any()) return (result, totalCount, totalPages);
 
+            var allAttend = allEventChatAttend();
+            var userCount = getalluserevent(userId, allAttend)
+                .Select(m => m.EventData)
+                .Distinct().OrderByDescending(m => m.Id);
+            if ((userCount.FirstOrDefault()?.eventdateto.Value.Date <= DateTime.UtcNow.Date))
+            {
+                if ((userCount.FirstOrDefault()?.eventto != null &&
+                     userCount.FirstOrDefault()?.eventdateto.Value.Date == DateTime.UtcNow.Date &&
+                     userCount.FirstOrDefault()?.eventto.Value >= DateTime.UtcNow.TimeOfDay) ||
+                    (userCount.FirstOrDefault()?.eventdateto.Value.Date == DateTime.UtcNow.Date &&
+                     userCount.FirstOrDefault()?.allday.Value == true))
+                {
+                }
+                else
+                {
+                    eventHasExpired = true;
+                }
+            }
+
+            result = paged.Select(m => new GetFavoriteEventsDto
+            {
+                description = m.description,
+                categorie = m.categorie?.name,
+                categorieimage = _configuration["BaseUrl"] + m.categorie?.image,
+                eventtypeid = m.EventTypeList.entityID.ToString(),
+                EventHasExpired = eventHasExpired,
+                eventtypecolor = m.EventTypeList.color,
+                eventtype = m.EventTypeList.Name,
+                lat = m.lat,
+                lang = m.lang,
+                Id = m.EntityId,
+                OrderByDes = m.Id,
+                eventdate = m.eventdate.Value.ConvertDateTimeToString(),
+                showAttendees = m.showAttendees == null ? false : m.showAttendees,
+                eventdateto = m.eventdateto.Value.ConvertDateTimeToString(),
+                allday = Convert.ToBoolean(m.allday),
+                timefrom = m.eventfrom == null ? "" : m.eventfrom.Value.ToString(@"hh\:mm"),
+                timeto = m.eventto == null ? "" : m.eventto.Value.ToString(@"hh\:mm"),
+                Title = m.Title,
+                checkout_details = m.checkout_details,
+                joined = GetEventattend(m.EntityId, allAttend),
+                image = (m.EventTypeListid != 3 ? _configuration["BaseUrl"] : "") + m.image,
+                totalnumbert = m.totalnumbert,
+                key = m.UserId == userId
+                    ? 1
+                    : (allAttend.Where(n => n.EventData.EntityId == m.EntityId).Where(b => b.UserattendId == userId)
+                        .Where(m => m.stutus != 1 && m.stutus != 2).FirstOrDefault() == null
+                        ? 2
+                        : 3),
+                Attendees = allAttend
+                    .Where(n => (n.EventData.UserId == userId && n.EventData.EntityId == m.EntityId))
+                    .Select(m => new AttendeesDto
+                        {
+                            image = _configuration["BaseUrl"] + m.Userattend.UserImage,
+                            UserName = m.Userattend.User.DisplayedUserName,
+                            DisplayedUserName = m.Userattend.User.UserName,
+                            UserId = m.Userattend.UserId,
+                            stutus= m.stutus,
+                            JoinDate = m.JoinDate == null
+                                ? DateTime.Now.Date.ConvertDateTimeToString()
+                                : m.JoinDate.Value.Date.ConvertDateTimeToString(),
+                            interests = GetINterestdata(m.Userattend.PrimaryId)
+                                .Select(m => new InterestsDto
+                                {   InterestsId = m.InterestsId,
+                                    Name = m.Interests.name
+                                }).ToList(),
+                            MyEvent = m.UserattendId == m.EventData.UserId ? true : false,
+                        }).Take(3).ToList()
             }).ToList();
 
             return (result ,totalCount,totalPages);
