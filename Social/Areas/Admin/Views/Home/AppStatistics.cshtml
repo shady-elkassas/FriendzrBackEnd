@@ -1618,9 +1618,9 @@
 
 
              $("#Exportstatisticview").click(function () {
-                 let x = $("#filter").val();
+                 var year = $("#EventsViewStatistics_Years").val();
                  var xhr = new XMLHttpRequest();
-                 xhr.open("GET", "Exportsatisticperview?", true);
+                 xhr.open("GET", "Exportsatisticperview?year=" + year, true);
                  xhr.responseType = "blob";
                  xhr.onload = function (e) {
                      if (this.status == 200) {

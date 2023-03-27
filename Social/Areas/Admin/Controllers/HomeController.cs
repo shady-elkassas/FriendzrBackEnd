@@ -2381,14 +2381,14 @@ namespace Social.Areas.Admin.Controllers
         #endregion
 
 
-        public async Task<IActionResult> Exportsatisticperview(string type , int year)
+        public async Task<IActionResult> Exportsatisticperview(int year)
         {
 
             var monthes = Enumerable.Range(1, 12).Select(i => new { index = i, Month = DateTimeFormatInfo.CurrentInfo.GetAbbreviatedMonthName(i) });
 
-            List<EventTracker> eventTrackers = authDBContext.EventTrackers.Include(q => q.User).Include(q => q.Event)
+            List<EventTracker> eventTrackers = authDBContext.EventTrackers.Include(q => q.User).Include(q=> q.User.City).Include(q => q.Event)
                 .Where(q => q.ActionType == "view" && q.User.Email.ToLower().Contains("@owner") == false 
-                && q.Date.Date.Year == DateTime.Now.Year && q.User.listoftags.Any() 
+                && q.Date.Date.Year == year && q.User.listoftags.Any() 
                 
                 
                 && q.User.birthdate != null && q.User.User.EmailConfirmed == true &&
@@ -2402,7 +2402,7 @@ namespace Social.Areas.Admin.Controllers
                 User = q.First().User,
                 Event = q.First().Event,
                 Date = q.First().Date
-            }).ToList();
+            }).Where(x=> x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
 
 
             ExportStatisticsByGenderAndAgeViewModel eventTrackersPerMonth = new ExportStatisticsByGenderAndAgeViewModel();
@@ -2460,7 +2460,7 @@ namespace Social.Areas.Admin.Controllers
                         currentRowR1++;
                         worksheet.Cell(currentRowR1, 2).Value = month.User.userName;
                         worksheet.Cell(currentRowR1, 3).Value = month.User.Requestesfor.Count();
-                        worksheet.Cell(currentRowR1, 4).Value = month.User.City ;
+                        worksheet.Cell(currentRowR1, 4).Value = month.User.City== null ? "" : month.User.City.DisplayName;
                         worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
                         worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
 
@@ -2491,61 +2491,84 @@ namespace Social.Areas.Admin.Controllers
 
         public async Task<IActionResult> Exportsatisticrequestsent()
         {
-            List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.birthdate != null && q.User.Email != "dev@dev.com" && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.User.listoftags.Any()).AsNoTracking().ToListAsync();
-
-            List<Requestes> numberOfConnectionRequests = requestes.Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToList();
-
-            List<Requestes> reqts = await authDBContext.Requestes.Where(x => x.Id != 0).ToListAsync();
-
-            using (XLWorkbook workbook = new XLWorkbook())
+            try
             {
-                IXLWorksheet worksheet = workbook.Worksheets.Add("Events View Statistics");
+                List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.birthdate != null && q.User.Email != "dev@dev.com" && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.User.listoftags.Any()).ToListAsync();
 
+                List<Requestes> numberOfConnectionRequests = requestes.Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToList();
 
-                int currentRowR1 = 2;
-                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Events View Statistics";
-                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Fill.SetBackgroundColor(XLColor.Gray);
-                worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
+                List<Requestes> reqts = await authDBContext.Requestes.Where(x => x.Id != 0).ToListAsync();
 
-                worksheet.Cell(currentRowR1, 2).Value = "User Name";
-                //worksheet.Cell(currentRowR1, 3).Value = "number of requests";
-                worksheet.Cell(currentRowR1, 4).Value = "location";
-                worksheet.Cell(currentRowR1, 5).Value = "email";
-                worksheet.Cell(currentRowR1, 6).Value = "age group ";
-
-
-                try
+                List<RequestFilterModel> groupedData = numberOfConnectionRequests.GroupBy(q => q.UserId).Select(q => new RequestFilterModel()
                 {
-                    foreach (var month in numberOfConnectionRequests)
-                    {
-                        currentRowR1++;
-                        worksheet.Cell(currentRowR1, 2).Value = month.User.userName;
-                        //worksheet.Cell(currentRowR1, 3).Value = reqts.Where(q => q.UserId == month.UserId).Count();
-                        worksheet.Cell(currentRowR1, 4).Value = month.User.City;
-                        worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
-                        worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
+                    Id = q.First().Id,
+                    EntityId = q.First().EntityId,
+                    CityName = q.FirstOrDefault().User.City == null ? "" : q.FirstOrDefault().User.City.DisplayName,
+                    //UserRequest = q.First().UserRequest,
+                    UserId = q.First().UserId,
+                    User = q.First().User,
+                   // Userblock = q.First().Userblock
 
+                }).Where(x => x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
+
+
+
+                using (XLWorkbook workbook = new XLWorkbook())
+                {
+                    IXLWorksheet worksheet = workbook.Worksheets.Add("Events View Statistics");
+
+
+                    int currentRowR1 = 2;
+                    worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Merge().Value = "Events View Statistics";
+                    worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Fill.SetBackgroundColor(XLColor.Gray);
+                    worksheet.Range(worksheet.Cell(1, 2), worksheet.Cell(1, 7)).Style.Font.SetBold().Font.FontSize = 14;
+
+                    worksheet.Cell(currentRowR1, 2).Value = "User Name";
+                    worksheet.Cell(currentRowR1, 3).Value = "number of requests";
+                    worksheet.Cell(currentRowR1, 4).Value = "location";
+                    worksheet.Cell(currentRowR1, 5).Value = "email";
+                    worksheet.Cell(currentRowR1, 6).Value = "age group ";
+
+
+                    try
+                    {
+                        foreach (var month in groupedData)
+                        {
+                            currentRowR1++;
+                            worksheet.Cell(currentRowR1, 2).Value = month.User.userName;
+                            worksheet.Cell(currentRowR1, 3).Value = month.User.Requestesfor.Count();
+                            worksheet.Cell(currentRowR1, 4).Value = month.CityName;
+                            worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
+                            worksheet.Cell(currentRowR1, 6).Value = month.User.agefrom;
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+
+
+
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        byte[] content = stream.ToArray();
+
+                        return File(
+                            content,
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "Filter Result.xlsx");
                     }
                 }
-                catch (Exception ex)
-                {
+            }
+             
+             catch (Exception ex)
+            {
 
-                    throw;
-                }
-
-
-
-
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    byte[] content = stream.ToArray();
-
-                    return File(
-                        content,
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "Filter Result.xlsx");
-                }
+                throw;
             }
         }
     }
