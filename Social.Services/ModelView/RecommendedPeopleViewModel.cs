@@ -6,6 +6,7 @@ namespace Social.Services.ModelView
     {
         public string UserId { get; set; }
         public string Name { get; set; }
+        public int  Key { get; set; }
         public bool? ImageIsVerified { get; set; }
         public string Image { get; set; }
         public decimal InterestMatchPercent { get; set; }

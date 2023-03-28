@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Social.Entity.DBContext;
@@ -35,17 +36,20 @@ namespace Social.Services.Implementation
         private readonly ICountryService countryService;
         private readonly ICityService cityService;
         private readonly IGoogleLocationService googleLocationService;
+        private readonly IFrindRequest _frindRequest;
+
 
         public UserService(IConfiguration configuration, UserManager<User> userManager, RoleManager<ApplicationRole> RoleManager,
             IFirebaseManager firebaseManager,
             ICountryService countryService,
             ICityService cityService,
             IGoogleLocationService googleLocationService,
-            IMessageServes MessageServes, AuthDBContext authContext, IHostingEnvironment environment)
+            IMessageServes MessageServes, AuthDBContext authContext, IHostingEnvironment environment, IFrindRequest frindRequest)
         {
             this.MessageServes = MessageServes;
             this._authContext = authContext;
             this._environment = environment;
+            _frindRequest = frindRequest;
             _configuration = configuration;
             this.userManager = userManager;
             roleManager = RoleManager;
@@ -1272,6 +1276,7 @@ namespace Social.Services.Implementation
                             UserId = previousUser.UserId,
                             ImageIsVerified = previousUser.ImageIsVerified ?? false,
                             Name = previousUser.User.DisplayedUserName,
+                            Key = _frindRequest.GetallkeyForFeed(userDeatil.PrimaryId,previousUser.PrimaryId),
                             Image = string.IsNullOrEmpty(previousUser.UserImage)
                                 ? _configuration["DefaultImage"]
                                 : $"{_configuration["BaseUrl"]}{previousUser.UserImage}",
@@ -1372,7 +1377,7 @@ namespace Social.Services.Implementation
             var recommendedPeople = usersList.OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
 
             var message = recommendedPeople != null ? "Your data" : "No more suggestions. Check back later or head to your Feed to see all Friendzrs currently online";
-
+           
             return (recommendedPeople, message);
         }
 
@@ -1412,6 +1417,7 @@ namespace Social.Services.Implementation
                     UserId = q.UserId,
                     ImageIsVerified = q.ImageIsVerified ?? false,
                     Name = q.User.DisplayedUserName,
+                    Key = _frindRequest.GetallkeyForFeed(user.PrimaryId, q.PrimaryId),
                     Image = string.IsNullOrEmpty(q.UserImage)
                         ? _configuration["DefaultImage"]
                         : $"{_configuration["BaseUrl"]}{q.UserImage}",
