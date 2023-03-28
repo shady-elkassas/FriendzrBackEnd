@@ -2421,7 +2421,9 @@ namespace Social.Areas.Admin.Controllers
                 worksheet.Cell(currentRowR1, 3).Value = "number of requests";
                 worksheet.Cell(currentRowR1, 4).Value = "location";
                 worksheet.Cell(currentRowR1, 5).Value = "email";
-                worksheet.Cell(currentRowR1, 6).Value = "age group ";
+                worksheet.Cell(currentRowR1, 6).Value = "age";
+                worksheet.Cell(currentRowR1, 7).Value = "gender";
+                worksheet.Cell(currentRowR1, 8).Value = "Registration Date";
                 
 
                 try
@@ -2434,6 +2436,8 @@ namespace Social.Areas.Admin.Controllers
                         worksheet.Cell(currentRowR1, 4).Value = month.User.City== null ? "" : month.User.City.DisplayName;
                         worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
                         worksheet.Cell(currentRowR1, 6).Value =DateTime.Now.Year - month.User.birthdate.Value.Year;
+                        worksheet.Cell(currentRowR1, 7).Value = month.User.Gender;
+                        worksheet.Cell(currentRowR1, 8).Value = month.User.Requestesfor.FirstOrDefault(x=> x.UserRequestId == month.User.PrimaryId).regestdata.ToString("ddd/MM/yyyy");
 
                     }
                 }
@@ -2479,6 +2483,7 @@ namespace Social.Areas.Admin.Controllers
                     UserId = q.First().UserId,
                     User = q.First().User,
                     birthdate = q.First().User.birthdate.Value,
+                    regestrationdate= q.First().regestdata
                   
 
                 }).Where(x => x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
@@ -2499,7 +2504,9 @@ namespace Social.Areas.Admin.Controllers
                     worksheet.Cell(currentRowR1, 3).Value = "number of requests";
                     worksheet.Cell(currentRowR1, 4).Value = "location";
                     worksheet.Cell(currentRowR1, 5).Value = "email";
-                    worksheet.Cell(currentRowR1, 6).Value = "age group ";
+                    worksheet.Cell(currentRowR1, 6).Value = "age";
+                    worksheet.Cell(currentRowR1, 7).Value = "gender";
+                    worksheet.Cell(currentRowR1, 8).Value = "Register Date";
 
                     
 
@@ -2514,6 +2521,8 @@ namespace Social.Areas.Admin.Controllers
                             worksheet.Cell(currentRowR1, 4).Value = month.CityName;
                             worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
                             worksheet.Cell(currentRowR1, 6).Value = month.Age;
+                            worksheet.Cell(currentRowR1, 7).Value = month.User.Gender;
+                            worksheet.Cell(currentRowR1, 8).Value = month.regestrationdate.ToString("dd/MM/yyyy");
 
                         }
                     }

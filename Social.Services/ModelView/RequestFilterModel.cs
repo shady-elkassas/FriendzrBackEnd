@@ -16,7 +16,10 @@ namespace Social.Services.ModelView
 
         public  UserDetails User { get; set; }
 
-       
+        public DateTime regestrationdate { get; set; }
+        public preferto preferto { get; set; }
+
+
         public DateTime birthdate { get; set; }
         public int Age { get {
                 return DateTime.Now.Year - birthdate.Year;

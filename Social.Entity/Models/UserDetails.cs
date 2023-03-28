@@ -109,5 +109,7 @@ namespace Social.Entity.Models
         public virtual ICollection<SkippedUser> UserSkippedUsers { get; set; }
         public virtual ICollection<SkippedEvent> SkippedEvents { get; set; }
         public virtual ICollection<UserImage> UserImages { get; set; }
+
+        
     }
 }
