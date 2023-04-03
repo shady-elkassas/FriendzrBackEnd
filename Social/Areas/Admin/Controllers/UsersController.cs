@@ -189,12 +189,12 @@ namespace Social.Areas.Admin.Controllers
 
                 if (x == 2)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) &&  (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
+                    data = data.Where(q =>    (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
                 }
 
                 if (x == 3)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
+                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) &&  (q.LastUpdateLocation.Value <= DateTime.Now.Date));
                 }
                 if (x == 4)
                 {
@@ -265,12 +265,12 @@ namespace Social.Areas.Admin.Controllers
 
                 if (x == 2)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) && (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
+                    data = data.Where(q =>  (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
                 }
 
                 if (x == 3)
                 {
-                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value.Month == DateTime.Now.Month) && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
+                    data = data.Where(q => (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date)  && (q.LastUpdateLocation.Value <= DateTime.Now.Date));
                 }
                 if (x == 4)
                 {

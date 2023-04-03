@@ -2483,8 +2483,8 @@ namespace Social.Areas.Admin.Controllers
                     UserId = q.First().UserId,
                     User = q.First().User,
                     birthdate = q.First().User.birthdate.Value,
-                    regestrationdate= q.First().regestdata
-                  
+                    regestrationdate = q.First().regestdata
+
 
                 }).Where(x => x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
 
@@ -2508,7 +2508,7 @@ namespace Social.Areas.Admin.Controllers
                     worksheet.Cell(currentRowR1, 7).Value = "gender";
                     worksheet.Cell(currentRowR1, 8).Value = "Register Date";
 
-                    
+
 
 
                     try
@@ -2522,7 +2522,7 @@ namespace Social.Areas.Admin.Controllers
                             worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
                             worksheet.Cell(currentRowR1, 6).Value = month.Age;
                             worksheet.Cell(currentRowR1, 7).Value = month.User.Gender;
-                            worksheet.Cell(currentRowR1, 8).Value = month.regestrationdate.ToString("MM/dd/yyyy");
+                            worksheet.Cell(currentRowR1, 8).Value = month.regestrationdate.ToString("dd/MM/yyyy");
 
                         }
                     }
@@ -2547,9 +2547,9 @@ namespace Social.Areas.Admin.Controllers
                     }
                 }
             }
-             
-             catch (Exception ex)
-            {
+
+            catch (Exception ex)
+            { 
 
                 throw;
             }
