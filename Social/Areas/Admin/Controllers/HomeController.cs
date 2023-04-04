@@ -2468,22 +2468,29 @@ namespace Social.Areas.Admin.Controllers
         {
             try
             {
-                List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.birthdate != null && q.User.Email != "dev@dev.com" && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.User.listoftags.Any()).ToListAsync();
+                
+
+                List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User)
+                    .Where(q => q.User.Email.ToLower().Contains("@owner") == false 
+                    
+                    && q.User.birthdate != null && q.User.Email != "dev@dev.com" 
+                    && q.User.User.EmailConfirmed == true 
+                    && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.User.listoftags.Any()).ToListAsync();
 
                 List<Requestes> numberOfConnectionRequests = requestes.Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToList();
 
                 List<Requestes> reqts = await authDBContext.Requestes.Where(x => x.Id != 0).ToListAsync();
 
-                List<RequestFilterModel> groupedData = numberOfConnectionRequests.GroupBy(q => q.UserId).Select(q => new RequestFilterModel()
+                List<RequestFilterModel> groupedData = numberOfConnectionRequests.Select(q => new RequestFilterModel()
                 {
-                    Id = q.First().Id,
-                    EntityId = q.First().EntityId,
-                    CityName = q.FirstOrDefault().User.City == null ? "" : q.FirstOrDefault().User.City.DisplayName,
+                    Id = q.Id,
+                    EntityId = q.EntityId,
+                    CityName = q.User.City == null ? "" : q.User.City.DisplayName,
                     //UserRequest = q.First().UserRequest,
-                    UserId = q.First().UserId,
-                    User = q.First().User,
-                    birthdate = q.First().User.birthdate.Value,
-                    regestrationdate = q.First().regestdata
+                    UserId = q.UserId,
+                    User = q.User,
+                    birthdate = q.User.birthdate.Value,
+                    regestrationdate = q.regestdata
 
 
                 }).Where(x => x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
