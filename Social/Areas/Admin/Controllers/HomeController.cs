@@ -2522,7 +2522,7 @@ namespace Social.Areas.Admin.Controllers
                             worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
                             worksheet.Cell(currentRowR1, 6).Value = month.Age;
                             worksheet.Cell(currentRowR1, 7).Value = month.User.Gender;
-                            worksheet.Cell(currentRowR1, 8).Value = month.regestrationdate.ToString("dd/MM/yyyy");
+                            worksheet.Cell(currentRowR1, 8).Value = month.regestrationdate.ToString("MM/dd/yyyy");
 
                         }
                     }
