@@ -912,8 +912,18 @@ namespace Social.Areas.Admin.Controllers
 
         public async Task<IActionResult> NumberOfConnectionRequestsSentStatictes()
         {
+            //List<Requestes> requestes = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User)
+            //       .Where(q => q.User.Email.ToLower().Contains("@owner") == false
+
+            //       && q.User.birthdate != null && q.User.Email != "dev@dev.com"
+            //       && q.User.User.EmailConfirmed == true
+            //       && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true) && q.User.listoftags.Any()).ToListAsync();
+
+            //List<Requestes> numberOfConnectionRequests = requestes.Where(q => !q.User.Email.ToLower().Contains("@owner") && q.User != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToList();
+
             List<Requestes> users = await authDBContext.Requestes.Include(q => q.User).ThenInclude(q => q.User).Where(q => q.User.Email.ToLower().Contains("@owner") == false && q.User.birthdate != null && q.User.birthdate != null && q.User.User.EmailConfirmed == true && (q.User.ProfileCompleted != null && q.User.ProfileCompleted == true)).ToListAsync();
-            users = users.Where(q => GetAge(q.User.birthdate.Value) >= 18).ToList();
+            users = users.Where(x => x.User.Requestesfor.Count() > 0 && !string.IsNullOrEmpty(x.User.userName)).ToList();
+
             StatisticsByGenderAndAgeViewModel numberOfConnectionRequestsSentStatictes = new StatisticsByGenderAndAgeViewModel()
             {
                 All = users.Count(),
@@ -2532,6 +2542,7 @@ namespace Social.Areas.Admin.Controllers
                             worksheet.Cell(currentRowR1, 8).Value = month.regestrationdate.ToString("MM/dd/yyyy");
 
                         }
+
                     }
                     catch (Exception ex)
                     {
