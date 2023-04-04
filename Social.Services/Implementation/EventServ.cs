@@ -3063,7 +3063,7 @@ namespace Social.Services.Implementation
         public async Task<(List<GetFavoriteEventsDto> events , int totalCount , int PagesCount)> GetFavoriteEvents(int userId , int pageSize,int pageNumber)
         {
             var eventsIds = await  _authContext.FavoriteEvents.Where(a =>  a.UserDetailsId == userId)
-                .Select(a=>a.EventEntityId).ToListAsync();
+                .Select(a=>a.EventEntityId).Distinct().ToListAsync();
             var events = _authContext.EventData
                 .Where(a => eventsIds.Contains(a.EntityId));
             var totalCount = events.Count();
