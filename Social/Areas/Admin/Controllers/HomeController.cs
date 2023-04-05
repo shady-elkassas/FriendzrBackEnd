@@ -2530,7 +2530,7 @@ namespace Social.Areas.Admin.Controllers
                         foreach (var month in groupedData)
                         {
                             currentRowR1++;
-                            worksheet.Cell(currentRowR1, 2).Value = month.User.userName;
+                            worksheet.Cell(currentRowR1, 2).Value =string.IsNullOrEmpty (month.User.userName) ? "Deleted User" : month.User.userName;
                             worksheet.Cell(currentRowR1, 3).Value = month.User.Requestesfor.Count();
                             worksheet.Cell(currentRowR1, 4).Value = month.CityName;
                             worksheet.Cell(currentRowR1, 5).Value = month.User.Email;
