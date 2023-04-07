@@ -1071,7 +1071,7 @@ namespace Social.Areas.Admin.Controllers
                         worksheet.Cell(currentRowR1, 4).Value = user.EmailConfirmed ? "Confirmed" : "Not Confirmed";
                         worksheet.Cell(currentRowR1, 5).Value = (user.UserDetails.ProfileCompleted == null || user.UserDetails.ProfileCompleted.Value == false) ? "Not Completed" : "Completed";
                         worksheet.Cell(currentRowR1, 6).Value = user.UserName;
-                        worksheet.Cell(currentRowR1, 7).Value = user.RegistrationDate.ToString("dd/MM/yyyy").Trim();
+                        worksheet.Cell(currentRowR1, 7).Value = user.RegistrationDate.ToString("MM/dd/yyyy").Trim();
 
                     }
                 }
@@ -1101,7 +1101,7 @@ namespace Social.Areas.Admin.Controllers
                     worksheet.Cell(currentRowR2, 12).Value = user.EmailConfirmed ? "Confirmed" : "Not Confirmed";
                     worksheet.Cell(currentRowR2, 13).Value = (user.UserDetails.ProfileCompleted == null || user.UserDetails.ProfileCompleted.Value == false) ? "Not Completed" : "Completed";
                     worksheet.Cell(currentRowR2, 14).Value = user.UserName;
-                    worksheet.Cell(currentRowR2, 15).Value = user.RegistrationDate.ToString("dd/MM/yyyy").Trim();
+                    worksheet.Cell(currentRowR2, 15).Value = user.RegistrationDate.ToString("MM/dd/yyyy").Trim();
                 }
 
 
@@ -1125,7 +1125,7 @@ namespace Social.Areas.Admin.Controllers
                     worksheet.Cell(currentRowR3, 20).Value = user.EmailConfirmed ? "Confirmed" : "Not Confirmed";
                     worksheet.Cell(currentRowR3, 21).Value = (user.UserDetails.ProfileCompleted == null || user.UserDetails.ProfileCompleted.Value == false) ? "Not Completed" : "Completed";
                     worksheet.Cell(currentRowR3, 22).Value = user.UserName;
-                    worksheet.Cell(currentRowR3, 23).Value = user.RegistrationDate.ToString("dd/MM/yyyy").Trim();
+                    worksheet.Cell(currentRowR3, 23).Value = user.RegistrationDate.ToString("MM/dd/yyyy").Trim();
 
                 }
 
