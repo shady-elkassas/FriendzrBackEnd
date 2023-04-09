@@ -806,8 +806,11 @@ namespace Social.Services.Implementation
                 .Where(p => 
                     (p.User.UserDetails.listoftags != null && p.User.UserDetails.listoftags.Count() != 0) 
                             && p.User.UserDetails.lat != null && p.User.UserDetails.lang != null
+                    && p.User.UserDetails.allowmylocation == true
+                    && p.User.UserDetails.Gender != null
                 )
                 .ToList();
+
             var allUserDetails = allLoginUsers.Select(m => m.User.UserDetails).ToList();
 
             allUserDetails = GetClosedUsersByDistance(allUserDetails, user, myLat, myLon, user.Manualdistancecontrol,
@@ -840,8 +843,6 @@ namespace Social.Services.Implementation
 
         private IEnumerable<UserDetails> CalculateDistanceClosedUsers(List<UserDetails> data,UserDetails user, double userLat, double userLong, decimal userManualDistanceControl, int userDistanceMax, string userGender)
         {
-            data = data.Where(m => m.allowmylocation == true).ToList();
-            data = data.Where(m => m.Gender != null).ToList();
             data = data.Where(p => (user.Filteringaccordingtoage == true ? birtdate(user.agefrom, user.ageto, (p.birthdate == null ? DateTime.Now.Date : p.birthdate.Value.Date)) : true)).ToList();
             data = data.Where(p =>
                 CalculateDistance(userLat, userLong, Convert.ToDouble(p.lat), Convert.ToDouble(p.lang)) <=
@@ -1417,7 +1418,7 @@ namespace Social.Services.Implementation
                     UserId = q.UserId,
                     ImageIsVerified = q.ImageIsVerified ?? false,
                     Name = q.User.DisplayedUserName,
-                    Key = _frindRequest.GetallkeyForFeed(user.PrimaryId, q.PrimaryId),
+                    Key =0,/*frindRequest.GetallkeyForFeed(user.PrimaryId, q.PrimaryId),*/
                     Image = string.IsNullOrEmpty(q.UserImage)
                         ? _configuration["DefaultImage"]
                         : $"{_configuration["BaseUrl"]}{q.UserImage}",
