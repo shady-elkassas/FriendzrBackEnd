@@ -1386,7 +1386,7 @@ namespace Social.Services.Implementation
             List<int> currentUserInterests, double distanceMin, double distanceMax)
         {
             var tasks = new List<Task<IEnumerable<RecommendedPeopleViewModel>>>();
-            var batchSize = 100;
+            var batchSize = 500;
             int numberOfBatches = (int)Math.Ceiling((double)users.Count() / batchSize);
 
             for (int i = 0; i < numberOfBatches; i++)
