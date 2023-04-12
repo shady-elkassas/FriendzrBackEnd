@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Social.Entity.Migrations;
+using Social.Areas.Admin.Controllers;
 
 namespace Social.Controllers
 {
@@ -54,7 +55,6 @@ namespace Social.Controllers
             this.appConfigrationService = appConfigrationService;
         }
 
-
         /// <summary>
         ///    Feeds Api
         /// </summary> 
@@ -62,7 +62,7 @@ namespace Social.Controllers
         [Route("AllUsers")]
         [Consumes("application/x-www-form-urlencoded")]
         [ServiceFilter(typeof(AuthorizeUser))]
-        public async Task<IActionResult> AllUsers([FromForm] int pageNumber, [FromForm] int pageSize, [FromForm] double degree, [FromForm] string userlang, [FromForm] string userlat, [FromForm] bool sortByInterestMatch)
+        public async Task<IActionResult> AllUsers([FromForm] int pageNumber,[FromForm] int pageSize, [FromForm] double degree, [FromForm] string userlang, [FromForm] string userlat, [FromForm] bool sortByInterestMatch)
         {
             try
             {
@@ -951,7 +951,152 @@ namespace Social.Controllers
             return age;
         }
 
-        
+
+        [HttpPost]
+        [Route("AllFilteredUsers")]
+        [Consumes("application/x-www-form-urlencoded")]
+        [ServiceFilter(typeof(AuthorizeUser))]
+        public async Task<IActionResult> AllUsersaccordingtoFilter([FromForm] int pageNumber,[FromForm] int filterno ,[FromForm] int pageSize, [FromForm] double degree, [FromForm] string userlang, [FromForm] string userlat, [FromForm] bool sortByInterestMatch)
+        {
+            try
+            {
+                var userDeatils = HttpContext.GetUser().User.UserDetails;
+                userDeatils.LastFeedRequestDate = DateTime.UtcNow; //Last Active Time
+                this._userService.UpdateUserDetails(userDeatils);
+                if (userDeatils.allowmylocation == false)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                    new ResponseModel<object>(StatusCodes.Status400BadRequest, false,
+                     _localizer["please allow your location"], null));
+                }
+                if (userlang != "" && userlang != null && userlat != "" && userlat != null)
+                {
+                    userDeatils.lang = userlang;
+                    userDeatils.lat = userlat;
+                    this._userService.UpdateUserDetails(userDeatils);
+                }
+                // var allReq = _authContext.Requestes.ToList();
+                var lat = userDeatils.lat is null ? 0 : Convert.ToDouble(userDeatils.lat);
+                var lang = userDeatils.lang is null ? 0 : Convert.ToDouble(userDeatils.lang);
+                if (lat == 0 || lang == 0)
+                {
+                    return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, "No data ", new
+                    {
+                        pageNumber = 0,
+                        pageSize = pageSize,
+                        totalPages = 0,
+                        totalRecords = 0,
+                        data = new List<UserFiltered>()
+                    }));
+                }
+                if (userDeatils.lang is null || userDeatils.lang == "0")
+                {
+                    return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, "not data Found", new
+                    {
+                        pageNumber = 1,
+                        pageSize = pageSize,
+                        totalPages = 0,
+                        totalRecords = 0,
+                        data = new List<UserFiltered>()
+                    }));
+                }
+                var appcon = appConfigrationService.GetData().FirstOrDefault();
+
+                if (sortByInterestMatch)
+                {
+                    UserLinkClick userLinkClick = new UserLinkClick() { UserId = userDeatils.PrimaryId, Date = DateTime.Now, Type = LinkClickTypeEnum.SortByInterestMatch.ToString() };
+
+                    _authContext.UserLinkClicks.Add(userLinkClick);
+
+                    await _authContext.SaveChangesAsync();
+                }
+
+                (List<UserDetails> userDetails, List<int> currentUserInterests) userDetailsList = (degree is 0) ?
+                    _userService.allusersInParallel(lat, lang, userDeatils.Gender, userDeatils, appcon, sortByInterestMatch) :
+                    _userService.allusersdirection(lat, lang, userDeatils.Gender, userDeatils, degree, appcon, sortByInterestMatch);
+
+                var listUsersdata = userDetailsList.userDetails.Where(m => m.PrimaryId != userDeatils.PrimaryId).ToList();
+                var validFilter = new PaginationFilter(pageNumber, pageSize);
+                var listdata = listUsersdata.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+                
+                var data = listdata.Select(q => new UserFiltered
+                {
+                    Gender = q.Gender,
+                    userId = q.UserId,
+                    lang = q.lang,
+                    lat = q.lat,
+                    ImageIsVerified = q.ImageIsVerified ?? false,
+                    DisplayedUserName = q.User.UserName,
+                    UserName = q.User.DisplayedUserName,
+                    email = q.User.Email,
+                    image = string.IsNullOrEmpty(q.UserImage) ? _configuration["DefaultImage"] : _configuration["BaseUrl"] + q.UserImage,
+                    key = _FrindRequest.GetallkeyForFeed(userDeatils.PrimaryId, q.PrimaryId),
+                    InterestMatchPercent = Math.Round(((q.listoftags.Select(q => q.InterestsId).Intersect(userDetailsList.currentUserInterests).Count() / Convert.ToDecimal(userDetailsList.currentUserInterests.Count())) * 100), 0),
+                    LastUpdateLocation = q.LastUpdateLocation
+                }).Where(k => k.key != 4 && k.key != 5);
+                ///filter logic api
+                if (filterno != null )
+                {
+
+
+                    if (filterno == 0)
+                    {
+                        data = data.Where(q => q.LastUpdateLocation.HasValue ? (q.LastUpdateLocation.Value.Date == DateTime.Now.AddDays(-1).Date) : true);
+
+                    }
+                    if (filterno == 1)
+                    {
+                        data = data.Where(q => q.LastUpdateLocation.HasValue ?  (q.LastUpdateLocation.Value <= DateTime.Now.Date) && (q.LastUpdateLocation.Value.Date >= DateTime.Now.AddDays(-7).Date) : true);
+                    }
+
+                    if (filterno == 2)
+                    {
+                        data = data.Where(q => q.LastUpdateLocation.HasValue ?( (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date))) : true);
+                    }
+
+                    if (filterno == 3)
+                    {
+                        data = data.Where(q => q.LastUpdateLocation.HasValue ? ( (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value <= DateTime.Now.Date) ) : true);
+                    }
+                    if (filterno == 4)
+                    {
+                        data = data.Where(q => q.LastUpdateLocation.HasValue ? ( (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-30)) && (q.LastUpdateLocation.Value <= DateTime.Now.Date)) :true);
+                    }
+
+                }
+                
+                int rowCount = listUsersdata.Count();
+                var pagedLands = data.ToList();//.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+                var pagedModel = new PagedResponse<List<UserFiltered>>(pagedLands, validFilter.PageNumber, pagedLands.Count(), data.Count());
+
+                //var dataObj = (degree is 0) ? pagedModel.Data : pagedLands;
+
+                var totalPages = ((double)rowCount / (double)validFilter.PageSize);
+
+                int roundedTotalPages = Convert.ToInt32(Math.Ceiling(totalPages));
+
+                return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, "Your data ", new
+                {
+                    //TODO: Abdelrahman (Fix Pagination)
+                    //pageNumber = pagedModel.PageNumber,
+                    //pageSize = pagedModel.PageSize,
+                    //totalPages = pagedModel.TotalPages,
+                    //totalRecords = pagedModel.TotalRecords,
+
+                    pageNumber = pagedModel.PageNumber,
+                    pageSize = pagedModel.PageSize,
+                    totalPages = roundedTotalPages,
+                    totalRecords = rowCount,
+                    data = pagedModel.Data
+                }));
+            }
+            catch (Exception ex)
+            {
+                await _errorLogService.InsertErrorLog(new BWErrorLog(HttpContext.GetUser().UserId, "FrindRequest/AllUsers", ex));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>(StatusCodes.Status500InternalServerError, false, ex.Message, null));
+            }
+        }
+
 
     }
 }

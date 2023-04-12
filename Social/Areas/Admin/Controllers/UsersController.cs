@@ -425,5 +425,23 @@ namespace Social.Areas.Admin.Controllers
         public DateTime? LastUpdateLocation { get; set; }
 
         public string? cityname { get; set; }
+        
+    }
+    public class UserFiltered
+    {
+        public string? Gender { get; set; }
+        public string? userId { get; set; }
+        public string? lang { get; set; }
+        public string? lat { get; set; }
+        public bool? ImageIsVerified { get; set; }
+
+        public string? DisplayedUserName { get; set; }
+        public string? UserName { get; set; }
+        public string? email { get; set; }
+        public string? image { get; set; }
+        public int? key { get; set; }
+        public decimal? InterestMatchPercent { get; set; }
+
+        public DateTime? LastUpdateLocation { get; set; }
     }
 }

@@ -124,11 +124,33 @@ namespace Social.Services.Helpers
 
     }
 
+    public class ExternalEventTaskMasterUtility
+    {
+        private readonly IConfiguration _configuration;
+
+        private string apiKey { get; set; }
+        private string baseUri { get; set; }
+
+        public ExternalEventTaskMasterUtility(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            apiKey = _configuration.GetValue<string>("TicketMaster:ApiKey");
+            baseUri = _configuration.GetValue<string>("TicketMaster:BaseUrl");
+        }
+
+
+    }
     public class ExternalEventDataResponse
     {
         public int TotalCount { get; set; }
         public List<ExternalEventData> ExternalEventData { get;set;}
         public bool IsJob { get; set; }
 
+    }
+    public class ExternalEventTaskMasterResponse
+    {
+        public int TotalCount { get; set; }
+       // public List<EXXMODEL> Model { get; set; }
+        public bool IsJob { get; set; }
     }
 }
