@@ -11,6 +11,7 @@ namespace Social.Entity.ModelView
         public string Message { set; get; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
+        public string LocationName { get; set; }
         public int Messagetype { get; set; }
         public bool linkable { get; set; }
         public String EventLINKid { get; set; }

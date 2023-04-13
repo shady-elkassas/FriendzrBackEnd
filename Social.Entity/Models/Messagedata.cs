@@ -20,6 +20,8 @@ namespace Social.Entity.Models
         public string Messages { get; set; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
+        public string LocationName { get; set; }
+
         public string MessagesAttached { get; set; }
         public bool linkable { get; set; }
         public int? EventDataid { get; set; }
