@@ -39,6 +39,8 @@ namespace Social.Entity.ModelView
         public string Message { set; get; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
+        public string LocationName { get; set; }
+
         public DateTime Messagesdate { get; set; }
         public TimeSpan Messagestime { get; set; }
         public List<IFormFile> Attach { set; get; }

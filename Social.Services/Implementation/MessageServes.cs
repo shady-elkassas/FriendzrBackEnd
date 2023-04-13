@@ -771,6 +771,7 @@ namespace Social.Services.Implementation
             Messagedata.Messages = MessageDTO.Message;
             Messagedata.Latitude = MessageDTO.Latitude;
             Messagedata.Longitude = MessageDTO.Longitude;
+            Messagedata.LocationName = MessageDTO.LocationName;
             Messagedata.Messagetype = MessageDTO.Messagetype;
             MessageVIEWDTO MessageVIEWDTO = new MessageVIEWDTO();
             if (MessageDTO.Attach != null)
@@ -799,6 +800,7 @@ namespace Social.Services.Implementation
             Messagedata.Messages = MessageDTO.Message;
             Messagedata.Latitude = MessageDTO.Latitude;
             Messagedata.Longitude = MessageDTO.Longitude;
+            Messagedata.LocationName = MessageDTO.LocationName;
             Messagedata.linkable = MessageDTO.linkable;
 
             Messagedata.EventDataid = geteventMessages(MessageDTO.EventLINKid);

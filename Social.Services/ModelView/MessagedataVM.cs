@@ -24,6 +24,8 @@ namespace Social.Entity.ModelView
         public string Messages { get; set; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
+        public string LocationName { get; set; }
+
         public string EventChatID { get; set; }
         public string Messagesdate { get; set; }
         public string Messagestime { get; set; }
