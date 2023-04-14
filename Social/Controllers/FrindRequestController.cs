@@ -1015,11 +1015,10 @@ namespace Social.Controllers
                     _userService.allusersInParallel(lat, lang, userDeatils.Gender, userDeatils, appcon, sortByInterestMatch) :
                     _userService.allusersdirection(lat, lang, userDeatils.Gender, userDeatils, degree, appcon, sortByInterestMatch);
 
-                var listUsersdata = userDetailsList.userDetails.Where(m => m.PrimaryId != userDeatils.PrimaryId).ToList();
+                var listUsersdata = userDetailsList.userDetails.Where(m => m.PrimaryId != userDeatils.PrimaryId ).ToList();
                 var validFilter = new PaginationFilter(pageNumber, pageSize);
-                var listdata = listUsersdata.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
                 
-                var data = listdata.Select(q => new UserFiltered
+                var data = listUsersdata.Select(q => new UserFiltered
                 {
                     Gender = q.Gender,
                     userId = q.UserId,
@@ -1033,7 +1032,7 @@ namespace Social.Controllers
                     key = _FrindRequest.GetallkeyForFeed(userDeatils.PrimaryId, q.PrimaryId),
                     InterestMatchPercent = Math.Round(((q.listoftags.Select(q => q.InterestsId).Intersect(userDetailsList.currentUserInterests).Count() / Convert.ToDecimal(userDetailsList.currentUserInterests.Count())) * 100), 0),
                     LastUpdateLocation = q.LastUpdateLocation
-                }).Where(k => k.key != 4 && k.key != 5);
+                }).Where(k => k.key != 4 && k.key != 5 && k.LastUpdateLocation != null);
                 ///filter logic api
                 if (filterno != null )
                 {
@@ -1041,32 +1040,34 @@ namespace Social.Controllers
 
                     if (filterno == 0)
                     {
-                        data = data.Where(q => q.LastUpdateLocation.HasValue ? (q.LastUpdateLocation.Value.Date == DateTime.Now.AddDays(-1).Date) : true);
+                        data = data.Where(q =>  (q.LastUpdateLocation.Value.Date == DateTime.Now.AddDays(-1).Date) );
 
                     }
                     if (filterno == 1)
                     {
-                        data = data.Where(q => q.LastUpdateLocation.HasValue ?  (q.LastUpdateLocation.Value <= DateTime.Now.Date) && (q.LastUpdateLocation.Value.Date >= DateTime.Now.AddDays(-7).Date) : true);
+                        data = data.Where(q =>   (q.LastUpdateLocation.Value <= DateTime.Now.Date) && (q.LastUpdateLocation.Value.Date >= DateTime.Now.AddDays(-7).Date) );
                     }
 
                     if (filterno == 2)
                     {
-                        data = data.Where(q => q.LastUpdateLocation.HasValue ?( (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date))) : true);
+                        data = data.Where(q =>  (q.LastUpdateLocation.Value <= DateTime.Now.Date) && ((q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-14).Date)));
                     }
 
                     if (filterno == 3)
                     {
-                        data = data.Where(q => q.LastUpdateLocation.HasValue ? ( (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value <= DateTime.Now.Date) ) : true);
+                        data = data.Where(q =>  ( (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-21).Date) && (q.LastUpdateLocation.Value <= DateTime.Now.Date) ) );
                     }
                     if (filterno == 4)
                     {
-                        data = data.Where(q => q.LastUpdateLocation.HasValue ? ( (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-30)) && (q.LastUpdateLocation.Value <= DateTime.Now.Date)) :true);
+                        data = data.Where(q =>  ( (q.LastUpdateLocation.Value >= DateTime.Now.AddDays(-30)) && (q.LastUpdateLocation.Value <= DateTime.Now.Date)));
                     }
 
                 }
+                int rowCount = data.Count();
+                var listdata = data.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+
                 
-                int rowCount = listUsersdata.Count();
-                var pagedLands = data.ToList();//.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+                var pagedLands = listdata;//.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
                 var pagedModel = new PagedResponse<List<UserFiltered>>(pagedLands, validFilter.PageNumber, pagedLands.Count(), data.Count());
 
                 //var dataObj = (degree is 0) ? pagedModel.Data : pagedLands;
