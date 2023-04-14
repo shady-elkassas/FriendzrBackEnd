@@ -259,6 +259,9 @@ namespace Social.Controllers
                     Title = userDeatils.userName,
                     name = userDeatils.User.DisplayedUserName,
                     Body = MessageDTO.Messagetype == 1 ? MessageDTO.Message : (MessageDTO.Messagetype == 4 ? (eventdata.Title + "(Shared Event)") : ((MessageDTO.Messagetype == 2 ? "photo" : "file"))),
+                   Latitude = MessageDTO.Latitude,
+                   Longitude = MessageDTO.Longitude,
+                   LocationName = MessageDTO.LocationName,
                     muit = muit,
                     Action_code = userDeatils.UserId,
                     Action = "user_chat",
@@ -751,7 +754,9 @@ namespace Social.Controllers
                                 // Body = MessageDTO.Message + (MessageDTO.Messagetype == 4 ? "Shared Event" : ((MessageDTO.Attach != null ? _configuration["BaseUrl"] + MessageVIEWDTO.Attach : ""))),
 
                                 Body = MessageDTO.Messagetype == 1 ? MessageDTO.Message : (MessageDTO.Messagetype == 4 ? (eventdata.Title + "(Shared Event)") : ((MessageDTO.Messagetype == 2 ? "photo" : "file"))),
-
+                                Latitude = MessageDTO.Latitude,
+                                Longitude = MessageDTO.Longitude,
+                                LocationName = MessageDTO.LocationName,
                                 muit = even.muit,
                                 isAdmin = even.EventData.UserId == userto.PrimaryId,
                                 Messagetype = MessageDTO.Messagetype,
@@ -1001,6 +1006,7 @@ namespace Social.Controllers
                     Messages = item.Messages,
                     Latitude = item.Latitude,
                     Longitude = item.Longitude,
+                    LocationName = item.LocationName,
                     Messagesdate = item.Messagesdate.ConvertDateTimeToString(),
                     Messagestime = item.Messagestime.ToString(@"hh\:mm"),
                     Username = item.User.User.DisplayedUserName,
@@ -1231,6 +1237,7 @@ namespace Social.Controllers
                         dat.Messages = item.Messages;
                         dat.Latitude = item.Latitude;
                         dat.Longitude = item.Longitude;
+                        dat.LocationName = item.LocationName;
                         dat.Messagesdate = item.Messagesdate.ConvertDateTimeToString();
                         dat.Messagestime = item.Messagestime.ToString(@"hh\:mm");
                         dat.Username = item.User.userName;
