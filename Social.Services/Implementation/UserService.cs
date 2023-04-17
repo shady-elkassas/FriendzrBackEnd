@@ -1373,7 +1373,7 @@ namespace Social.Services.Implementation
                                   && !recentRequests.Contains(q.PrimaryId)).ToList();
 
 
-            var usersList = await GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
+            var usersList = await GetRecommendedClosedUsersInParallelInWithBatchesV2(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
 
             var recommendedPeople = usersList.OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
 
@@ -1397,6 +1397,19 @@ namespace Social.Services.Implementation
 
             return (await Task.WhenAll(tasks)).SelectMany(u => u);
         }
+        public async Task<IEnumerable<RecommendedPeopleViewModel>> GetRecommendedClosedUsersInParallelInWithBatchesV2(IEnumerable<UserDetails> users, UserDetails user, List<int> currentUserInterests, double distanceMin, double distanceMax)
+        {
+            var batchSize = 500;
+            var numberOfBatches = (int)Math.Ceiling((double)users.Count() / batchSize);
+            var tasks = Enumerable.Range(0, numberOfBatches).Select(i =>
+            {
+                var currentUsers = users.Skip(i * batchSize).Take(batchSize);
+                return GetRecommendedUsersV2(currentUsers, user, currentUserInterests, distanceMin, distanceMax);
+            });
+            var results = await Task.WhenAll(tasks);
+            return results.SelectMany(u => u);
+        }
+
 
         private async Task<IEnumerable<RecommendedPeopleViewModel>> RecommendedClosedUsers(IEnumerable<UserDetails> usersList, UserDetails user , List<int> currentUserInterests ,double distanceMin , double distanceMax)
             {
@@ -1438,9 +1451,61 @@ namespace Social.Services.Implementation
 
                 return recommendPeople;
             }
+        public bool IsAgeInRange(int fromAge, int toAge, DateTime birthdate)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - birthdate.Year;
+            if (birthdate > today.AddYears(-age))
+            {
+                age--;
+            }
 
-            // Not Used
-            public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFixOld(UserDetails userDeatil, string userId)
+            return age >= fromAge && age <= toAge;
+        }
+
+        public bool IsUserTypeValid(ICollection<AppearanceTypes_UserDetails> appearanceTypes, string userType)
+        {
+            if (appearanceTypes == null || !appearanceTypes.Any())
+            {
+                return true;
+            }
+
+            var targetType = userType.ToLowerInvariant();
+            var isMale = targetType == "male";
+            var isFemale = targetType.Contains("femal");
+            var isOther = targetType.Contains("other");
+
+            var hasNone = appearanceTypes.Any(x => x.AppearanceTypeID == 1);
+            var hasMale = appearanceTypes.Any(x => x.AppearanceTypeID == 2 && isMale);
+            var hasFemale = appearanceTypes.Any(x => x.AppearanceTypeID == 3 && isFemale);
+            var hasOther = appearanceTypes.Any(x => x.AppearanceTypeID == 4 && isOther);
+
+            return !hasNone && !hasMale && !hasFemale && !hasOther;
+        }
+
+        private async Task<IEnumerable<RecommendedPeopleViewModel>> GetRecommendedUsersV2(IEnumerable<UserDetails> users, UserDetails currentUser, List<int> currentUserInterests, double distanceMin, double distanceMax)
+        {
+            var filteredUsers = users.Where(u => (!u.ghostmode || IsUserTypeValid(u.AppearanceTypes, currentUser.Gender)))
+                .Where(u => !currentUser.ghostmode || (u.allowmylocation && IsUserTypeValid(currentUser.AppearanceTypes, u.Gender)))
+                .Where(u => !currentUser.Filteringaccordingtoage || IsAgeInRange(currentUser.agefrom, currentUser.ageto, u.birthdate?.Date ?? DateTime.Now.Date));
+
+            var recommendedUsers = filteredUsers.Select(u => new RecommendedPeopleViewModel()
+                {
+                    UserId = u.UserId,
+                    ImageIsVerified = u.ImageIsVerified ?? false,
+                    Name = u.User.DisplayedUserName,
+                    Key = 0, // TODO: Get the key for the feed
+                    Image = string.IsNullOrEmpty(u.UserImage) ? _configuration["DefaultImage"] : $"{_configuration["BaseUrl"]}{u.UserImage}",
+                    DistanceFromYou = Math.Round(googleLocationService.CalculateDistance(Convert.ToDouble(u.lat), Convert.ToDouble(u.lang), Convert.ToDouble(currentUser.lat), Convert.ToDouble(currentUser.lang), 'M'), 2),
+                    InterestMatchPercent = u.listoftags.Select(t => t.InterestsId).Intersect(currentUserInterests).Count() / Convert.ToDecimal(currentUserInterests.Count()) * 100,
+                    MatchedInterests = u.listoftags.Where(t => currentUserInterests.Contains(t.InterestsId)).Select(t => t.Interests.name).ToList()
+                })
+                .Where(u => u.DistanceFromYou <= distanceMax && u.DistanceFromYou >= distanceMin);
+
+            return recommendedUsers;
+        }
+        // Not Used
+        public async Task<(RecommendedPeopleViewModel, string)> RecommendedPeopleFixOld(UserDetails userDeatil, string userId)
             {
 
                 if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(userId))
