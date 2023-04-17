@@ -1373,7 +1373,7 @@ namespace Social.Services.Implementation
                                   && !recentRequests.Contains(q.PrimaryId)).ToList();
 
 
-            var usersList = await GetRecommendedClosedUsersInParallelInWithBatchesV2(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
+            var usersList = await GetRecommendedClosedUsersInParallelInWithBatches(usersDetails, userDeatil,currentUserInterests,distanceMin,distanceMax);
 
             var recommendedPeople = usersList.OrderByDescending(q => q.InterestMatchPercent).FirstOrDefault();
 
