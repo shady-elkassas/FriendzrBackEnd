@@ -367,6 +367,7 @@ namespace Social.Services.Implementation
                     await firebaseManager.SendNotification(item.User.UserDetails?.FcmToken, fireBaseInfo);
                 }
 
+                VM.Id = messagedata.Id;
                 return new ResponseModel<ChatGroupSendMessageVM>(StatusCodes.Status200OK, true,
                     localizer["SavedSuccessfully"], VM);
             }

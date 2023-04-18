@@ -23,6 +23,7 @@ namespace Social.Services.ModelView
         [JsonIgnore]
         public IFormFile Attach_File { set; get; }
         public string Attach { set; get; }
+        public string Id { set; get; }
 
     }
 }
