@@ -34,4 +34,13 @@ namespace Social.Services.ModelView
         public string Latitude { get; set; }
         public string LocationName { get; set; }
     }
+
+    public class GetLiveLocationDto
+    {
+        public string Id { set; get; }
+        public string Longitude { get; set; }
+        public string Latitude { get; set; }
+        public string LocationName { get; set; }
+    }
+}
 }

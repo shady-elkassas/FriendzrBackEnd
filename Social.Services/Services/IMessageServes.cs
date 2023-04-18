@@ -25,6 +25,8 @@ namespace Social.Services.Services
         bool getUserMessages(string UserMessagesid, string userid);
 
         Task<bool> UpdateLiveLocationMessageData(UpdateLiveLocationDto dto);
+
+        Task<GetLiveLocationDto> GetLiveLocationMessageData(string id);
         //string geteventMessages(string eventid);
         // EventChat getEventChat(string eventid);
         FireBaseDatamodel getFireBaseData(int userid, FireBaseData model,DateTime? date=null,TimeSpan?time=null,bool IsCreatedByAdmin = false);

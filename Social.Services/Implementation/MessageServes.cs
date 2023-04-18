@@ -218,6 +218,21 @@ namespace Social.Services.Implementation
             return await _authContext.SaveChangesAsync() >0;
 
         }
+
+        public async Task<GetLiveLocationDto> GetLiveLocationMessageData(string id)
+        {
+            var data = await _authContext.Messagedata.FirstOrDefaultAsync(a => a.Id == id);
+            if (data == null) return new GetLiveLocationDto();
+            var result = new GetLiveLocationDto
+            {
+                Id = data.Id,
+                LocationName = data.LocationName,
+                Latitude = data.Latitude,
+                Longitude = data.Longitude
+            };
+            return result;
+
+        }
         public bool getmuitMessages(string UserMessagesid, string userid, List<UserMessages> UserMessages)
         {
             var data = UserMessages.Where(n => n.Id == UserMessagesid && (n.muit == userid || n.Tomuit == userid)).FirstOrDefault();
