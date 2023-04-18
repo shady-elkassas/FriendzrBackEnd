@@ -5,6 +5,7 @@ using Social.Entity.Enums;
 using Social.Entity.Models;
 using Social.Entity.ModelView;
 using Social.Services.Helpers;
+using Social.Services.ModelView;
 using Social.Services.Services;
 using System;
 using System.Collections.Generic;
@@ -202,6 +203,19 @@ namespace Social.Services.Implementation
             var data = this._authContext.UserMessages.Where(n => n.Id == UserMessagesid && (n.muit == userid || n.Tomuit == userid)).FirstOrDefault();
 
             return data == null ? false : true;
+
+        }
+
+        public async Task<bool> UpdateLiveLocationMessageData(UpdateLiveLocationDto dto)
+        {
+            var data = _authContext.Messagedata.FirstOrDefault(a => a.Id == dto.Id);
+            if (data == null) return false;
+            data.LocationName = dto.LocationName;
+            data.Latitude = dto.Latitude;
+            data.Longitude = dto.Longitude;
+            _authContext.Messagedata.Update(data);
+            
+            return await _authContext.SaveChangesAsync() >0;
 
         }
         public bool getmuitMessages(string UserMessagesid, string userid, List<UserMessages> UserMessages)

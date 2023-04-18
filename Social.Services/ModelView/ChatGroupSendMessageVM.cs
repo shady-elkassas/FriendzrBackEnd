@@ -26,4 +26,12 @@ namespace Social.Services.ModelView
         public string Id { set; get; }
 
     }
+
+    public class UpdateLiveLocationDto
+    {
+        public string Id { set; get; }
+        public string Longitude { get; set; }
+        public string Latitude { get; set; }
+        public string LocationName { get; set; }
+    }
 }

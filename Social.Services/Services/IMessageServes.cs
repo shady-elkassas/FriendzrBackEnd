@@ -1,6 +1,7 @@
 ﻿using Social.Entity.Models;
 using Social.Entity.ModelView;
 using Social.Services.Helpers;
+using Social.Services.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,9 @@ namespace Social.Services.Services
         List<Messagedata> geteventMessagedata(string UserMessagesid);
         bool getUserMessages(string UserMessagesid, string userid);
 
+        Task<bool> UpdateLiveLocationMessageData(UpdateLiveLocationDto dto);
         //string geteventMessages(string eventid);
-       // EventChat getEventChat(string eventid);
+        // EventChat getEventChat(string eventid);
         FireBaseDatamodel getFireBaseData(int userid, FireBaseData model,DateTime? date=null,TimeSpan?time=null,bool IsCreatedByAdmin = false);
         Task addFireBaseDatamodel(FireBaseDatamodel model);
         Task addFireBaseDatamodel(List<FireBaseDatamodel> model);

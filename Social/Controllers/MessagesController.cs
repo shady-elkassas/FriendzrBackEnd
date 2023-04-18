@@ -311,7 +311,16 @@ namespace Social.Controllers
 
             }
         }
+        [HttpPost]
+        [Route("UpdateLiveLocation")]
+        public async Task<IActionResult> UpdateLiveLocation([FromForm] UpdateLiveLocationDto model)
+        {
 
+            var result = await MessageServes.UpdateLiveLocationMessageData(model);
+            return StatusCode(StatusCodes.Status200OK,
+                new ResponseModel<object>(StatusCodes.Status200OK, true,
+                    "Update Live Location", result));
+        }
         [HttpPost]
         [Route("SendMessageFix")]
         public async Task<IActionResult> SendMessageFix([FromForm] MessageDTO MessageDTO)
@@ -536,7 +545,7 @@ namespace Social.Controllers
             var Result = await chatGroupService.SendMessage(HttpContext.GetUser().User, model);
             return StatusCode(Result.StatusCode, Result);
         }
-
+      
 
         [HttpPost]
         [Route("Sendnotifacation")]
