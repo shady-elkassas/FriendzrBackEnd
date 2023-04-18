@@ -43,4 +43,4 @@ namespace Social.Services.ModelView
         public string LocationName { get; set; }
     }
 }
-}
+
