@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Social.Entity.DBContext;
+using Social.Entity.Enums;
 using Social.Entity.Migrations;
 using Social.Entity.Models;
 using Social.Entity.ModelView;
@@ -753,6 +754,7 @@ namespace Social.Controllers
             return StatusCode(StatusCodes.Status200OK, new ResponseModel<object>(StatusCodes.Status200OK, true, _localizer["Added"], result));
         }
 
+        
         // for web
         [Route("ExportExternalEvents")]
         [HttpPost]
@@ -762,7 +764,7 @@ namespace Social.Controllers
             var result = await this.ExportExternalEvents(externalEvents);
             return StatusCode(StatusCodes.Status200OK, result);
         }
-
+       
 
         private async Task<InsertedEventResultViewModel> ExportExternalEvents(ExternalEventDataResponse externalEvents)
         {
@@ -899,6 +901,7 @@ namespace Social.Controllers
                     showAttendees = q.showAttendees,
                     IsActive = true,
                     UserId = 269,
+                    EventTypeCode = EventTypes.Skiddle.ToString()
 
                 }).ToList();                
                 List<EventData> createdEvents = await _eventServ.InsertEvents(newEvents);
@@ -938,6 +941,8 @@ namespace Social.Controllers
 
         }
 
+
+
         private ExternalEventDataResponse SetAllDayProperty(ExternalEventDataResponse externalEvents)
         {
             var externalEventData= new List<ExternalEventData>();
@@ -973,5 +978,44 @@ namespace Social.Controllers
             externalEvents.ExternalEventData = externalEventData;
             return externalEvents;
         }
+
+
+        //private ExternalEventTaskMasterResponse SetAllDayPropertyForTicketMaster(ExternalEventTaskMasterResponse externalEvents)
+        //{
+        //    var externalEventData = new List<Event>();
+        //    foreach (var item in externalEvents.ExternalEventDataForTciketMaster)
+        //    {
+        //        if (item.sales.presales.Where(x => x.startDateTime != null && x.endDateTime != null && item.ticketing.safeTix.enabled == true).Any() )
+        //        {
+        //            //ask
+        //            if (item.sales.presales.FirstOrDefault().endDateTime.Subtract(item.sales.presales.FirstOrDefault().startDateTime).Days <= 1)
+        //            {
+        //                //var totalHours = item.openingtimes.doorsclose.Subtract(item.openingtimes.doorsopen).TotalHours;
+        //                var totalHours = 7;
+        //                var totalHoursValue = totalHours < 0 ? totalHours += 24 : totalHours;
+        //                if (totalHoursValue >= 12)
+        //                {
+        //                    item.allday = true;
+        //                }
+        //                else
+        //                {
+        //                    item.allday = false;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                item.allday = false;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            item.allday = false;
+        //        }
+        //        externalEventData.Add(item);
+        //    }
+
+        //    externalEvents.ExternalEventDataForTciketMaster = externalEventData;
+        //    return externalEvents;
+        //}
     }
 }

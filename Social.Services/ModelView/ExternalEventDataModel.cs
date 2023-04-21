@@ -10,8 +10,19 @@ namespace Social.Services.ModelView
         public int totalcount { get; set; }
         public int pagecount { get; set; }
         public List<ExternalEventData> results { get; set; }
-        
+        //public List<Event> resultsTi { get; set; }
+
     }
+    public class ExternalEventTicketMasterDataModel
+    {
+        public int error { get; set; }
+        public int totalcount { get; set; }
+        public int pagecount { get; set; }
+        public List<Event> results { get; set; }
+
+    }
+
+
     public class ExternalEventData
     {
         public string id { get; set; }

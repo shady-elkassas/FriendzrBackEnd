@@ -9,6 +9,7 @@ namespace Social.Entity.Models
         public string ActionType { get; set; }
         public DateTime Date { get; set; }
         public virtual EventData Event { get; set; }
+        //public virtual EventDataTicketMaster EventDataTicketMaster { get; set; }
         public virtual UserDetails User { get; set; }
     }
 }

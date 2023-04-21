@@ -3040,6 +3040,13 @@ namespace Social.Services.Implementation
             await _authContext.SaveChangesAsync();
             return eventsData;
         }
+
+        //public async Task<List<EventDataTicketMaster>> InsertTicketMasterEvents(List<EventDataTicketMaster> eventsData)
+        //{
+        //    await _authContext.EventDataTicketMaster.AddRangeAsync(eventsData);
+        //    await _authContext.SaveChangesAsync();
+        //    return eventsData;
+        //}
         public async Task<bool> InsertFavoriteEvent(int userId , string eventId)
         {
             var entity = new FavoriteEvent
@@ -3285,6 +3292,8 @@ namespace Social.Services.Implementation
             {
             }
         }
+
+
 
 
 

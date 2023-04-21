@@ -25,6 +25,7 @@ namespace Social.Entity.Models
         public string MessagesAttached { get; set; }
         public bool linkable { get; set; }
         public int? EventDataid { get; set; }
+        public int? TicketMasterEventDataid { get; set; }
         public DateTime Messagesdate { get; set; }
         public TimeSpan Messagestime { get; set; }
         public virtual ChatGroup ChatGroup { get; set; }

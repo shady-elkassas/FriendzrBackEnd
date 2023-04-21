@@ -64,6 +64,7 @@ namespace Social.Entity.DBContext
         public DbSet<SkippedUser> SkippedUsers { get; set; }
         public DbSet<SkippedEvent> SkippedEvents { get; set; } //=>
         public DbSet<EmailTemplate> EmailTemplates { get; set; }
+       // public DbSet<EventDataTicketMaster> EventDataTicketMaster { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -160,6 +161,7 @@ namespace Social.Entity.DBContext
             modelBuilder.Entity<EventChatAttend>(b =>
             {               
                 b.HasOne(ur => ur.EventData).WithMany(u => u.EventChatAttend).HasForeignKey(b => b.EventDataid).OnDelete(DeleteBehavior.Cascade).IsRequired();
+              //  b.HasOne(ur => ur.EventDataTicketMaster).WithMany(u => u.EventChatAttend).HasForeignKey(b => b.TicketMasterEventDataid).OnDelete(DeleteBehavior.NoAction).IsRequired();
                 //b.HasOne(ur => ur.Userattend).WithOne(u=>u.EventChatAttend)
                 //.HasForeignKey<EventChatAttend>(l => l.UserattendId)
                 //.OnDelete(DeleteBehavior.Cascade);
@@ -214,7 +216,6 @@ namespace Social.Entity.DBContext
             modelBuilder.Entity<Messagedata>(b =>
             {               
                // b.HasOne(ur => ur.EventData).WithMany(u => u.Messagedata).HasForeignKey(b => b.EventDataid).OnDelete(DeleteBehavior.Cascade);
-                b.HasOne(ur => ur.EventChatAttend).WithMany(u => u.Messagedata).HasForeignKey(b => b.EventChatAttendId).OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(ur => ur.User).WithMany(u => u.Messagedata).HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Cascade).IsRequired();
             });
 
@@ -238,6 +239,21 @@ namespace Social.Entity.DBContext
             {
                 b.HasOne(ur => ur.User).WithMany(u => u.FireBaseDatamodel).HasForeignKey(b => b.userid).OnDelete(DeleteBehavior.Cascade).IsRequired();
             });
+
+
+            //modelBuilder.Entity<EventDataTicketMaster>(b =>
+            //{
+            //    b.HasKey(x => x.Id);
+            //   // b.Property(x => x.Id).UseIdentityColumn();
+            //    b.HasOne(ur => ur.User).WithMany(u => u.EventDataTicketMaster).HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Cascade);
+            //    b.HasMany(r => r.Messagedata).WithOne(x => x.EventDataTicketMaster).HasForeignKey(b => b.TicketMasterEventDataid).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //    b.HasMany(r => r.EventReports).WithOne(x => x.EventDataTicketMaster).HasForeignKey(b => b.TicketMasterEventDataID).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //    b.HasOne(r => r.EventTypeList).WithMany(x => x.EventDataTicketMaster).HasForeignKey(b => b.EventTypeListid).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //    b.HasOne(r => r.City).WithMany(x => x.EventDataTicketMaster).HasForeignKey(b => b.CityID).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //    b.HasOne(r => r.Country).WithMany(x => x.EventDataTicketMaster).HasForeignKey(b => b.CountryID).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //    b.HasMany(r => r.EventTrackers).WithOne(x => x.EventDataTicketMaster).HasForeignKey(b => b.TicketMasetrEventId).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //    b.HasMany(r => r.SkippedEvents).WithOne(x => x.EventDataTicketMaster).HasForeignKey(b => b.TicketMasterEventId).OnDelete(DeleteBehavior.Cascade).IsRequired();
+            //});
 
         }
     }

@@ -30,6 +30,7 @@ namespace Social.Entity.Models
         public bool leave { get; set; }
         public bool leavechat { get; set; }
         public int EventDataid { get; set; }
+        public int TicketMasterEventDataid { get; set; }
         public string note { get; set; }
         public bool muit { get; set; }
         public bool isrecivedremindernotification { get; set; }
@@ -37,6 +38,7 @@ namespace Social.Entity.Models
         public DateTime? deletedate { get; set; }
         public TimeSpan? delettime { get; set; }
         public virtual EventData EventData { get; set; }
+        //public virtual EventDataTicketMaster EventDataTicketMaster { get; set; }
         public virtual UserDetails Userattend { get; set; }
         public virtual ICollection<Messagedata> Messagedata { get; set; }
     }

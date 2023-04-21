@@ -11,6 +11,7 @@ namespace Social.Entity.Models
         public EventTypeList()
         {
             EventData = new HashSet<EventData>();
+            //EventDataTicketMaster = new HashSet<EventDataTicketMaster>();
         }
         public int ID { get; set; }
         public Guid entityID { get; set; }
@@ -19,5 +20,6 @@ namespace Social.Entity.Models
         public bool key { get; set; }
         //public bool IsActive { get; set; }
         public virtual ICollection<EventData> EventData { get; set; }
+        //public virtual ICollection<EventDataTicketMaster> EventDataTicketMaster { get; set; }
     }
 }

@@ -137,5 +137,7 @@ namespace Social.Services.Services
         List<EventDataByLocationMV> GetAllEventsByLocationsWithDateFilter(string eventLang, string eventLat, UserDetails user,
             AppConfigrationVM AppConfigrationVM, string categories, string dateCriteria, DateTime? startDate,
             DateTime? endDate);
+
+        //Task<List<EventDataTicketMaster>> InsertTicketMasterEvents(List<EventDataTicketMaster> eventsData);
     }
 }
