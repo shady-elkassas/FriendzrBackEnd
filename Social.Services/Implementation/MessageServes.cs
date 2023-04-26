@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Social.Entity.DBContext;
 using Social.Entity.Enums;
@@ -216,6 +217,18 @@ namespace Social.Services.Implementation
             _authContext.Messagedata.Update(data);
             
             return await _authContext.SaveChangesAsync() >0;
+
+        }
+
+        public async Task<bool> StopLiveLocationMessageData(string id)
+        {
+            var data = _authContext.Messagedata.FirstOrDefault(a => a.Id == id);
+            if (data == null) return false;
+
+            data.IsLiveLocation = false;
+            _authContext.Messagedata.Update(data);
+
+            return await _authContext.SaveChangesAsync() > 0;
 
         }
 

@@ -321,7 +321,16 @@ namespace Social.Controllers
                 new ResponseModel<object>(StatusCodes.Status200OK, true,
                     "Update Live Location", result));
         }
+        [HttpPost]
+        [Route("StopLiveLocation")]
+        public async Task<IActionResult> StopLiveLocation([FromForm] string id)
+        {
 
+            var result = await MessageServes.StopLiveLocationMessageData(id);
+            return StatusCode(StatusCodes.Status200OK,
+                new ResponseModel<object>(StatusCodes.Status200OK, true,
+                    "Stop Live Location", result));
+        }
         [HttpGet]
         [Route("GetLiveLocation")]
         public async Task<IActionResult> GetLiveLocation([FromForm] string id)
