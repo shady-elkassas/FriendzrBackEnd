@@ -21,7 +21,8 @@ namespace Social.Entity.Models
         public string Longitude { get; set; }
         public string Latitude { get; set; }
         public string LocationName { get; set; }
-        public DateTime? LocationStartTime { get; set; }
+        public string LocationStartTime { get; set; }
+        public string LocationEndTime { get; set; }
         public string LocationPeriod { get; set; }
         public bool? IsLiveLocation { get; set; }
 

@@ -244,6 +244,7 @@ namespace Social.Services.Implementation
                 Longitude = data.Longitude,
                 LocationPeriod = data.LocationPeriod,
                 LocationStartTime = data.LocationStartTime,
+                LocationEndTime = data.LocationEndTime,
                 IsLiveLocation = data.IsLiveLocation ?? false,
             };
             return result;
@@ -819,6 +820,7 @@ namespace Social.Services.Implementation
             Messagedata.LocationName = MessageDTO.LocationName;
             Messagedata.LocationPeriod = MessageDTO.LocationPeriod;
             Messagedata.LocationStartTime = MessageDTO.LocationStartTime;
+            Messagedata.LocationEndTime = MessageDTO.LocationEndTime;
             Messagedata.IsLiveLocation = MessageDTO.IsLiveLocation;
             Messagedata.Messagetype = MessageDTO.Messagetype;
             MessageVIEWDTO MessageVIEWDTO = new MessageVIEWDTO();
@@ -851,6 +853,7 @@ namespace Social.Services.Implementation
             Messagedata.LocationName = MessageDTO.LocationName;
             Messagedata.LocationPeriod = MessageDTO.LocationPeriod;
             Messagedata.LocationStartTime = MessageDTO.LocationStartTime;
+            Messagedata.LocationEndTime = MessageDTO.LocationEndTime;
             Messagedata.IsLiveLocation = MessageDTO.IsLiveLocation;
             Messagedata.linkable = MessageDTO.linkable;
 
