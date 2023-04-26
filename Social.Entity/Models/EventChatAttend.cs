@@ -30,7 +30,7 @@ namespace Social.Entity.Models
         public bool leave { get; set; }
         public bool leavechat { get; set; }
         public int EventDataid { get; set; }
-        public int TicketMasterEventDataid { get; set; }
+       // public int TicketMasterEventDataid { get; set; }
         public string note { get; set; }
         public bool muit { get; set; }
         public bool isrecivedremindernotification { get; set; }
