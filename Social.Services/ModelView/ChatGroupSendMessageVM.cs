@@ -15,7 +15,9 @@ namespace Social.Services.ModelView
         public string Longitude { get; set; }
         public string Latitude { get; set; }
         public string LocationName { get; set; }
-
+        public DateTime? LocationStartTime { get; set; }
+        public string LocationPeriod { get; set; }
+        public bool? IsLiveLocation { get; set; }
         public Messagetype MessageType { get; set; }
         public bool linkable { get; set; }
         public String EventLINKid { get; set; }
@@ -41,6 +43,9 @@ namespace Social.Services.ModelView
         public string Longitude { get; set; }
         public string Latitude { get; set; }
         public string LocationName { get; set; }
+        public DateTime? LocationStartTime { get; set; }
+        public string LocationPeriod { get; set; }
+        public bool? IsLiveLocation { get; set; }
     }
 }
 

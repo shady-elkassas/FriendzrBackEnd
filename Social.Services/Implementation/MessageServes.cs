@@ -228,7 +228,10 @@ namespace Social.Services.Implementation
                 Id = data.Id,
                 LocationName = data.LocationName,
                 Latitude = data.Latitude,
-                Longitude = data.Longitude
+                Longitude = data.Longitude,
+                LocationPeriod = data.LocationPeriod,
+                LocationStartTime = data.LocationStartTime,
+                IsLiveLocation = data.IsLiveLocation ?? false,
             };
             return result;
 
@@ -801,6 +804,9 @@ namespace Social.Services.Implementation
             Messagedata.Latitude = MessageDTO.Latitude;
             Messagedata.Longitude = MessageDTO.Longitude;
             Messagedata.LocationName = MessageDTO.LocationName;
+            Messagedata.LocationPeriod = MessageDTO.LocationPeriod;
+            Messagedata.LocationStartTime = MessageDTO.LocationStartTime;
+            Messagedata.IsLiveLocation = MessageDTO.IsLiveLocation;
             Messagedata.Messagetype = MessageDTO.Messagetype;
             MessageVIEWDTO MessageVIEWDTO = new MessageVIEWDTO();
             if (MessageDTO.Attach != null)
@@ -830,6 +836,9 @@ namespace Social.Services.Implementation
             Messagedata.Latitude = MessageDTO.Latitude;
             Messagedata.Longitude = MessageDTO.Longitude;
             Messagedata.LocationName = MessageDTO.LocationName;
+            Messagedata.LocationPeriod = MessageDTO.LocationPeriod;
+            Messagedata.LocationStartTime = MessageDTO.LocationStartTime;
+            Messagedata.IsLiveLocation = MessageDTO.IsLiveLocation;
             Messagedata.linkable = MessageDTO.linkable;
 
             Messagedata.EventDataid = geteventMessages(MessageDTO.EventLINKid);

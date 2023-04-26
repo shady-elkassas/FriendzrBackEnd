@@ -1027,6 +1027,9 @@ namespace Social.Controllers
                     Latitude = item.Latitude,
                     Longitude = item.Longitude,
                     LocationName = item.LocationName,
+                    LocationPeriod = item.LocationPeriod,
+                    LocationStartTime = item.LocationStartTime,
+                    IsLiveLocation = item.IsLiveLocation ?? false,
                     Messagesdate = item.Messagesdate.ConvertDateTimeToString(),
                     Messagestime = item.Messagestime.ToString(@"hh\:mm"),
                     Username = item.User.User.DisplayedUserName,
@@ -1258,6 +1261,9 @@ namespace Social.Controllers
                         dat.Latitude = item.Latitude;
                         dat.Longitude = item.Longitude;
                         dat.LocationName = item.LocationName;
+                        dat.LocationPeriod = item.LocationPeriod;
+                        dat.LocationStartTime = item.LocationStartTime;
+                        dat.IsLiveLocation = item.IsLiveLocation ?? false;
                         dat.Messagesdate = item.Messagesdate.ConvertDateTimeToString();
                         dat.Messagestime = item.Messagestime.ToString(@"hh\:mm");
                         dat.Username = item.User.userName;
