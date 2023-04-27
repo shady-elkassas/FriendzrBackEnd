@@ -1110,7 +1110,7 @@ namespace Social.Controllers
                           pageSize = pageSize,
                           totalPages = roundedTotalPages,
                           rowCount,
-
+                          totalRecords = rowCount,
                           data = pagedModel.Data
                       }));
 
