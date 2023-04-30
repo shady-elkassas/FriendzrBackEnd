@@ -333,7 +333,7 @@ namespace Social.Controllers
         }
         [HttpGet]
         [Route("GetLiveLocation")]
-        public async Task<IActionResult> GetLiveLocation([FromForm] string id)
+        public async Task<IActionResult> GetLiveLocation([FromQuery] string id)
         {
 
             var result =  await MessageServes.GetLiveLocationMessageData(id);
