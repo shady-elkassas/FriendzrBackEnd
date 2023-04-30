@@ -16,6 +16,10 @@ namespace Social.Entity.ModelView
         public string Longitude { get; set; }
         public string Latitude { get; set; }
         public string LocationName { get; set; }
+        public string LocationStartTime { get; set; }
+        public string LocationEndTime { get; set; }
+        public string LocationPeriod { get; set; }
+        public bool? IsLiveLocation { get; set; }
         public string imageUrl { get; set; }
         public int? Messagetype { get; set; }
         public string Action_code { get; set; }
