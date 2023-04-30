@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Social.Entity.DBContext;
 
 namespace Social.Entity.Migrations
 {
     [DbContext(typeof(AuthDBContext))]
-    partial class AuthDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230426091324_AddLocationOptionsToMessageDataTable")]
+    partial class AddLocationOptionsToMessageDataTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -724,6 +726,9 @@ namespace Social.Entity.Migrations
                     b.Property<TimeSpan?>("Jointime")
                         .HasColumnType("time");
 
+                    b.Property<int>("TicketMasterEventDataid")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserNotreadcount")
                         .HasColumnType("int");
 
@@ -1257,17 +1262,14 @@ namespace Social.Entity.Migrations
                     b.Property<string>("Latitude")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LocationEndTime")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LocationName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LocationPeriod")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LocationStartTime")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("LocationStartTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Longitude")
                         .HasColumnType("nvarchar(max)");

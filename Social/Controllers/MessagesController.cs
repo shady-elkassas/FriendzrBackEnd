@@ -321,7 +321,16 @@ namespace Social.Controllers
                 new ResponseModel<object>(StatusCodes.Status200OK, true,
                     "Update Live Location", result));
         }
+        [HttpPost]
+        [Route("StopLiveLocation")]
+        public async Task<IActionResult> StopLiveLocation([FromForm] string id)
+        {
 
+            var result = await MessageServes.StopLiveLocationMessageData(id);
+            return StatusCode(StatusCodes.Status200OK,
+                new ResponseModel<object>(StatusCodes.Status200OK, true,
+                    "Stop Live Location", result));
+        }
         [HttpGet]
         [Route("GetLiveLocation")]
         public async Task<IActionResult> GetLiveLocation([FromForm] string id)
@@ -1027,6 +1036,10 @@ namespace Social.Controllers
                     Latitude = item.Latitude,
                     Longitude = item.Longitude,
                     LocationName = item.LocationName,
+                    LocationPeriod = item.LocationPeriod,
+                    LocationStartTime = item.LocationStartTime,
+                    LocationEndTime = item.LocationEndTime,
+                    IsLiveLocation = item.IsLiveLocation ?? false,
                     Messagesdate = item.Messagesdate.ConvertDateTimeToString(),
                     Messagestime = item.Messagestime.ToString(@"hh\:mm"),
                     Username = item.User.User.DisplayedUserName,
@@ -1097,7 +1110,7 @@ namespace Social.Controllers
                           pageSize = pageSize,
                           totalPages = roundedTotalPages,
                           rowCount,
-
+                          totalRecords = rowCount,
                           data = pagedModel.Data
                       }));
 
@@ -1258,6 +1271,10 @@ namespace Social.Controllers
                         dat.Latitude = item.Latitude;
                         dat.Longitude = item.Longitude;
                         dat.LocationName = item.LocationName;
+                        dat.LocationPeriod = item.LocationPeriod;
+                        dat.LocationStartTime = item.LocationStartTime;
+                        dat.LocationEndTime = item.LocationEndTime;
+                        dat.IsLiveLocation = item.IsLiveLocation ?? false;
                         dat.Messagesdate = item.Messagesdate.ConvertDateTimeToString();
                         dat.Messagestime = item.Messagestime.ToString(@"hh\:mm");
                         dat.Username = item.User.userName;

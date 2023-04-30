@@ -25,7 +25,7 @@ namespace Social.Services.Services
         bool getUserMessages(string UserMessagesid, string userid);
 
         Task<bool> UpdateLiveLocationMessageData(UpdateLiveLocationDto dto);
-
+        Task<bool> StopLiveLocationMessageData(string id);
         Task<GetLiveLocationDto> GetLiveLocationMessageData(string id);
         //string geteventMessages(string eventid);
         // EventChat getEventChat(string eventid);

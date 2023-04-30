@@ -21,6 +21,10 @@
     <Compile Remove="Migrations\20230421150048_AddEventDataTicketMaster.Designer.cs" />
     <Compile Remove="Migrations\20230421150232_AddEventDataTicketMaster.cs" />
     <Compile Remove="Migrations\20230421150232_AddEventDataTicketMaster.Designer.cs" />
+    <Compile Remove="Migrations\20230426091050_AddLocationOptionsToMessageDataTable.cs" />
+    <Compile Remove="Migrations\20230426091050_AddLocationOptionsToMessageDataTable.Designer.cs" />
+    <Compile Remove="Migrations\20230426091151_AddLocationOptionsToMessageDataTable.cs" />
+    <Compile Remove="Migrations\20230426091151_AddLocationOptionsToMessageDataTable.Designer.cs" />
     <Compile Remove="Models\EventDataTicketMaster.cs" />
   </ItemGroup>
 

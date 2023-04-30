@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Social.Entity.DBContext;
 using Social.Entity.Enums;
@@ -219,6 +220,18 @@ namespace Social.Services.Implementation
 
         }
 
+        public async Task<bool> StopLiveLocationMessageData(string id)
+        {
+            var data = _authContext.Messagedata.FirstOrDefault(a => a.Id == id);
+            if (data == null) return false;
+
+            data.IsLiveLocation = false;
+            _authContext.Messagedata.Update(data);
+
+            return await _authContext.SaveChangesAsync() > 0;
+
+        }
+
         public async Task<GetLiveLocationDto> GetLiveLocationMessageData(string id)
         {
             var data = await _authContext.Messagedata.FirstOrDefaultAsync(a => a.Id == id);
@@ -228,7 +241,11 @@ namespace Social.Services.Implementation
                 Id = data.Id,
                 LocationName = data.LocationName,
                 Latitude = data.Latitude,
-                Longitude = data.Longitude
+                Longitude = data.Longitude,
+                LocationPeriod = data.LocationPeriod,
+                LocationStartTime = data.LocationStartTime,
+                LocationEndTime = data.LocationEndTime,
+                IsLiveLocation = data.IsLiveLocation ?? false,
             };
             return result;
 
@@ -801,6 +818,10 @@ namespace Social.Services.Implementation
             Messagedata.Latitude = MessageDTO.Latitude;
             Messagedata.Longitude = MessageDTO.Longitude;
             Messagedata.LocationName = MessageDTO.LocationName;
+            Messagedata.LocationPeriod = MessageDTO.LocationPeriod;
+            Messagedata.LocationStartTime = MessageDTO.LocationStartTime;
+            Messagedata.LocationEndTime = MessageDTO.LocationEndTime;
+            Messagedata.IsLiveLocation = MessageDTO.IsLiveLocation;
             Messagedata.Messagetype = MessageDTO.Messagetype;
             MessageVIEWDTO MessageVIEWDTO = new MessageVIEWDTO();
             if (MessageDTO.Attach != null)
@@ -830,6 +851,10 @@ namespace Social.Services.Implementation
             Messagedata.Latitude = MessageDTO.Latitude;
             Messagedata.Longitude = MessageDTO.Longitude;
             Messagedata.LocationName = MessageDTO.LocationName;
+            Messagedata.LocationPeriod = MessageDTO.LocationPeriod;
+            Messagedata.LocationStartTime = MessageDTO.LocationStartTime;
+            Messagedata.LocationEndTime = MessageDTO.LocationEndTime;
+            Messagedata.IsLiveLocation = MessageDTO.IsLiveLocation;
             Messagedata.linkable = MessageDTO.linkable;
 
             Messagedata.EventDataid = geteventMessages(MessageDTO.EventLINKid);
