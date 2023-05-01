@@ -336,7 +336,14 @@ namespace Social.Services.Implementation
                         imageUrl = BaseDomainUrl + item.User.UserDetails.UserImage,
                         Title = CurrentUser.UserDetails.userName + "@" + messagedata.ChatGroup.Name,
                         // Body = VM.Message + _configuration["BaseUrl"] + VM.Attach,
-                        Body = VM.MessageType == Messagetype.Text ?  VM.Message:((int)VM.MessageType == 4 ? "Shared Event" : (((int)VM.MessageType == 2 ? "photo" : "file"))) ,
+                        Body = VM.MessageType switch
+                        {
+                            Messagetype.Text => VM.Message,
+                            Messagetype.linlable => (eventdata.Title + "(Shared Event)"),
+                            Messagetype.Image => "photo",
+                            Messagetype.Location => VM.IsLiveLocation == true ? "live location" : "current location",
+                            _ => "file"
+                        },
                         Latitude = VM.Latitude,
                         Longitude = VM.Longitude,
                         LocationName = VM.LocationName,

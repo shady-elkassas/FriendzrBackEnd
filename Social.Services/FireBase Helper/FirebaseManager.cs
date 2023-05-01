@@ -57,10 +57,14 @@ namespace Social.Services.FireBase_Helper
                      {"Action", fireBaseData.Action },
                      {"Messagetype", fireBaseData.Messagetype.ToString() },
                      {"muit", fireBaseData.muit.ToString()},
-
-                     {"name", fireBaseData.name },
                      {"date", fireBaseData.date },
-
+                     {"Latitude", fireBaseData.Latitude },
+                     {"Longitude", fireBaseData.Longitude },
+                     {"LocationName", fireBaseData.LocationName },
+                     {"LocationPeriod", fireBaseData.LocationPeriod },
+                     {"LocationEndTime", fireBaseData.LocationEndTime },
+                     {"LocationStartTime", fireBaseData.LocationStartTime },
+                     {"IsLiveLocation", fireBaseData.IsLiveLocation == true ? "true" : "false" },
                      {"isAdmin", fireBaseData.isAdmin.ToString() },
                      {"time", fireBaseData.time},
                      {"messageId", fireBaseData.messageId },

@@ -258,7 +258,14 @@ namespace Social.Controllers
                     imageUrl = _configuration["BaseUrl"] + userDeatils.User.UserDetails.UserImage,
                     Title = userDeatils.userName,
                     name = userDeatils.User.DisplayedUserName,
-                    Body = MessageDTO.Messagetype == 1 ? MessageDTO.Message : (MessageDTO.Messagetype == 4 ? (eventdata.Title + "(Shared Event)") : ((MessageDTO.Messagetype == 2 ? "photo" : "file"))),
+                    Body = MessageDTO.Messagetype switch
+                    {
+                        1 => MessageDTO.Message,
+                        4 => (eventdata.Title + "(Shared Event)"),
+                        2 => "photo",
+                        5 => MessageDTO.IsLiveLocation == true  ? "live location" : "current location",
+                        _ => "file"
+                    },
                     Latitude = MessageDTO.Latitude,
                     Longitude = MessageDTO.Longitude,
                     LocationName = MessageDTO.LocationName,
@@ -786,7 +793,14 @@ namespace Social.Controllers
                                 //Body = MessageDTO.Message + MessageDTO.Messagetype == "4" ? "Shared Event" : ((MessageDTO.Attach != null ? _configuration["BaseUrl"] + MessageVIEWDTO.Attach : "")),
                                 // Body = MessageDTO.Message + (MessageDTO.Messagetype == 4 ? "Shared Event" : ((MessageDTO.Attach != null ? _configuration["BaseUrl"] + MessageVIEWDTO.Attach : ""))),
 
-                                Body = MessageDTO.Messagetype == 1 ? MessageDTO.Message : (MessageDTO.Messagetype == 4 ? (eventdata.Title + "(Shared Event)") : ((MessageDTO.Messagetype == 2 ? "photo" : "file"))),
+                                Body = MessageDTO.Messagetype switch
+                                {
+                                    1 => MessageDTO.Message,
+                                    4 => (eventdata.Title + "(Shared Event)"),
+                                    2 => "photo",
+                                    5 => MessageDTO.IsLiveLocation == true ? "live location" : "current location",
+                                    _ => "file"
+                                },
                                 Latitude = MessageDTO.Latitude,
                                 Longitude = MessageDTO.Longitude,
                                 LocationName = MessageDTO.LocationName,
