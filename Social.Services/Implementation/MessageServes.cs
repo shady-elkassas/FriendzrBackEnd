@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Social.Entity.DBContext;
 using Social.Entity.Enums;
 using Social.Entity.Models;
 using Social.Entity.ModelView;
+using Social.Services.FireBase_Helper;
 using Social.Services.Helpers;
 using Social.Services.ModelView;
 using Social.Services.Services;
@@ -21,14 +23,19 @@ namespace Social.Services.Implementation
         private readonly IChatGroupService chatGroupService;
         private readonly IGlobalMethodsService globalMethodsService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        
+        private readonly IConfiguration _configuration;
+        private readonly IFirebaseManager firebaseManager;
+
         public MessageServes(IGlobalMethodsService globalMethodsService, IHttpContextAccessor httpContextAccessor, AuthDBContext authContext,
-            IChatGroupService chatGroupService)
+            IChatGroupService chatGroupService, IFirebaseManager firebaseManager, IConfiguration configuration)
         {
             this.globalMethodsService = globalMethodsService;
             this.httpContextAccessor = httpContextAccessor;
             this._authContext = authContext;
-            this.chatGroupService = chatGroupService;           
+            this.chatGroupService = chatGroupService;
+            this.firebaseManager = firebaseManager;
+            _configuration = configuration;
+
         }
         public async Task<bool> CheckUserMessages(int currentuserid, int antherid)
         {
@@ -222,11 +229,38 @@ namespace Social.Services.Implementation
 
         public async Task<bool> StopLiveLocationMessageData(string id)
         {
-            var data = _authContext.Messagedata.FirstOrDefault(a => a.Id == id);
+            var data = _authContext.Messagedata
+                .Include(a=>a.UserMessagess)
+                .ThenInclude(a=>a.ToUser)
+                .ThenInclude(a=>a.User)
+                .FirstOrDefault(a => a.Id == id);
             if (data == null) return false;
 
             data.IsLiveLocation = false;
             _authContext.Messagedata.Update(data);
+            if (data.UserMessagess?.ToUser == null) return await _authContext.SaveChangesAsync() > 0;
+            try
+            {
+                var fireBaseInfo = new FireBaseData()
+                {
+                    imageUrl = _configuration["BaseUrl"] + data.User?.UserImage,
+                    Title = data.User?.userName,
+                    name = data.User?.userName,
+                    Body = "stop location",
+                    muit = getUserMessages(data.UserMessagessId, data.UserMessagess?.ToUserId.ToString()),
+                    Action_code = data.UserId.ToString(),
+                    Action = "user_chat",
+                    messageId = data.Id,
+                    senderId = data.User?.UserId,
+                    senderImage = _configuration["BaseUrl"] + data.User?.UserImage,
+
+                };
+                await firebaseManager.SendNotification(data.UserMessagess?.ToUser?.FcmToken, fireBaseInfo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             return await _authContext.SaveChangesAsync() > 0;
 

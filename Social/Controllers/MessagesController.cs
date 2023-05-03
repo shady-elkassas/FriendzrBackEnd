@@ -24,6 +24,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 namespace Social.Controllers
 {
     [Route("api/[controller]")]
