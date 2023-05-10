@@ -24,6 +24,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 namespace Social.Controllers
 {
     [Route("api/[controller]")]
@@ -258,10 +260,21 @@ namespace Social.Controllers
                     imageUrl = _configuration["BaseUrl"] + userDeatils.User.UserDetails.UserImage,
                     Title = userDeatils.userName,
                     name = userDeatils.User.DisplayedUserName,
-                    Body = MessageDTO.Messagetype == 1 ? MessageDTO.Message : (MessageDTO.Messagetype == 4 ? (eventdata.Title + "(Shared Event)") : ((MessageDTO.Messagetype == 2 ? "photo" : "file"))),
-                   Latitude = MessageDTO.Latitude,
-                   Longitude = MessageDTO.Longitude,
-                   LocationName = MessageDTO.LocationName,
+                    Body = MessageDTO.Messagetype switch
+                    {
+                        1 => MessageDTO.Message,
+                        4 => (eventdata.Title + "(Shared Event)"),
+                        2 => "photo",
+                        5 => MessageDTO.IsLiveLocation == true  ? "live location" : "current location",
+                        _ => "file"
+                    },
+                    Latitude = MessageDTO.Latitude,
+                    Longitude = MessageDTO.Longitude,
+                    LocationName = MessageDTO.LocationName,
+                    LocationPeriod = MessageDTO.LocationPeriod,
+                    LocationEndTime = MessageDTO.LocationEndTime,
+                    LocationStartTime = MessageDTO.LocationStartTime,
+                    IsLiveLocation = MessageDTO.IsLiveLocation ?? false,
                     muit = muit,
                     Action_code = userDeatils.UserId,
                     Action = "user_chat",
@@ -782,10 +795,21 @@ namespace Social.Controllers
                                 //Body = MessageDTO.Message + MessageDTO.Messagetype == "4" ? "Shared Event" : ((MessageDTO.Attach != null ? _configuration["BaseUrl"] + MessageVIEWDTO.Attach : "")),
                                 // Body = MessageDTO.Message + (MessageDTO.Messagetype == 4 ? "Shared Event" : ((MessageDTO.Attach != null ? _configuration["BaseUrl"] + MessageVIEWDTO.Attach : ""))),
 
-                                Body = MessageDTO.Messagetype == 1 ? MessageDTO.Message : (MessageDTO.Messagetype == 4 ? (eventdata.Title + "(Shared Event)") : ((MessageDTO.Messagetype == 2 ? "photo" : "file"))),
+                                Body = MessageDTO.Messagetype switch
+                                {
+                                    1 => MessageDTO.Message,
+                                    4 => (eventdata.Title + "(Shared Event)"),
+                                    2 => "photo",
+                                    5 => MessageDTO.IsLiveLocation == true ? "live location" : "current location",
+                                    _ => "file"
+                                },
                                 Latitude = MessageDTO.Latitude,
                                 Longitude = MessageDTO.Longitude,
                                 LocationName = MessageDTO.LocationName,
+                                LocationPeriod = MessageDTO.LocationPeriod,
+                                LocationEndTime = MessageDTO.LocationEndTime,
+                                LocationStartTime = MessageDTO.LocationStartTime,
+                                IsLiveLocation = MessageDTO.IsLiveLocation ?? false,
                                 muit = even.muit,
                                 isAdmin = even.EventData.UserId == userto.PrimaryId,
                                 Messagetype = MessageDTO.Messagetype,
