@@ -194,6 +194,7 @@ namespace Social
             services.AddScoped<ExternalEventUtility, ExternalEventUtility>();
             services.AddScoped<IExternalEventJob, ExternalEventJob>();
             services.AddScoped<PublicController, PublicController>();
+           services.AddScoped<TicketMasterController, TicketMasterController>();
             services.AddScoped<AccountupdateController, AccountupdateController>();
             services.AddScoped<INotifyUpdateProfileJob, NotifyUpdateProfileJob>();
             services.AddSingleton(Log.Logger);

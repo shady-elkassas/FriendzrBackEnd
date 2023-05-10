@@ -6,9 +6,12 @@ namespace Social.HangFireJobs
     public class ExternalEventJob : IExternalEventJob
     {
         private readonly PublicController _publicController;
-        public ExternalEventJob(PublicController publicController)
+        private readonly TicketMasterController _TicketMasterController;
+        public ExternalEventJob(PublicController publicController , TicketMasterController TicketMasterController)
         {
-            _publicController= publicController; 
+            _publicController= publicController;
+
+            _TicketMasterController = TicketMasterController;
         }
         public async Task ExportExternalEvents()
         {
